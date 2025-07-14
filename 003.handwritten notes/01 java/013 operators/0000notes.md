@@ -1,0 +1,3 @@
+# Notes
+
+![alt text](013operators_240321_215322_250714_011456_1.jpg) ![alt text](013operators_240321_215322_250714_011456_2.jpg) ![alt text](013operators_240321_215322_250714_011456_3.jpg) ![alt text](013operators_240321_215322_250714_011456_4.jpg) ![alt text](013operators_240321_215322_250714_011456_5.jpg) ![alt text](013operators_240321_215322_250714_011456_6.jpg)
