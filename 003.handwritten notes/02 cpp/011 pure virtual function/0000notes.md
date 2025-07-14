@@ -1,0 +1,3 @@
+# Notes 
+
+![alt text](<011 pure virtual function_250117_212018_1.jpg>) ![alt text](<011 pure virtual function_250117_212018_2.jpg>) ![alt text](<011 pure virtual function_250117_212018_3.jpg>) ![alt text](<011 pure virtual function_250117_212018_4.jpg>) ![alt text](<011 pure virtual function_250117_212018_5.jpg>) ![alt text](<011 pure virtual function_250117_212018_6.jpg>) ![alt text](<011 pure virtual function_250117_212018_7.jpg>)

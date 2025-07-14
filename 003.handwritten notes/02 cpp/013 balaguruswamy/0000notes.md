@@ -1,0 +1,3 @@
+# Notes 
+
+![alt text](<013cpp balaguruswamy_250130_113403_1.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_2.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_3.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_4.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_5.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_6.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_7.jpg>) ![alt text](<013cpp balaguruswamy_250130_113403_8.jpg>)
