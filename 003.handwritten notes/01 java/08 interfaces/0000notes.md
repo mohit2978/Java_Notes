@@ -1,0 +1,3 @@
+# Notes
+
+![alt text](<008interface basics_240516_233050_250714_011529_1.jpg>) ![alt text](<008interface basics_240516_233050_250714_011529_2.jpg>) ![alt text](<008interface basics_240516_233050_250714_011529_3.jpg>) ![alt text](<008interface basics_240516_233050_250714_011529_4.jpg>) ![alt text](<008interface basics_240516_233050_250714_011529_5.jpg>) ![alt text](<008interface basics_240516_233050_250714_011529_6.jpg>)
