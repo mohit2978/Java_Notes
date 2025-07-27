@@ -86,6 +86,8 @@ a[20] will print some garbage value but a.at(20) will give error!!
 
 ![alt text](image-9.png)
 
+we can use `class Sample s1` or ignore class keyword and use `Sample s1`!!
+
 ![alt text](image-10.png)
 
 
