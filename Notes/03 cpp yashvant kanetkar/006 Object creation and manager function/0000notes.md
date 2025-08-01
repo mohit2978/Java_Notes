@@ -87,6 +87,11 @@ Static ones is deletd as soon as it goes out of scope, no need to explict deleti
 
 - Move Assignment Operator → move during assignment
 
+Rule of 5 says if you provide any one of these , you must provide all other 4 too!!
+
+
+Copy assignment vs copy constructor --> Copy assignment botyh object created and doing e1=e2 but copy contructor one object is not created we are creating it `Emp e1(e2)`.
+
 ```cpp
 
 #include <iostream>
@@ -377,25 +382,52 @@ delete b;  // ❌ Undefined Behavior: double delete!
 
 ![alt text](image-6.png)
 
+Constructor having new in it is called as `Dynamic Constructor`!! If we do not define `Destructor` then p and q will not be there but memeory will still be allocated,so to deallocate memory we must call our own destructor!!
+
+DP here is dangling pointer , we need to put p and q as nullptr to avoid it!!
+
 ![alt text](image-7.png)
 
 ## Shallow copy and Deep copy
 
 ![alt text](image-8.png)
 
+Deafault copy constructor do shallow copy !!It just copies adress of p and q not create new Object for them!! 
+
+Same with assignment!!
+
+We have dangling pointer problem if e1 is deleted!!
+
 ![alt text](image-9.png)
 
 ![alt text](image-10.png)
 
+we making z as const in `Copy=` as Ex should not modify z!!
+
+Copy constructor synatx --> X of const X Ref 
+ 
+ where x is some Class!!
+
+
 ![alt text](image-11.png)
+
+we deleted first p and q in `copy = Operator` as old memeory location allocated to p and q must be deleted!!
+
+we return by refernce to avoid copy!!
 
 ![alt text](image-12.png)
 
+## lvalue and rvalue
 
 ![alt text](image-13.png)
 
+>What occuring on left is left value and on right is rvalue is wrong!!
+
+expression (i+2) is rvalue but i is lvalue as have adress!!
+
 ![alt text](image-14.png)
 
+Single & lavlaue ref ,Double & rvalue refernece!!
 
 ![alt text](image-15.png)
 
