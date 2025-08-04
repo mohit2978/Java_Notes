@@ -435,10 +435,23 @@ Single & lavlaue ref ,Double & rvalue refernece!!
 
 ![alt text](image-16.png)
 
+Here we need to specify move(e1) if we do not tell it will call copy constructor!!
+
+e1 is lvaleue nbut internally e1 is casted to rvalue refenece. 
+
+In here we do not do `new()` ,we want existing resources owned by `e1` should be owned by `e2` so we just copy them!! 
+
+And then in `e1` we just put `nullptr`!!
+
 ![alt text](image-17.png)
 
+In move assignment too we need to tell to call move() assignment else will call copy assignment!!
+
+Again here internally casting happens to `rValue Refence`!! See here in parameter we are receiving `rValue Ref` in copy we just have `refenence`
 
 ![alt text](image-18.png)
+
+## Why need move constructor and assignment!!
 
 ![alt text](image-19.png)
 
