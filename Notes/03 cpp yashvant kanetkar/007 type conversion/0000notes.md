@@ -89,12 +89,23 @@ similarly,we have `ostringstream`--> menas giving output to string.
 
 ![alt text](image-13.png)
 
+can see above dmy and Date.
+
+dmy--> source
+
+Date--> destination
+
 ---
 
 ![alt text](image-14.png)
 
 ![alt text](image-15.png)
 
+in dmy we have conversion function.
+
+`ostringStream` we writing something into string.
+
+Let put conversion in destination Object .
 
 ![alt text](image-16.png)
 
@@ -103,6 +114,7 @@ similarly,we have `ostringstream`--> menas giving output to string.
 
 ![alt text](image-18.png)
 
+---
 
 ![alt text](image-19.png)
 
