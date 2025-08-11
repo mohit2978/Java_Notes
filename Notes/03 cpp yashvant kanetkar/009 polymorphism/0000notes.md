@@ -11,13 +11,23 @@
 
 ![alt text](image-3.png)
 
+Already seen Inheritance , now we will see Polymorphism and Upcasting!!
+
 ---
 
 ![alt text](image-4.png)
 
-Both here will show `Shape` as output. To show different output we use `virtual`!!
+Storing an object of derived class object in pointer to base is called as `Upcasting`.
+
+Both here will show `Shape` as output because type of pointer is `Shape` class. To show different output we use `virtual`!!
 
 ![alt text](image-5.png)
+
+Almost same code ,just putting virtual keyword!!
+
+>Note:If function not declared virtual ,Type of object helps to bind the call ,if declared as virtual then contents of pointer helps to bind the call
+
+How this happens?? automatically general answer ,but in programming nothing happens automatically.
 
 ### Pure Virtual function
 
