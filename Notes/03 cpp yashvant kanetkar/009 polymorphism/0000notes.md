@@ -33,17 +33,34 @@ How this happens?? automatically general answer ,but in programming nothing happ
 
 ![alt text](image-6.png)
 
+We mark function as virtual and assign that function as 0 this is just grammar telling that this is pure virtual function.
+
+We cannot create object of `Abstarct class` but can create pointer of that class. so `Shape *` is fine but not `Shape s;`
+
+A class can have `many pure virtual function`!!Also along with pure function we can have any number of functions.
+
+### Imp
+
 ![alt text](image-7.png)
+
+Here above `Virtual Function mech` if 1st two points met the Base class function be called if function is not virtual else if it is virtual then Derived class be called.
 
 ## Sizes
 
 ![alt text](image-8.png)
 
+On left even though `Ex` has no data members we created object of it so To get memory a min of 1B is given to Empty class.
+
+Now if you put a virtual function in class you see size is 8. even though no data memebers. You remove `virtual` keyword size again will be 1.
+
+If you add `int ` data member than on right you get `12` as output.
 
 ![alt text](image-9.png)
 
 ![alt text](image-10.png)
 
+
+---
 
 ![alt text](image-11.png)
 
