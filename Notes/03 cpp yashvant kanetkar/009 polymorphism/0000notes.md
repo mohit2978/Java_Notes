@@ -87,17 +87,34 @@ Let practise a bit.
 
 Here all are early bounded as no pointer in here.As no pointer so we know which object it is bounded to so we know at compile time which one to call.
 
+der d2.h() is not in der2, so will go to der1. All other will be executed in der2.
+
+Early binding is called as `static binding` and late binding is also called as `dynamic binding`.
 
 ![alt text](image-14.png)
 
+Above in case-2 we have Vtable .Early binding is easy as no virtual function h().
+
+in top main() b has der1 so f() and g() of der1 is called . This Pointer will have which object is defined at runtime as object is made at runtime.b->g() goes to Vtable of der1 which has function of base class.
+
+In later main,we have f() ,g(),x() ,`x() is not virtual in base class`.so we cannot call x() from here , will get compilation error. 
+
+Yes you make der3 and there you make virtual function x() and then call x() from der3 object you will be able to call.
+
+
 ![alt text](image-15.png)
 
+See here x() cannot be called again as x() is not defined virtual in der1. 
 
 ![alt text](image-16.png)
 
+Here no inheritance ,So virtual function not work here ,`draw Vtable always`!!
+
+Now let us see dimond problem.
+
 ![alt text](image-17.png)
 
-
+vbptr-->Virtual base pointer
 
 
 
