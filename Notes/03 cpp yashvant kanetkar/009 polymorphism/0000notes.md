@@ -59,15 +59,33 @@ If you add `int ` data member than on right you get `12` as output.
 
 ![alt text](image-10.png)
 
+Slot no2 of Vatble will be called.
+
+Once a function is virtual in base class then it will be virtual in all child classes .
+
+VTable has adress of all virtual function.
 
 ---
 
+## Early and late Bindings
+
 ![alt text](image-11.png)
 
+Virtual function does not decide late binding it is the above condition which tells whether late or early binding happens or not.
+
+Let us see cases when we cannnot tell at compile time which fucntion will be called.
 
 ![alt text](image-12.png)
 
+This(Left one) p->Draw2() will be bound at runtime as at runtime we decide which object be bounded.
+
+Also same at right one ,at runtime we get to know which one p is bound to.
+
+Let practise a bit.
+
 ![alt text](image-13.png)
+
+Here all are early bounded as no pointer in here.As no pointer so we know which object it is bounded to so we know at compile time which one to call.
 
 
 ![alt text](image-14.png)
