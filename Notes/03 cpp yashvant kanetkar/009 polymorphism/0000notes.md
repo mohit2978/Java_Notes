@@ -116,7 +116,9 @@ Now let us see dimond problem.
 
 vbptr-->Virtual base pointer
 
+vbptr points to where Base b object is present offset to that from starting of class.
 
+Once you made Show as virtual there be no `vbptr`
 
 
 
