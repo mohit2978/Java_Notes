@@ -337,6 +337,76 @@ What happens if the User exists in the database, but their name column is null?
 * **If `user.getName()` returns `null`:** `map()` is smart enough to handle this. It takes that `null` value and packages it into an `Optional.empty()`.
 * **If `user.getName()` returns `"Alice"`:** `map()` packages `"Alice"` into an `Optional<String>`.
 
+# Optional definition from intellij
+
+ See below Optional is generic class having only one value in it!!
+```java
+public final class Optional<T> {
+    /**
+     * Common instance for {@code empty()}.
+     */
+    private static final Optional<?> EMPTY = new Optional<>(null);
+
+    /**
+     * If non-null, the value; if null, indicates no value is present
+     */
+    private final T value;
+
+    /**
+     * Returns an empty {@code Optional} instance.  No value is present for this
+     * {@code Optional}.
+     *
+     * @apiNote
+     * Though it may be tempting to do so, avoid testing if an object is empty
+     * by comparing with {@code ==} or {@code !=} against instances returned by
+     * {@code Optional.empty()}.  There is no guarantee that it is a singleton.
+     * Instead, use {@link #isEmpty()} or {@link #isPresent()}.
+     *
+     * @param <T> The type of the non-existent value
+     * @return an empty {@code Optional}
+     */
+    public static<T> Optional<T> empty() {
+        @SuppressWarnings("unchecked")
+        Optional<T> t = (Optional<T>) EMPTY;
+        return t;
+    } explain
+ ```   
+
+- Constructor of Optional is private so we cannot do new Optional
+
+- The Class and Field are final (Immutability)
+
+    By making the class final, the creators ensured that no one can subclass Optional. You cannot create a custom MyOptional that overrides methods to behave maliciously or unexpectedly.
+
+    By making the value field final, they made Optional completely immutable. Once you put a value into an Optional, it cannot be changed. If you want a different value, you must create a brand-new Optional. This immutability makes Optional inherently thread-safe.
+
+
+- The Memory-Saving Singleton Trick
+
+    `private static final Optional<?> EMPTY = new Optional<>(null);`
+
+    Imagine if your application had to return an empty Optional thousands of times a second. If it created a new Optional<>(null) every single time, it would flood the Java heap memory and trigger constant Garbage Collection.
+
+    To solve this, Java creates exactly one empty Optional when the class is loaded into memory. It is stored in the static EMPTY constant.
+
+- The empty() Method and Type Erasure  
+
+    ```java
+    public static<T> Optional<T> empty() {
+        @SuppressWarnings("unchecked")
+        Optional<T> t = (Optional<T>) EMPTY;
+        return t;
+    }
+    ```
+
+    When you call Optional.empty(), Java doesn't create a new object; it just hands you that single, pre-made EMPTY instance.
+
+    But wait, EMPTY is of type Optional<?> (wildcard), and your method might need an `Optional<String>`. How does that work?
+
+    Java suppresses the compiler warning (@SuppressWarnings("unchecked")) and forcefully casts it to your required type <T>.
+
+    Because the internal value is just null, and null has no strict type, this cast is perfectly safe at runtime. (This is a concept known as Type Erasure).
+
 ### 1. Creating an Optional
 These are static methods used to wrap your data inside an `Optional` object.
 
@@ -346,8 +416,24 @@ These are static methods used to wrap your data inside an `Optional` object.
 | `Optional.of(T value)` | `Optional<T>` | Creates an `Optional` with a non-null value. Throws `NPE` if value is null.<br>`Optional<String> opt = Optional.of("Hello");` |
 | `Optional.ofNullable(T value)` | `Optional<T>` | Creates an `Optional`. If the value is null, it safely returns an empty `Optional`.<br>`Optional<String> opt = Optional.ofNullable(user.getName());` |
 
+
+In case we do 
+
+```java
+Optional<String> emptyOpt1 = Optional.empty();
+Optional<Integer> emptyOpt2 = Optional.empty();
+```
+
+emptyOp1 and emptyOp2 both points to same singleTon `EMPTY` object.
+
 ### 2. Checking the Value
 Used to verify if the container actually holds data.
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
 
 | Method | Return Type | Purpose & Example |
 | :--- | :--- | :--- |
@@ -364,6 +450,104 @@ These methods get the data out of the `Optional`, providing fallbacks if it is e
 | `orElseGet(Supplier)` | `T` | Returns the value, or executes a function to generate a default value (better for performance).<br>`String name = opt.orElseGet(() -> fetchDefaultName());` |
 | `orElseThrow(Supplier)` | `T` | Returns the value, or throws an exception you specify.<br>`User u = opt.orElseThrow(() -> new RuntimeException("Not Found"));` |
 
+>Note:use get only when you have value guaranteed
+
+If a Consumer takes an object and returns nothing, a Supplier is the exact opposite: It takes nothing, but returns an object.
+
+```java
+@FunctionalInterface
+public interface Supplier<T> {
+    /**
+     * Gets a result.
+     * @return a result
+     */
+    T get();
+}
+```
+Why is Supplier so important in interviews?
+
+The number one reason Supplier exists in modern Java is to enable Lazy Evaluation. This is a massive performance optimization concept that interviewers love to test.
+
+Lazy evaluation means: "Don't execute this heavy code unless you absolutely have to."
+
+Here is the classic interview trap demonstrating this, using Optional:
+
+##### The Trap: orElse() vs orElseGet()
+Imagine you want to look up a user in the cache. If they aren't in the cache, you want to query the database (which is slow and expensive).
+
+The Wrong Way (Eager Evaluation):
+```java
+Optional<User> cachedUser = cache.findUser("alice");
+
+// BAD: fetchUserFromDatabase() runs EVERY SINGLE TIME, 
+// even if cachedUser is present!
+User user = cachedUser.orElse(fetchUserFromDatabase("alice"));
+```
+Because orElse() takes a direct object, Java evaluates fetchUserFromDatabase() immediately before passing the result to orElse(). You just wasted a database call.
+
+The Right Way (Lazy Evaluation with Supplier):
+
+```java
+Optional<User> cachedUser = cache.findUser("alice");
+
+// GOOD: fetchUserFromDatabase() ONLY runs if cachedUser is empty.
+User user = cachedUser.orElseGet(() -> fetchUserFromDatabase("alice"));
+```
+Because orElseGet() takes a Supplier (the () -> lambda), you are not passing the result of the database call; you are passing a blueprint of how to make the database call. The Optional will only execute that blueprint (by calling .get() on the Supplier) if the Optional is empty.
+
+
+Now see very Imp 
+
+The difference between those two snippets is one of the most important concepts in modern Java: **Passing a Value versus Passing a Behavior**. 
+
+It all comes down to *when* the code actually executes. Here is the exact breakdown of why `()` and `->` completely change how the JVM runs your code.
+
+### 1. `fetchUserFromDatabase("alice")` (The Value)
+When you write it exactly like this, without the arrow, it is a standard method call. In Java, before a method like `orElse()` can run, Java must evaluate all of its arguments first.
+
+So, when Java sees this line:
+```java
+User user = cachedUser.orElse(fetchUserFromDatabase("alice"));
+```
+Here is the exact order of execution:
+
+* Java sees `fetchUserFromDatabase("alice")` and says, *"I need to figure out what this value is before I can pass it to `orElse()`."*
+* It executes the database query right then and there.
+* It gets the result (e.g., a `User` object).
+* It passes that `User` object into the `orElse()` method.
+
+If `cachedUser` was already full, `orElse()` just throws away the result of the database query you just ran. You wasted time, CPU, and database resources for nothing. This is called **Eager Evaluation**.
+
+---
+
+### 2. `() -> fetchUserFromDatabase("alice")` (The Recipe)
+When you add `() ->`, you are no longer making a method call. You are creating a **Lambda Expression** (specifically, a `Supplier`). You are not passing a value; you are passing a recipe or a blueprint for how to get the value later.
+
+When Java sees this line:
+
+```java
+User user = cachedUser.orElseGet(() -> fetchUserFromDatabase("alice"));
+```
+
+Here is the exact order of execution:
+
+* Java sees `() -> fetchUserFromDatabase("alice")` and says, *"Okay, this is just a set of instructions. I will package this up and hand it to `orElseGet()`."*
+* It **DOES NOT** execute the database query.
+* Inside the `orElseGet()` method, it checks if `cachedUser` has data.
+* If `cachedUser` has data, it ignores your instructions entirely. The database is never queried.
+* If `cachedUser` is empty, only then does it say, *"Alright, I need the backup data now. Let me execute those instructions you gave me."* This is called **Lazy Evaluation**.
+
+---
+
+### The Real-World Analogy
+Imagine you are going to a friend's house for dinner, but you aren't sure if they cooked enough food.
+
+* **`orElse(...)`** is like buying a large pizza on the way there. You spent the money and carried the pizza (**Eager**). If your friend made a huge dinner, you just throw the pizza in the trash. You wasted money.
+* **`orElseGet(() -> ...)`** is like saving the pizza place's phone number in your pocket. You haven't bought anything yet (**Lazy**). If your friend's dinner is small, you pull out your phone, use the instructions, and order the pizza. You only spend the money if you absolutely have to.
+
+This is exactly why interviewers look for `orElseGet()` when performance matters!
+
+>Note:use `orElse` if you have a default value like some string or anything but if you have some computation that needs to be done then use `orElseGet`
 ### 4. Executing Code based on Presence
 Used to run logic only when the data is actually there, avoiding `if` statements.
 
@@ -371,6 +555,63 @@ Used to run logic only when the data is actually there, avoiding `if` statements
 | :--- | :--- | :--- |
 | `ifPresent(Consumer)` | `void` | Executes a block of code only if the value exists.<br>`opt.ifPresent(name -> System.out.println(name));` |
 | `ifPresentOrElse(Consumer, Runnable)` *(Java 9+)* | `void` | Executes the first block if present, or the second block if empty.<br>`opt.ifPresentOrElse(n -> print(n), () -> print("Empty"));` |
+
+>Note: A Consumer is a functional interface that takes one argument (the user) and returns nothing (void).
+
+>Note: A Runnable is a functional interface that takes zero arguments and returns nothing (void). Because the Optional is empty, there is no object to pass to the second function, which is why it uses a Runnable () -> instead of a Consumer.
+
+IfPresent Example
+
+ - Pre-optional way(before java-8)
+
+    ```java
+    User user = userRepository.findByUsername("alice");
+
+    if (user != null) {
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
+    }
+    // If user is null, we just skip the block.
+    ```
+ - After Optional 
+
+    ```java
+    Optional<User> userOptional = userRepository.findByUsername("alice");
+
+    // The Consumer (the lambda expression) only runs if the Optional is not empty.
+    userOptional.ifPresent(user -> {
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
+    });
+    ```
+ifPresentOrElse(Consumer, Runnable) Example
+
+- Old way 
+
+    ```java
+    DiscountCode code = discountRepository.findByCode("SUMMER50");
+
+    if (code != null) {
+        applyDiscountToCart(code);
+    } else {
+        log.warn("Attempted to use an invalid discount code!");
+    }
+    ```
+
+- New way 
+
+    ```java
+
+    Optional<DiscountCode> codeOptional = discountRepository.findByCode("SUMMER50");
+
+    codeOptional.ifPresentOrElse(
+        // Arg 1: The Consumer (Runs if present)
+        code -> applyDiscountToCart(code), 
+        
+        // Arg 2: The Runnable (Runs if empty)
+        () -> log.warn("Attempted to use an invalid discount code!") 
+    );
+    ```
 
 ### 5. Transforming the Value
 Used to modify the data inside the `Optional` without breaking the chain.
@@ -386,7 +627,12 @@ A classic interview question is asking developers to explain the exact differenc
 
 
 
-
+| Interface | Signature | Analogy | Common Use Case |
+| :--- | :--- | :--- | :--- |
+| **Supplier** | `() -> T` | The Factory | `orElseGet()`, `orElseThrow()` |
+| **Consumer** | `T -> ()` | The Black Hole | `ifPresent()`, `forEach()` |
+| **Predicate**| `T -> boolean` | The Judge | `filter()` |
+| **Function** | `T -> R` | The Transformer | `map()`, `flatMap()` |
 
 
 
