@@ -1,3 +1,179 @@
+Here's a comprehensive overview of all Java Thread constructors:
+
+## Java Thread Constructors
+
+Java's `Thread` class has **8 constructors**:
+
+---
+
+### 1. `Thread()`
+```java
+Thread t = new Thread();
+```
+Creates a new thread with a default name (e.g., `"Thread-0"`), no target runnable, and belongs to the same thread group as the creating thread.
+
+---
+
+### 2. `Thread(Runnable target)`
+```java
+Thread t = new Thread(() -> System.out.println("Running"));
+```
+Creates a thread that will execute the given `Runnable` when started.
+
+---
+
+### 3. `Thread(String name)`
+```java
+Thread t = new Thread("MyThread");
+```
+Creates a thread with a custom name but no runnable (the `run()` method does nothing unless overridden).
+
+---
+
+### 4. `Thread(Runnable target, String name)`
+```java
+Thread t = new Thread(() -> System.out.println("Running"), "MyThread");
+```
+Creates a named thread with a specific `Runnable` to execute.
+
+---
+
+### 5. `Thread(ThreadGroup group, Runnable target)`
+```java
+ThreadGroup tg = new ThreadGroup("MyGroup");
+Thread t = new Thread(tg, () -> System.out.println("Running"));
+```
+Creates a thread belonging to a specific `ThreadGroup` with a given `Runnable`.
+
+---
+
+### 6. `Thread(ThreadGroup group, String name)`
+```java
+ThreadGroup tg = new ThreadGroup("MyGroup");
+Thread t = new Thread(tg, "MyThread");
+```
+Creates a named thread belonging to a specific `ThreadGroup`, with no runnable.
+
+---
+
+### 7. `Thread(ThreadGroup group, Runnable target, String name)`
+```java
+ThreadGroup tg = new ThreadGroup("MyGroup");
+Thread t = new Thread(tg, () -> System.out.println("Running"), "MyThread");
+```
+Creates a fully specified thread: group, runnable, and name.
+
+---
+
+### 8. `Thread(ThreadGroup group, Runnable target, String name, long stackSize)`
+```java
+ThreadGroup tg = new ThreadGroup("MyGroup");
+Thread t = new Thread(tg, () -> System.out.println("Running"), "MyThread", 1024 * 1024);
+```
+Same as above but also sets a **custom stack size** (in bytes). This is platform-dependent and may be ignored by the JVM.
+
+---
+
+## Quick Comparison Table
+
+| Constructor | Group | Runnable | Name | Stack Size |
+|---|---|---|---|---|
+| `Thread()` | ❌ | ❌ | ❌ | ❌ |
+| `Thread(Runnable)` | ❌ | ✅ | ❌ | ❌ |
+| `Thread(String)` | ❌ | ❌ | ✅ | ❌ |
+| `Thread(Runnable, String)` | ❌ | ✅ | ✅ | ❌ |
+| `Thread(ThreadGroup, Runnable)` | ✅ | ✅ | ❌ | ❌ |
+| `Thread(ThreadGroup, String)` | ✅ | ❌ | ✅ | ❌ |
+| `Thread(ThreadGroup, Runnable, String)` | ✅ | ✅ | ✅ | ❌ |
+| `Thread(ThreadGroup, Runnable, String, long)` | ✅ | ✅ | ✅ | ✅ |
+
+
+---
+
+## Key Notes
+
+- **Default name**: If not specified, Java auto-assigns names like `Thread-0`, `Thread-1`, etc.
+- **Default group**: If not specified, the thread inherits the group of the creating thread.
+- **Stack size**: Highly platform-specific; the JVM may ignore it entirely.
+- **Modern Java (19+)**: Virtual threads use `Thread.ofVirtual().start(runnable)` instead of constructors — the builder pattern is now preferred for new code.
+
+
+Using a **method reference** as a `Runnable`. Here's exactly what's happening:
+
+---
+
+## How It Works
+
+```java
+class MyClass {
+    void t1() {
+        System.out.println("Thread 1 running: " + Thread.currentThread().getName());
+    }
+
+    void t2() {
+        System.out.println("Thread 2 running: " + Thread.currentThread().getName());
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        MyClass obj = new MyClass();
+
+        Thread t1 = new Thread(obj::t1, "Thread-One");
+        Thread t2 = new Thread(obj::t2, "Thread-Two");
+
+        t1.start();
+        t2.start();
+    }
+}
+```
+
+---
+
+## Why This Works
+
+`Thread(Runnable target, String name)` is the constructor being used.
+
+`Runnable` is a **functional interface** — it has exactly one abstract method:
+```java
+void run();
+```
+
+Since `t1()` and `t2()` also take no arguments and return void, they **match the Runnable signature**, so Java allows you to pass them as method references:
+
+```
+obj::t1  →  treated as  →  () -> obj.t1()  →  which is a  →  Runnable
+```
+
+---
+
+## Static Methods Work Too
+
+If `t1` and `t2` are `static`, you use the class name instead of the object:
+
+```java
+class MyClass {
+    static void t1() { System.out.println("t1 running"); }
+    static void t2() { System.out.println("t2 running"); }
+}
+
+Thread t1 = new Thread(MyClass::t1, "Thread-One");
+Thread t2 = new Thread(MyClass::t2, "Thread-Two");
+```
+
+---
+
+## Key Takeaway
+
+| Syntax | Type | When to use |
+|---|---|---|
+| `obj::method` | Instance method reference | Method belongs to an object |
+| `ClassName::method` | Static method reference | Method is static |
+| `() -> obj.method()` | Lambda (equivalent) | Same as above, more verbose |
+
+All three are valid `Runnable` implementations — method references are just the **cleanest and most concise** way to write it.
+
+
 ## Synchronization & Race Conditions — In Depth
 
 ---
