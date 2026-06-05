@@ -1,3 +1,0 @@
-# Notes 
-
-![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_1.jpg>) ![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_2.jpg>) ![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_3.jpg>) ![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_4.jpg>) ![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_5.jpg>)
