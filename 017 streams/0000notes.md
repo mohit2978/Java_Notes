@@ -1,14 +1,3 @@
-![alt text](017streams_240326_020525_250714_011518_1.jpg) 
-![alt text](017streams_240326_020525_250714_011518_2.jpg)
- ![alt text](017streams_240326_020525_250714_011518_3.jpg) 
- ![alt text](017streams_240326_020525_250714_011518_4.jpg) 
- ![alt text](017streams_240326_020525_250714_011518_5.jpg)
-  ![alt text](017streams_240326_020525_250714_011518_6.jpg)
-   ![alt text](017streams_240326_020525_250714_011518_7.jpg) 
-
-
-  Here's a thorough breakdown of everything in your Java 8 Streams notes, organized clearly:---
-
 ![alt text](image-16.png)
 ## What is a Stream?
 
@@ -608,3 +597,10 @@ Parallel processing Time Taken: 5 millisecond
 The only code change is `.stream()` → `.parallelStream()`. Internally, the Fork-Join pool splits the 10 elements into chunks, each chunk is processed on a **separate CPU core simultaneously**, results are joined — hence ~13x faster in this example.
 
 The output order being scrambled in parallel is expected and normal — parallel processing doesn't guarantee order.
+
+![alt text](017streams_240326_020525_250714_011518_1.jpg) 
+![alt text](017streams_240326_020525_250714_011518_2.jpg)
+ ![alt text](017streams_240326_020525_250714_011518_3.jpg) 
+ ![alt text](017streams_240326_020525_250714_011518_4.jpg) 
+ ![alt text](017streams_240326_020525_250714_011518_5.jpg)
+  ![alt text](017streams_240326_020525_250714_011518_6.jpg)
