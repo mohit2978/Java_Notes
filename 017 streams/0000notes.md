@@ -90,6 +90,148 @@ You can stream a `HashMap` three ways:
 
 The key insight tying it all together: **intermediate ops are the recipe, terminal ops are pressing "cook".** Nothing happens until you press cook, and once you do, the stream is spent. 
 
+
+## Streams from ANY Collection in Java
+
+You **can** create streams from absolutely any collection! Every class that implements `Collection` interface has a `.stream()` method built in.
+
+---
+
+### From Any Collection — It Just Works
+
+```java
+// List
+List<String> list = Arrays.asList("A", "B", "C");
+list.stream().forEach(System.out::println);
+
+// Set
+Set<String> set = new HashSet<>(Arrays.asList("X", "Y", "Z"));
+set.stream().forEach(System.out::println);
+
+// LinkedList
+LinkedList<Integer> linked = new LinkedList<>(Arrays.asList(1, 2, 3));
+linked.stream().forEach(System.out::println);
+
+// Queue
+Queue<String> queue = new LinkedList<>(Arrays.asList("a", "b", "c"));
+queue.stream().forEach(System.out::println);
+
+// TreeSet
+TreeSet<Integer> tree = new TreeSet<>(Arrays.asList(5, 3, 1));
+tree.stream().forEach(System.out::println); // prints in sorted order: 1 3 5
+```
+
+---
+
+### From a Map — Slightly Different
+
+`Map` does **not** extend `Collection`, so it has **no direct `.stream()`**.
+But you stream its **views** instead:
+
+```java
+Map<String, Integer> map = new HashMap<>();
+map.put("Alice", 90);
+map.put("Bob", 85);
+map.put("Charlie", 92);
+
+// Stream over keys
+map.keySet().stream()
+   .forEach(System.out::println);  // Alice, Bob, Charlie
+
+// Stream over values
+map.values().stream()
+   .forEach(System.out::println);  // 90, 85, 92
+
+// Stream over key-value pairs (most powerful)
+map.entrySet().stream()
+   .forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+// Alice -> 90
+// Bob -> 85
+// Charlie -> 92
+```
+
+---
+
+### Practical Map Stream Operations
+
+```java
+Map<String, Integer> scores = new HashMap<>();
+scores.put("Alice", 90);
+scores.put("Bob", 55);
+scores.put("Charlie", 92);
+scores.put("Dave", 48);
+
+// Filter students who passed (score >= 60)
+scores.entrySet().stream()
+      .filter(e -> e.getValue() >= 60)
+      .forEach(e -> System.out.println(e.getKey() + " passed"));
+
+// Collect back to a new Map
+Map<String, Integer> passed = scores.entrySet().stream()
+      .filter(e -> e.getValue() >= 60)
+      .collect(Collectors.toMap(
+          Map.Entry::getKey,
+          Map.Entry::getValue
+      ));
+
+// Sort map by value
+scores.entrySet().stream()
+      .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+      .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue()));
+// Charlie: 92
+// Alice: 90
+// Bob: 55
+// Dave: 48
+```
+
+---
+
+### Other Ways to Create Streams
+
+```java
+// From an Array
+String[] arr = {"A", "B", "C"};
+Arrays.stream(arr).forEach(System.out::println);
+
+// Stream.of()
+Stream.of("X", "Y", "Z").forEach(System.out::println);
+
+// From a String (character stream)
+"hello".chars().forEach(c -> System.out.print((char) c));
+
+// Infinite stream
+Stream.iterate(0, n -> n + 2)
+      .limit(5)
+      .forEach(System.out::println); // 0 2 4 6 8
+
+Stream.generate(Math::random)
+      .limit(3)
+      .forEach(System.out::println);
+
+// IntStream range (like a for loop)
+IntStream.range(1, 6)
+         .forEach(System.out::println); // 1 2 3 4 5
+
+IntStream.rangeClosed(1, 5)
+         .forEach(System.out::println); // 1 2 3 4 5
+```
+
+---
+
+### Summary
+
+| Source | How to Stream |
+|---|---|
+| `List`, `Set`, `Queue`, `LinkedList` | `.stream()` directly |
+| `Map` keys | `map.keySet().stream()` |
+| `Map` values | `map.values().stream()` |
+| `Map` entries | `map.entrySet().stream()` |
+| Array | `Arrays.stream(arr)` |
+| Manual values | `Stream.of(a, b, c)` |
+| Number range | `IntStream.range(start, end)` |
+
+> The rule is simple — if it's a `Collection`, it has `.stream()`. `Map` is **not** a `Collection`, so you stream its **keySet / values / entrySet** instead.
+
    ## Clear Images
 
    ![alt text](image.png)
@@ -412,6 +554,237 @@ after Sorted:-4
 
 ---
 
+## Java Stream Lazy Evaluation — Deep Dive
+
+---
+
+### The Core Concept: Streams are LAZY
+
+Streams don't process elements one operation at a time across the whole list.
+They process **one element at a time** through the whole pipeline.
+
+Think of it like a **conveyor belt**, not a **bucket brigade**:
+
+```
+❌ Wrong mental model (bucket brigade):
+  [2,1,4,7,10] → filter ALL → [4,7,10] → map ALL → [-4,-7,-10] → sort ALL
+
+✅ Correct mental model (conveyor belt):
+  element 2   → filter ❌ (dropped)
+  element 1   → filter ❌ (dropped)
+  element 4   → filter ✅ → peek → map → peek → sorted buffer
+  element 7   → filter ✅ → peek → map → peek → sorted buffer
+  element 10  → filter ✅ → peek → map → peek → sorted buffer
+                                                sorted buffer → sort → peek → collect
+```
+
+---
+
+### Two Types of Intermediate Operations
+
+```
+STATELESS                      STATEFUL
+─────────────────────          ──────────────────────────────
+filter()                       sorted()
+map()                          distinct()
+peek()                         limit() / skip() (partially)
+flatMap()
+mapToInt() etc.
+```
+
+**Stateless** → processes each element independently, passes it forward immediately.
+
+**Stateful** → must **collect ALL elements first**, then process. Acts as a **barrier** in the pipeline.
+
+
+## `skip()` — Why "Partially Stateful"?
+
+---
+
+### What `skip(n)` does
+It discards the first `n` elements and passes the rest downstream.
+
+---
+
+### Why "partially stateful"?
+
+It only needs to **count** how many elements it has seen — it does **not** need to buffer or collect all elements like `sorted()` does.
+
+```java
+// sorted() → must see ALL elements before passing ANY forward
+// skip(3)  → just counts, discards first 3, then passes rest immediately
+```
+
+---
+
+### Behavior Comparison
+
+```
+sorted() — fully stateful:
+  elem 1 → held in buffer
+  elem 2 → held in buffer
+  elem 3 → held in buffer
+  elem 4 → held in buffer
+  ... waits for ALL ...
+  now sorts and releases everything
+
+skip(3) — partially stateful:
+  elem 1 → counter=1, discard ❌
+  elem 2 → counter=2, discard ❌
+  elem 3 → counter=3, discard ❌
+  elem 4 → counter=4, pass downstream ✅ immediately
+  elem 5 → pass downstream ✅ immediately
+  elem 6 → pass downstream ✅ immediately
+```
+
+`skip()` passes elements forward **one by one** once the skip count is reached — just like a stateless op. It only needs a **single integer counter**, not a full buffer.
+
+---
+
+### That's why it's "partial"
+
+| | Needs to buffer elements? | Needs some state? |
+|---|---|---|
+| `filter()` — stateless | ❌ No | ❌ No |
+| `sorted()` — fully stateful | ✅ Yes (all elements) | ✅ Yes |
+| `skip(n)` — partially stateful | ❌ No | ✅ Yes (just a counter) |
+
+It has **state** (the counter), but it doesn't have the **blocking barrier** behavior of truly stateful ops like `sorted()` or `distinct()`.
+
+---
+
+### `limit()` is the same idea
+
+```java
+// limit(n) — just a counter too
+// once n elements have passed through → stop the pipeline entirely
+// no buffering needed, just counting
+stream
+  .limit(3)   // counter: let 3 through, then short-circuit ✅
+```
+
+Both `skip()` and `limit()` are called **partially stateful** because they carry a small piece of state (a counter) but never need to hold all elements in memory — unlike `sorted()` or `distinct()`.
+
+---
+
+### Your Pipeline Visualized
+
+```
+Source: [2, 1, 4, 7, 10]
+         │
+         ▼
+      filter(≥3)        ← stateless
+         │
+         ▼
+    peek("after filter") ← stateless
+         │
+         ▼
+     map(val * -1)       ← stateless
+         │
+         ▼
+   peek("after negating") ← stateless
+         │
+         ▼
+       sorted()          ← STATEFUL BARRIER ⛔ (waits for all elements)
+         │
+         ▼
+    peek("after sorted")  ← stateless
+         │
+         ▼
+       collect()          ← terminal operation (triggers everything)
+```
+
+---
+
+### Element-by-Element Trace
+
+```
+PHASE 1 — Elements flow through stateless ops one by one:
+
+  2 → filter(2≥3)? NO  → 💀 dropped
+  1 → filter(1≥3)? NO  → 💀 dropped
+  4 → filter(4≥3)? YES → peek → "after filter:4"
+                       → map  → -4
+                       → peek → "after negating:-4"
+                       → enters sorted() buffer [-4]
+  7 → filter(7≥3)? YES → peek → "after filter:7"
+                       → map  → -7
+                       → peek → "after negating:-7"
+                       → enters sorted() buffer [-4, -7]
+ 10 → filter(10≥3)?YES → peek → "after filter:10"
+                       → map  → -10
+                       → peek → "after negating:-10"
+                       → enters sorted() buffer [-4, -7, -10]
+
+PHASE 2 — sorted() has ALL elements, now sorts:
+
+  buffer [-4, -7, -10] → sorted → [-10, -7, -4]
+  -10 → peek → "after Sorted:-10" → collect
+   -7 → peek → "after Sorted:-7"  → collect
+   -4 → peek → "after Sorted:-4"  → collect
+```
+
+---
+
+### Why is this Lazy? Nothing runs until `collect()`
+
+```java
+// This does NOTHING yet — no printing, no filtering
+Stream<Integer> numbersStream = numbers.stream()
+    .filter(...)
+    .peek(...)
+    .map(...)
+    .sorted();
+
+// THIS line pulls the trigger — entire pipeline executes NOW
+List<Integer> result = numbersStream.collect(Collectors.toList());
+```
+
+The stream is just building a **recipe** of operations. `collect()` (or any terminal op like `forEach`, `count`, `findFirst`) is what actually **executes** it.
+
+---
+
+### Short-Circuit: Laziness saves work
+
+```java
+// Without laziness: filter ALL 1M elements, then take 5
+// With laziness: stop as soon as 5 elements pass filter ✅
+List<Integer> result = IntStream.range(1, 1_000_000)
+    .filter(n -> n % 2 == 0)
+    .limit(5)                   // stops pipeline early!
+    .boxed()
+    .collect(Collectors.toList());
+// Result: [2, 4, 6, 8, 10] — only processed ~10 elements, not 1M
+```
+
+---
+
+### Multiple Stateful Ops = Multiple Barriers
+
+```java
+stream
+  .filter(...)       // stateless
+  .map(...)          // stateless
+  .sorted()          // ⛔ BARRIER 1 — waits for all, then sorts
+  .distinct()        // ⛔ BARRIER 2 — waits for all sorted, then dedupes
+  .limit(3)          // short-circuits after 3
+  .collect(...)
+```
+
+Each stateful op acts as a **checkpoint** — everything before it must complete before anything after it begins.
+
+---
+
+### Key Takeaways
+
+| Concept | Explanation |
+|---|---|
+| **Lazy evaluation** | Nothing executes until a terminal operation is called |
+| **Conveyor belt model** | Each element travels the full pipeline before the next starts |
+| **Stateless ops** | Pass elements forward immediately (`filter`, `map`, `peek`) |
+| **Stateful ops** | Must buffer ALL elements first (`sorted`, `distinct`) |
+| **Short-circuiting** | `limit`, `findFirst` can stop the pipeline early, saving work |
+
 ## Images 10–13 — Terminal Operations
 
 **1. `forEach(Consumer<T>)`**
@@ -597,6 +970,206 @@ Parallel processing Time Taken: 5 millisecond
 The only code change is `.stream()` → `.parallelStream()`. Internally, the Fork-Join pool splits the 10 elements into chunks, each chunk is processed on a **separate CPU core simultaneously**, results are joined — hence ~13x faster in this example.
 
 The output order being scrambled in parallel is expected and normal — parallel processing doesn't guarantee order.
+
+
+
+## Parallel Streams in Java
+
+---
+
+### What is a Parallel Stream?
+
+A normal stream processes elements **sequentially** — one by one, in order, on a **single thread**.
+
+A parallel stream **splits the data** into chunks and processes them **simultaneously** on **multiple threads**.
+
+```java
+// Sequential
+list.stream().filter(...).map(...).collect(...);
+
+// Parallel — just add .parallel() or use .parallelStream()
+list.parallelStream().filter(...).map(...).collect(...);
+// OR
+list.stream().parallel().filter(...).map(...).collect(...);
+```
+
+---
+
+### How it Works Internally — ForkJoinPool
+
+Parallel streams use Java's **ForkJoinPool** under the hood:
+
+```
+Your List: [1, 2, 3, 4, 5, 6, 7, 8]
+                    │
+              ForkJoinPool splits
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+   [1, 2, 3]     [4, 5]      [6, 7, 8]
+   Thread-1      Thread-2    Thread-3
+   filter/map    filter/map  filter/map
+        │           │           │
+        └───────────┼───────────┘
+                    ▼
+                  merge
+                    │
+                collect()
+```
+
+It uses a **divide and conquer** strategy:
+- **Fork** — split the data recursively into smaller chunks
+- **Process** — each chunk processed independently on its own thread
+- **Join** — results merged back together
+
+---
+
+### Sequential vs Parallel — Side by Side
+
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+
+// Sequential — single thread, ordered
+numbers.stream()
+       .map(n -> {
+           System.out.println(Thread.currentThread().getName() + " processing " + n);
+           return n * 2;
+       })
+       .collect(Collectors.toList());
+
+// Output (always in order, always main thread):
+// main processing 1
+// main processing 2
+// main processing 3 ... and so on
+
+// Parallel — multiple threads, unordered
+numbers.parallelStream()
+       .map(n -> {
+           System.out.println(Thread.currentThread().getName() + " processing " + n);
+           return n * 2;
+       })
+       .collect(Collectors.toList());
+
+// Output (random order, multiple threads):
+// ForkJoinPool.commonPool-worker-3 processing 5
+// ForkJoinPool.commonPool-worker-1 processing 1
+// ForkJoinPool.commonPool-worker-2 processing 7
+// main processing 3  ← main thread also participates!
+// ForkJoinPool.commonPool-worker-3 processing 6 ...
+```
+
+---
+
+### Key Behavioral Differences
+
+| Behavior | Sequential | Parallel |
+|---|---|---|
+| Threads used | 1 (main) | multiple (ForkJoinPool) |
+| Element order | always maintained | NOT guaranteed |
+| `peek()` / `forEach()` order | in order | random |
+| Performance on small data | faster | slower (thread overhead) |
+| Performance on large data | slower | faster |
+| Stateful ops (`sorted`) | simple | expensive (must re-merge) |
+
+---
+
+### Order is NOT Guaranteed
+
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+
+// Sequential — always prints 1 2 3 4 5
+numbers.stream()
+       .forEach(System.out::println);
+
+// Parallel — may print 3 1 4 2 5 (random every run)
+numbers.parallelStream()
+       .forEach(System.out::println);
+
+// forEachOrdered — forces order even in parallel (but loses parallelism benefit)
+numbers.parallelStream()
+       .forEachOrdered(System.out::println); // always 1 2 3 4 5
+```
+
+---
+
+### When Parallel is FASTER vs SLOWER
+
+```java
+// ✅ GOOD case for parallel — large data, heavy computation
+List<Integer> bigList = IntStream.range(1, 1_000_000)
+                                 .boxed()
+                                 .collect(Collectors.toList());
+
+long sum = bigList.parallelStream()
+                  .mapToLong(n -> heavyComputation(n))
+                  .sum();  // much faster than sequential
+
+// ❌ BAD case for parallel — small data, simple operation
+List<Integer> smallList = Arrays.asList(1, 2, 3, 4, 5);
+
+smallList.parallelStream()
+         .map(n -> n * 2)
+         .collect(Collectors.toList());
+// SLOWER than sequential — thread creation overhead > actual work
+```
+
+---
+
+### Parallel + Stateful ops are Expensive
+
+```java
+// sorted() in parallel:
+// each chunk is sorted independently → then must MERGE sort all chunks
+// much more expensive than sequential sort
+
+numbers.parallelStream()
+       .sorted()   // ⚠️ has to collect all, then merge-sort across threads
+       .collect(Collectors.toList());
+```
+
+---
+
+### Thread Safety Warning — Shared State is DANGEROUS
+
+```java
+// ❌ WRONG — shared mutable state, race condition!
+List<Integer> result = new ArrayList<>();
+numbers.parallelStream()
+       .filter(n -> n > 3)
+       .forEach(n -> result.add(n));  // multiple threads writing to same list!
+// result will have missing/duplicate/corrupt data
+
+// ✅ CORRECT — let the stream handle collection safely
+List<Integer> result = numbers.parallelStream()
+                               .filter(n -> n > 3)
+                               .collect(Collectors.toList()); // thread-safe
+```
+
+---
+
+### Key Rules for Parallel Streams
+
+```
+✅ Use when:
+   - Large datasets (100k+ elements)
+   - Heavy per-element computation (CPU-bound)
+   - Operations are stateless and independent
+   - Order doesn't matter
+
+❌ Avoid when:
+   - Small datasets
+   - Simple/cheap operations
+   - You need guaranteed ordering
+   - Operations have shared mutable state
+   - I/O bound tasks (use CompletableFuture instead)
+```
+
+---
+
+### One-Line Mental Model
+
+> A sequential stream is a **single worker** processing items on a conveyor belt one by one. A parallel stream is **multiple workers** each handling their own section of the belt simultaneously — faster for big jobs, but needs coordination and order is lost.
 
 ![alt text](017streams_240326_020525_250714_011518_1.jpg) 
 ![alt text](017streams_240326_020525_250714_011518_2.jpg)
