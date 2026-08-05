@@ -1,5 +1,3 @@
-![alt text](image-16.png)
-
 ## What is a Stream?
 
 - We can consider a Stream as a **pipeline**, through which our collection elements pass.
@@ -123,6 +121,75 @@ Stream<Integer> streamFromIterate = Stream.iterate(1000, (Integer n) -> n + 5000
 - `1000` is the **seed** (initial value)
 - `n -> n + 5000` is how each next value is generated
 - `.limit(5)` is the **max count** — without it the stream is infinite
+
+#####  Output: `[1000, 6000, 11000, 16000, 21000]`
+
+## Why
+
+```java
+Stream<Integer> streamFromIterate = Stream.iterate(1000, (Integer n) -> n + 5000).limit(5);
+```
+
+`Stream.iterate(seed, unaryOperator)` generates an **infinite sequential stream** by repeatedly applying the function to the previous value, starting from `seed`:
+
+```
+term 1: 1000                    (the seed itself)
+term 2: 1000 + 5000 = 6000
+term 3: 6000 + 5000 = 11000
+term 4: 11000 + 5000 = 16000
+term 5: 16000 + 5000 = 21000
+term 6: 21000 + 5000 = 26000    (would continue forever...)
+```
+
+Since `Stream.iterate` with just these two arguments has **no termination condition**, it would keep generating values indefinitely if you tried to consume it directly (e.g., `forEach` without a limit would run forever, eventually throwing an error or hanging). That's exactly why `.limit(5)` is chained — it caps the stream to the **first 5 elements** and makes it a finite stream.
+
+## Printing It
+
+```java
+streamFromIterate.forEach(System.out::println);
+```
+Output:
+```
+1000
+6000
+11000
+16000
+21000
+```
+
+## Important: Streams Are Lazy
+
+Nothing is actually computed when you write:
+```java
+Stream<Integer> streamFromIterate = Stream.iterate(1000, n -> n + 5000).limit(5);
+```
+This line just **builds a pipeline description** — no values are generated yet. Computation only happens once a **terminal operation** is invoked (`forEach`, `collect`, `toList`, `count`, etc.). This is why streams can safely be built from an infinite source like `iterate` — as long as you apply a limiting operation like `.limit()` before (or combined with) a terminal operation, only the needed elements are ever actually computed.
+
+## Bonus: Three-Argument Overload (Java 9+)
+
+Since Java 9, there's a version that takes a **predicate** as a built-in stopping condition, avoiding the need for `.limit()`:
+```java
+Stream.iterate(1000, n -> n < 25000, n -> n + 5000)
+      .forEach(System.out::println);
+```
+```
+1000
+6000
+11000
+16000
+21000
+```
+This produces the same result here, but is safer in general — it stops based on a **condition on the value itself**, rather than a fixed count, which is useful when you don't know in advance how many elements you'll need.
+
+## Quick Summary
+
+| Element # | Value |
+|---|---|
+| 1 | 1000 |
+| 2 | 6000 |
+| 3 | 11000 |
+| 4 | 16000 |
+| 5 | 21000 |
 
 ---
 
@@ -501,6 +568,8 @@ A terminal operator just **closes** the stream, so you can't use it more than on
 
 *(Personal note from the source: rarely used day-to-day, but comes up in interviews.)*
 
+![alt text](image-15.png)
+
 Helps to perform operations on a stream **concurrently**, taking advantage of a multi-core CPU. The `parallelStream()` method is used instead of the regular `stream()` method — you just swap in `.parallelStream()`.
 
 **Internally it does:**
@@ -696,32 +765,13 @@ IntStream.rangeClosed(1, 5).forEach(System.out::println);  // 1 2 3 4 5
 
 ---
 
-## Source Images (for reference)
 
-Handwritten notes (primary source, with annotations):
 
-![alt text](017streams_240326_020525_250714_011518_1.jpg)
-![alt text](017streams_240326_020525_250714_011518_2.jpg)
-![alt text](017streams_240326_020525_250714_011518_3.jpg)
-![alt text](017streams_240326_020525_250714_011518_4.jpg)
-![alt text](017streams_240326_020525_250714_011518_5.jpg)
-![alt text](017streams_240326_020525_250714_011518_6.jpg)
 
-Clean/typed versions of the same slides:
 
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
-![alt text](image-3.png)
-![alt text](image-4.png)
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
-![alt text](image-8.png)
-![alt text](image-9.png)
-![alt text](image-10.png)
-![alt text](image-11.png)
-![alt text](image-12.png)
-![alt text](image-13.png)
-![alt text](image-14.png)
-![alt text](image-15.png)
+
+
+
+
+
+
