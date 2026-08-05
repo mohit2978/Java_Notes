@@ -655,50 +655,109 @@ public void run() throws InterruptedException // ❌ Not allowed
 
 So inside the lambda, you **must** handle `InterruptedException` with a `try-catch` (or wrap it in an unchecked exception). That's why the producer and consumer thread code uses a `try-catch` block.
 
-![alt text](<022thread continued_240330_230041_250714_011532_3.jpg>) ![alt text](<022thread continued_240330_230041_250714_011532_4.jpg>) ![alt text](<022thread continued_240330_230041_250714_011532_5.jpg>)
-
-
-This is one of the most common Java interview questions. Let's understand it from the ground up.
-
 ---
 
-# What is a Thread?
+### 2 threads one prints even value and other print odd value we want to print output as 
 
-A **thread** is an independent path of execution inside a program.
-
-Example:
+```text 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+```
 
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Main Thread");
+class SharedResource {
+    private int i = 1;
+    private boolean oddTurn = true;
+
+    public synchronized void printOdd() throws InterruptedException {
+        while (!oddTurn) {
+            wait();
+        }
+
+        System.out.println(i + " printed by " +
+                           Thread.currentThread().getName());
+
+        i++;
+        oddTurn = false;
+        notify();
+    }
+
+    public synchronized void printEven() throws InterruptedException {
+        while (oddTurn) {
+            wait();
+        }
+
+        System.out.println(i + " printed by " +
+                           Thread.currentThread().getName());
+
+        i++;
+        oddTurn = true;
+        notify();
     }
 }
-```
 
-When Java starts, it automatically creates a thread called
-
-```
-main
-```
-
-You can check it:
-
-```java
 public class Main {
-    public static void main(String[] args) {
-        System.out.println(Thread.currentThread().getName());
+    public static void main(String[] args) throws InterruptedException {
+        SharedResource resource = new SharedResource();
+
+        Thread t1 = new Thread(() -> {
+            for (int count = 0; count < 5; count++) {
+                try {
+                    resource.printOdd();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }, "T1");
+
+        Thread t2 = new Thread(() -> {
+            for (int count = 0; count < 5; count++) {
+                try {
+                    resource.printEven();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }, "T2");
+
+        t1.start();
+        t2.start();
+
+        t1.join();
+        t2.join();
     }
 }
 ```
 
 Output
 
-```
-main
+```text
+
+1 printed by T1
+2 printed by T2
+3 printed by T1
+4 printed by T2
+5 printed by T1
+6 printed by T2
+7 printed by T1
+8 printed by T2
+9 printed by T1
+10 printed by T2
 ```
 
----
+![alt text](<022thread continued_240330_230041_250714_011532_3.jpg>) ![alt text](<022thread continued_240330_230041_250714_011532_4.jpg>) ![alt text](<022thread continued_240330_230041_250714_011532_5.jpg>)
+
+
 
 # Java has two types of threads
 
