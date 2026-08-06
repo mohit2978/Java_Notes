@@ -1,7 +1,7 @@
 # Generics
 
-Great question. Let me explain generics from scratch.
 
+![alt text](image.png)
 ---
 
 ## What Problem Do Generics Solve?
@@ -40,61 +40,6 @@ String s = list.get(0);  // ✅ no cast needed
 
 **Generics move errors from RUNTIME to COMPILE TIME.**
 
----
-
-## Generic Class
-
-```java
-// WITHOUT generics — works only for Integer
-public class Box {
-    private Integer value;
-
-    public void set(Integer value) {
-        this.value = value;
-    }
-
-    public Integer get() {
-        return value;
-    }
-}
-
-Box intBox = new Box();
-intBox.set(123);         // ✅
-intBox.set("hello");     // ❌ compile error
-// Need separate StringBox, UserBox etc for each type ❌
-```
-
-```java
-// WITH generics — works for ANY type
-public class Box<T> {        // T = Type parameter
-    private T value;         // T is placeholder for actual type
-
-    public void set(T value) {
-        this.value = value;
-    }
-
-    public T get() {
-        return value;
-    }
-}
-
-// Using Box with different types
-Box<Integer> intBox    = new Box<Integer>();
-intBox.set(123);         // ✅
-intBox.set("hello");     // ❌ COMPILE ERROR
-
-Box<String> strBox     = new Box<String>();
-strBox.set("Hello");     // ✅
-strBox.set(123);         // ❌ COMPILE ERROR
-
-Box<User> userBox      = new Box<User>();
-userBox.set(new User()); // ✅
-
-// Getting values — no cast needed
-Integer num  = intBox.get();    // ✅ no cast
-String  str  = strBox.get();    // ✅ no cast
-User    user = userBox.get();   // ✅ no cast
-```
 
 ---
 
@@ -429,42 +374,6 @@ String s = list.get(0); // no cast needed ✅
 
 ---
 
-## Summary
-
-```
-Generics = parameterized types
-           write code that works with any type
-           but stays type safe
-
-Syntax:
-<T>              → single type parameter
-<T, V>           → multiple type parameters
-<T extends X>    → T must be X or subclass
-<T extends X & Y>→ T must implement both X and Y
-
-Used in:
-Class<T>         → Generic class
-<T> method()     → Generic method
-Interface<T>     → Generic interface
-
-Benefits:
-✅ Type safety      → errors at compile time not runtime
-✅ No casting       → cleaner code
-✅ Code reuse       → one class/method for all types
-✅ Readability      → List<User> is clearer than List
-
-Common in Java:
-List<E>            → ArrayList, LinkedList
-Map<K,V>           → HashMap, TreeMap
-Optional<T>        → Optional
-JpaRepository<T,ID>→ Spring Data
-ApiResponse<T>     → your own wrapper classes
-
-Rule:
-Use generics when your class/method logic
-is the same but the TYPE changes
-```
-
 
 
 
@@ -485,7 +394,7 @@ is the same but the TYPE changes
 
 # Wildcard
 
-
+![alt text](image-1.png)
 
 ---
 
@@ -618,9 +527,9 @@ public void addNumber(List<? extends Number> list) {
     list.add(1.1);      // ❌ COMPILE ERROR
 }
 // Why? List<? extends Number> could be List<Integer>
-// Adding a Double to List<Integer> would break it ❌
-```
 
+```
+![alt text](image-2.png)
 **Used in your project:**
 ```java
 // JwtProvider.java
@@ -681,103 +590,8 @@ public void readItems(List<? super Integer> list) {
 // Why? Could be List<Number> or List<Object>
 // Cannot guarantee it returns Integer ❌
 ```
-
+![alt text](image-3.png)
 ---
 
-## PECS Rule — How to remember
 
-```
-Producer Extends, Consumer Super
-
-Producer = you READ from it  → use extends
-Consumer = you WRITE to it   → use super
-```
-
-```java
-// READING from list → extends
-public double sum(List<? extends Number> list) {
-    // list PRODUCES numbers for us to read
-    for (Number n : list) { ... }
-}
-
-// WRITING to list → super
-public void addNumbers(List<? super Integer> list) {
-    // list CONSUMES integers we add
-    list.add(1);
-    list.add(2);
-}
-
-// BOTH reading and writing → no wildcard
-public void swap(List<Integer> list, int i, int j) {
-    Integer temp = list.get(i);   // read
-    list.set(i, list.get(j));     // write
-    list.set(j, temp);            // write
-}
-```
-
----
-
-## All 3 Side by Side
-
-```java
-List<?>              // any type
-List<? extends T>    // T or subclass  → for READING
-List<? super T>      // T or superclass → for WRITING
-
-
-// Hierarchy used in examples:
-Object
-  └── Number
-        ├── Integer
-        ├── Double
-        └── Float
-
-
-List<? extends Number>   accepts: Number, Integer, Double, Float
-List<? super Integer>    accepts: Integer, Number, Object
-List<?>                  accepts: anything
-```
-
----
-
-## Read vs Write rules
-
-```java
-List<? extends Number> list1 = new ArrayList<Integer>();
-Number n = list1.get(0);   // ✅ READ as Number
-list1.add(1);              // ❌ CANNOT WRITE
-
-List<? super Integer> list2 = new ArrayList<Number>();
-list2.add(1);              // ✅ WRITE Integer
-Object o = list2.get(0);  // ✅ READ only as Object
-
-List<?> list3 = new ArrayList<String>();
-Object x = list3.get(0);  // ✅ READ only as Object
-list3.add("hello");        // ❌ CANNOT WRITE
-```
-
----
-
-## Summary
-
-```
-Wildcard    Syntax              Means                  Use when
-──────────  ──────────────────  ─────────────────────  ──────────────────
-Unbounded   List<?>             any type               just printing/reading
-                                                       don't care about type
-
-Upper       List<? extends T>   T or its subclasses    READING from list
-bounded                                                (Producer)
-
-Lower       List<? super T>     T or its superclasses  WRITING to list
-bounded                                                (Consumer)
-
-
-PECS rule:
-  Producer (reading)  → Extends
-  Consumer (writing)  → Super
-
-Your project uses it:
-  Collection<? extends GrantedAuthority>  ← JwtProvider
-  reading authorities → extends ✅
-```
+![alt text](image-4.png)

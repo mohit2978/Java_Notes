@@ -1,3 +1,5 @@
+![alt text](image.png)
+
 ### IS-A Relationship — Inheritance
 
 > "B IS A type of A"

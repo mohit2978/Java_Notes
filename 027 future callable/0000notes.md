@@ -1,5 +1,7 @@
 # Notes
 
+![alt text](image.png)
+
 ![alt text](<027future callable completablefuture_240522_205111_250714_011444_1.jpg>)
 
 ## Future & Callable in Java
