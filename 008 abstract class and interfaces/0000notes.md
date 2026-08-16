@@ -466,6 +466,9 @@ p1.process();
 
 Interface could never do this — it can't hold the stateful ordered skeleton.
 
+ ![alt text](<006template momento interpretor_240926_093420_260423_140407_0.png>) ![alt text](<006template momento interpretor_240926_093420_260423_140407_1.png>)
+
+ ![alt text](<006template momento interpretor_240926_093420_260423_140407_2.png>)
 ---
 
 ### Summary
