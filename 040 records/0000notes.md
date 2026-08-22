@@ -46,7 +46,9 @@ userObj1.getName();
 userObj1.getAge();
 ```
 
-One thing we can easily notice is: **lots of boiler code** (just for a basic immutable POJO class).
+One thing we can easily notice is: **lots of boiler code** (just for a basic immutable POJO class).We need to make it `final` so no one can `Override`
+
+No setter method given as no one can set after initilization.
 
 We already saw how **Lombok** helps reduce some of this boiler code:
 
@@ -56,7 +58,12 @@ We already saw how **Lombok** helps reduce some of this boiler code:
 - automatic generation of `toString()` method via `@ToString`
 - automatic generation of an immutable class via `@Value`
 
-(See topic **031 Lombok** for details.)
+Then why we need record when we have lombok??
+
+Lombok is external library we do not have it in java.
+Also Lomobok cannot restrict you from setters but record restrict you to add setters.
+
+let us see record Now.
 
 And that's where **Java 16 Records** come into the picture.
 
@@ -157,7 +164,7 @@ public record User(String name, int age) implements Comparable<User> {
 
 ## Record Components
 
-The fields declared in the record header (`String name, int age`) are called **record components**.
+The fields declared in the record header (`String name, int age`) are called **record components**.These are `private final` fields.
 
 ```java
 public record User(String name, int age) {
@@ -203,7 +210,7 @@ public record User(String name, int age) {
 
 ### Canonical Constructor
 
-- Automatically generates a **canonical constructor** — a constructor that takes all record components (fields) in order.
+- Automatically generates a **canonical constructor** — a constructor that takes all record components (fields) in same order.
 - We can override the canonical constructor if we want:
 
 ```java
@@ -243,7 +250,7 @@ Why? Because the canonical constructor guarantees that all fields (components) w
 public record User(String name, int age) {
 
     public User(int age) {
-        this("defaultName", age);
+        this("defaultName", age);//internally we invoking canonical constructor
     }
 }
 ```
@@ -296,6 +303,7 @@ record User(String name, int age) {
     }
 }
 ```
+we can increase the access level of constructor but cant decrease the access level.
 
 ---
 
@@ -326,7 +334,7 @@ Output:
 [A, B, C]
 ```
 
-So the "immutable" record's internal list was still mutated from the outside. Always do defensive copying:
+So the "immutable" record's internal list was still mutated from the outside.as only reference was immutable not the list so solution is Always do defensive copying:
 
 ```java
 public record User(String name, List<String> hobbies) {
@@ -444,6 +452,8 @@ public record User(String name, int age) {
 
 And we can access it in a similar way as we access nested classes:
 
+As it is static so can access by ClassName or recordName 
+
 ```java
 User.NestedAddressRecord addressObj = new User.NestedAddressRecord();
 addressObj.display();
@@ -506,13 +516,15 @@ record User(String a) {
 }
 ```
 
-If a nested record were non-static, it would need a hidden reference to its enclosing instance, so that it could access the parent's fields — internally, `Address` would contain a reference to `User`:
+If a nested record were non-static, it can refer to parent too so it would need a hidden reference to its enclosing instance, so that it could access the parent's fields — internally, `Address` would contain a reference to `User`:
 
 ```java
 private final User userObj;   // hidden reference
 ```
 
 This **violates the promise of records**:
+
+which says record is transaparent data carrier.As we do not see parent class in the nested record.
 
 - The state of nested record `Address` would no longer be fully declared in `record Address(String b)`.
 - It would carry extra, invisible state (`userObj`).
