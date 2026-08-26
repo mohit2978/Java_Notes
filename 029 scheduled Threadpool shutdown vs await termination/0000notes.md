@@ -1,4 +1,4 @@
-# Notes
+
 
 ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_1.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_2.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_3.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_4.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_5.jpg>)
 

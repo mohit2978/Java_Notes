@@ -63,8 +63,8 @@ Special focus on **Multithreading & Concurrency** (13 dedicated topics) and **Ja
 | 035 | Optionals |
 | 036 | Method References |
 | 037 | Generics & Wildcards |
-| 038 | Relationships (Association, Aggregation, Composition) |
-| 039 | Record Class & Marker Interface |
+| 038 | Record Class |
+| 039 | & Marker Interface |
 
 ---
 

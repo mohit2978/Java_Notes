@@ -1,4 +1,4 @@
-# Notes
+
 
 
 ![alt text](<016collections 2 hashmap_240325_234040_250714_011425_1.jpg>) 

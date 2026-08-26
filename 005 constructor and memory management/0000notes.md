@@ -1,4 +1,4 @@
-# Notes
+
 
 ![alt text](<005constructor and memory management_240329_164159_250714_011446_1.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_2.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_3.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_4.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_5.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_6.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_7.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_8.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_9.jpg>) ![alt text](<005constructor and memory management_240329_164159_250714_011446_10.jpg>)
 
