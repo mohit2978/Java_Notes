@@ -1,4 +1,4 @@
-Here's a comprehensive overview of all Java Thread constructors:
+
 
 ## Java Thread Constructors
 

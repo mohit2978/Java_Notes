@@ -1,68 +1,837 @@
-# Notes 
+## ThreadLocal Variable 
 
-## ThreadLocal Variable — Complete Explanation
+`ThreadLocal` in Java is used when you want each thread to have its own private copy of a variable, even though the same code/object is being used by multiple threads. Normally, if multiple threads access the same instance variable, they share that variable and can overwrite each other's value. `ThreadLocal` solves this by internally maintaining a separate value for every thread. So if Thread-1 stores `"Mohit"` and Thread-2 stores `"Rahul"` in the same `ThreadLocal` variable, Thread-1 will always see `"Mohit"` and Thread-2 will always see `"Rahul"`. It is commonly useful for things like user/request context, transaction context, logging correlation IDs, date formatters in older Java code, and other data that should belong to one thread/request without passing it through every method.
+
+## First understand the problem without `ThreadLocal`
+
+Suppose we have one shared object:
+
+```java
+class UserService {
+
+    private String userName;
+
+    public void process(String name) {
+        userName = name;
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(
+            Thread.currentThread().getName()
+            + " -> " + userName
+        );
+    }
+}
+```
+
+Now:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        UserService service = new UserService();
+
+        Thread t1 = new Thread(() -> {
+            service.process("Mohit");
+        }, "Thread-1");
+
+        Thread t2 = new Thread(() -> {
+            service.process("Rahul");
+        }, "Thread-2");
+
+        t1.start();
+        t2.start();
+    }
+}
+```
+
+We expect:
+
+```text
+Thread-1 -> Mohit
+Thread-2 -> Rahul
+```
+
+But you may get:
+
+```text
+Thread-1 -> Rahul
+Thread-2 -> Rahul
+```
+
+Why?
+
+Because there is only **one shared variable**:
+
+```java
+private String userName;
+```
+
+Imagine this execution:
+
+```text
+Thread-1
+userName = "Mohit"
+
+        ↓ context switch
+
+Thread-2
+userName = "Rahul"
+
+        ↓
+
+Thread-1 wakes up
+reads userName
+
+But userName is now "Rahul"
+```
+
+So:
+
+```text
+           Shared UserService object
+
+             userName
+                |
+                v
+             "Rahul"
+
+             ↑      ↑
+             |      |
+         Thread-1 Thread-2
+```
+
+Both threads are accessing the **same variable**.
 
 ---
+
+# Now use `ThreadLocal`
+
+Change this:
+
+```java
+private String userName;
+```
+
+to:
+
+```java
+private ThreadLocal<String> userName = new ThreadLocal<>();
+```
+
+Full example:
+
+```java
+class UserService {
+
+    private ThreadLocal<String> userName = new ThreadLocal<>();
+
+    public void process(String name) {
+
+        userName.set(name);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(
+            Thread.currentThread().getName()
+            + " -> " + userName.get()
+        );
+
+        userName.remove();
+    }
+}
+```
+
+Main:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        UserService service = new UserService();
+
+        Thread t1 = new Thread(() -> {
+            service.process("Mohit");
+        }, "Thread-1");
+
+        Thread t2 = new Thread(() -> {
+            service.process("Rahul");
+        }, "Thread-2");
+
+        t1.start();
+        t2.start();
+    }
+}
+```
+
+Output:
+
+```text
+Thread-1 -> Mohit
+Thread-2 -> Rahul
+```
+
+Even though both threads are using the same:
+
+```java
+ThreadLocal<String> userName
+```
+
+they don't see each other's values.
+
+Conceptually:
+
+```text
+ThreadLocal<String> userName
+          |
+          |
+     ----------------
+     |              |
+ Thread-1        Thread-2
+     |              |
+  "Mohit"         "Rahul"
+```
+
+You can think of it like:
+
+```text
+Thread-1 private storage
+------------------------
+userName = "Mohit"
+
+
+Thread-2 private storage
+------------------------
+userName = "Rahul"
+```
+
+---
+
+# How do we use `ThreadLocal`?
+
+The three most important methods are:
+
+```java
+set()
+get()
+remove()
+```
+
+Example:
+
+```java
+ThreadLocal<String> local = new ThreadLocal<>();
+
+local.set("Mohit");
+
+System.out.println(local.get());
+
+local.remove();
+```
+
+Output:
+
+```text
+Mohit
+```
+
+But the important thing is that `set()` is associated with the **current thread**.
+
+Suppose:
+
+```java
+ThreadLocal<String> local = new ThreadLocal<>();
+```
+
+Then:
+
+```java
+Thread-1:
+
+local.set("A");
+local.get();       // A
+```
+
+And:
+
+```java
+Thread-2:
+
+local.set("B");
+local.get();       // B
+```
+
+It behaves conceptually like:
+
+```text
+ThreadLocal
+
+        Thread-1 → "A"
+        Thread-2 → "B"
+        Thread-3 → "C"
+```
+
+Not:
+
+```text
+ThreadLocal → one shared value
+```
+
+---
+
+# Why do we need `ThreadLocal`?
+
+Imagine a web application receiving two requests:
+
+```text
+Request 1
+User = Mohit
+
+Request 2
+User = Rahul
+```
+
+Tomcat may handle them using different threads:
+
+```text
+HTTP Request
+Mohit
+   |
+   v
+http-nio-thread-1
+
+
+HTTP Request
+Rahul
+   |
+   v
+http-nio-thread-2
+```
+
+During Mohit's request, many methods may need to know:
+
+```text
+current user = Mohit
+```
+
+For example:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Audit Service
+    ↓
+Logger
+```
+
+One solution would be to pass the user everywhere:
+
+```java
+controller(user)
+    ↓
+service(user)
+    ↓
+repository(user)
+    ↓
+audit(user)
+```
+
+You could end up with:
+
+```java
+createOrder(order, currentUser);
+
+processPayment(payment, currentUser);
+
+saveAuditLog(log, currentUser);
+```
+
+even when these methods don't really need `currentUser` as part of their business parameters.
+
+Instead, you can have a request context:
+
+```java
+class UserContext {
+
+    private static final ThreadLocal<String> currentUser =
+            new ThreadLocal<>();
+
+    public static void setUser(String user) {
+        currentUser.set(user);
+    }
+
+    public static String getUser() {
+        return currentUser.get();
+    }
+
+    public static void clear() {
+        currentUser.remove();
+    }
+}
+```
+
+At the beginning of the request:
+
+```java
+UserContext.setUser("Mohit");
+```
+
+Then somewhere much deeper:
+
+```java
+String user = UserContext.getUser();
+```
+
+No need to pass:
+
+```java
+user
+```
+
+through every method.
+
+---
+
+# Realistic example
+
+Suppose:
+
+```java
+class UserContext {
+
+    private static final ThreadLocal<String> currentUser =
+            new ThreadLocal<>();
+
+    public static void set(String user) {
+        currentUser.set(user);
+    }
+
+    public static String get() {
+        return currentUser.get();
+    }
+
+    public static void clear() {
+        currentUser.remove();
+    }
+}
+```
+
+Service:
+
+```java
+class OrderService {
+
+    public void createOrder() {
+
+        System.out.println(
+            "Creating order for: " + UserContext.get()
+        );
+    }
+}
+```
+
+Now:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        OrderService service = new OrderService();
+
+        Thread t1 = new Thread(() -> {
+
+            UserContext.set("Mohit");
+
+            service.createOrder();
+
+            UserContext.clear();
+
+        }, "Thread-1");
+
+
+        Thread t2 = new Thread(() -> {
+
+            UserContext.set("Rahul");
+
+            service.createOrder();
+
+            UserContext.clear();
+
+        }, "Thread-2");
+
+        t1.start();
+        t2.start();
+    }
+}
+```
+
+Output:
+
+```text
+Creating order for: Mohit
+Creating order for: Rahul
+```
+
+Even though:
+
+```java
+UserContext
+OrderService
+```
+
+are shared, the user information is isolated per thread.
+
+---
+
+# What is happening internally?
+
+A very important interview point:
+
+> The value is actually associated with the `Thread`, not stored as one shared value inside the `ThreadLocal` object.
+
+Conceptually, every Java `Thread` has something similar to a map:
+
+```text
+Thread
+   |
+   └── ThreadLocalMap
+```
+
+For Thread-1:
+
+```text
+Thread-1
+
+ThreadLocalMap
+------------------------
+userContext → "Mohit"
+requestId   → "REQ-101"
+```
+
+Thread-2:
+
+```text
+Thread-2
+
+ThreadLocalMap
+------------------------
+userContext → "Rahul"
+requestId   → "REQ-102"
+```
+
+So when you write:
+
+```java
+userContext.set("Mohit");
+```
+
+conceptually Java does something like:
+
+```java
+currentThread.threadLocalMap.put(
+    userContext,
+    "Mohit"
+);
+```
+
+And:
+
+```java
+userContext.get();
+```
+
+conceptually means:
+
+```java
+currentThread.threadLocalMap.get(userContext);
+```
+
+So:
+
+```text
+                 ThreadLocal object
+                        |
+                used as a key
+                   /        \
+                  /          \
+
+         Thread-1            Thread-2
+       ThreadLocalMap      ThreadLocalMap
+
+       TL -> Mohit         TL -> Rahul
+```
+
+That's the core idea.
+
+---
+
+# Why `remove()` is very important
+
+You will often see:
+
+```java
+threadLocal.remove();
+```
+
+especially in Spring Boot/Tomcat applications.
+
+Why?
+
+Because servers use **thread pools**.
+
+For example:
+
+```text
+Thread Pool
+
+Thread-1
+Thread-2
+Thread-3
+Thread-4
+```
+
+After handling Mohit's request, Thread-1 doesn't die.
+
+It returns to the pool:
+
+```text
+Mohit's Request
+      ↓
+Thread-1
+
+request finished
+
+Thread-1
+      ↓
+returns to pool
+```
+
+Later:
+
+```text
+Rahul's Request
+      ↓
+same Thread-1
+```
+
+If you forgot:
+
+```java
+threadLocal.remove();
+```
+
+Thread-1 may still contain:
+
+```text
+currentUser = Mohit
+```
+
+This can cause:
+
+```text
+stale data
+incorrect user context
+memory leaks
+security problems
+```
+
+Therefore the common pattern is:
+
+```java
+try {
+
+    threadLocal.set(value);
+
+    // do work
+
+} finally {
+
+    threadLocal.remove();
+}
+```
+
+Example:
+
+```java
+try {
+
+    UserContext.set("Mohit");
+
+    orderService.createOrder();
+
+} finally {
+
+    UserContext.clear();
+}
+```
+
+---
+
+# `ThreadLocal.withInitial()`
+
+You can also give a default value.
+
+Instead of:
+
+```java
+ThreadLocal<Integer> count =
+        new ThreadLocal<>();
+```
+
+You can write:
+
+```java
+ThreadLocal<Integer> count =
+        ThreadLocal.withInitial(() -> 0);
+```
+
+Then:
+
+```java
+System.out.println(count.get());
+```
+
+prints:
+
+```text
+0
+```
+
+Each thread gets its own initial `0`.
+
+Example:
+
+```java
+ThreadLocal<Integer> counter =
+        ThreadLocal.withInitial(() -> 0);
+
+Runnable task = () -> {
+
+    counter.set(counter.get() + 1);
+    counter.set(counter.get() + 1);
+
+    System.out.println(
+        Thread.currentThread().getName()
+        + " : "
+        + counter.get()
+    );
+};
+
+new Thread(task, "T1").start();
+new Thread(task, "T2").start();
+```
+
+Output:
+
+```text
+T1 : 2
+T2 : 2
+```
+
+It is **not**:
+
+```text
+T1 : 2
+T2 : 4
+```
+
+because each thread has its own counter.
+
+---
+
+# ThreadLocal vs synchronization
+
+Don't confuse `ThreadLocal` with:
+
+```java
+synchronized
+Lock
+AtomicInteger
+```
+
+They solve different problems.
+
+Suppose two threads need to increment the **same bank balance**:
+
+```text
+balance = 100
+```
+
+You want:
+
+```text
+Thread-1
+Thread-2
+      ↓
+same balance
+```
+
+Then you need synchronization:
+
+```java
+synchronized
+```
+
+or locks/atomic variables.
+
+But suppose every thread should have its **own request ID**:
+
+```text
+Thread-1 → REQ-101
+Thread-2 → REQ-102
+```
+
+Then use:
+
+```java
+ThreadLocal
+```
+
+So remember:
+
+```text
+Synchronization
+      ↓
+multiple threads safely access
+the SAME data
+
+
+ThreadLocal
+      ↓
+give every thread
+SEPARATE data
+```
+
+## Interview crux
+
+You can explain it like this:
+
+> `ThreadLocal` provides thread-confined storage. A single `ThreadLocal` object can be shared by many threads, but each thread gets its own independent value. It is useful when some context, such as a user ID, request ID, transaction information, or security context, belongs to the current thread and should not be shared with other threads. It avoids race conditions for such per-thread data and also avoids passing context through every method. In thread-pool environments, we should call `remove()` after use because threads are reused.
 
 ## One Line Definition
 
 > **ThreadLocal gives each thread its own private copy of a variable — threads never share it, never interfere with each other.**
 
----
 
-## Problem Without ThreadLocal
-
-```java
-// Shared variable — ALL threads share same object
-class UserContext {
-    static String userName;  // ← shared by all threads ❌
-}
-
-Thread-1 sets userName = "Shrayansh"
-Thread-2 sets userName = "Rahul"
-
-Thread-1 reads userName → gets "Rahul" ❌ WRONG!
-// Thread-2 overwrote Thread-1's value
-```
 
 ---
 
-## Solution With ThreadLocal
-
-```java
-// Each thread gets its OWN copy
-class UserContext {
-    static ThreadLocal<String> userName = new ThreadLocal<>();
-}
-
-Thread-1 sets userName = "Shrayansh"
-Thread-2 sets userName = "Rahul"
-
-Thread-1 reads userName → gets "Shrayansh" ✅
-Thread-2 reads userName → gets "Rahul"     ✅
-// Each thread sees only its own value
-```
-
----
-
-## Simple Analogy
-
-```
-Without ThreadLocal:
-📋 One whiteboard in office
-→ Everyone writes on same board
-→ Person A writes name → Person B overwrites it
-→ Person A reads wrong name ❌
-
-With ThreadLocal:
-📔 Each person has their own personal notebook
-→ Person A writes in their notebook
-→ Person B writes in their notebook
-→ Each reads only their own notebook ✅
-→ No interference at all
-```
-
----
 
 ## Basic API
 
@@ -321,22 +1090,11 @@ new Thread(() -> System.out.println(itl.get())).start();  // prints Shrayansh �
 
 ---
 
-## One Final Mental Model
 
-```
-Normal variable:    One locker shared by everyone
-                    → anyone can open and change contents
-                    → chaos ❌
-
-ThreadLocal:        Each person has their OWN locker
-                    → only you can open your locker
-                    → others have their own lockers
-                    → complete privacy ✅
-```
 
 ![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_1.jpg>) ![alt text](<030 Threadlocal virtual thread vs normal thread_24_250714_011527_2.jpg>)
 
-## ThreadLocal — Complete Explanation from Slides
+## ThreadLocal — Complete Explanation from 
 
 ---
 
