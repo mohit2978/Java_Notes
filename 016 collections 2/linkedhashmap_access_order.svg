@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 400" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14.5px; }
+      .node-rect { fill: #313244; stroke: #89b4fa; stroke-width: 1.5; rx: 6px; }
+      .node-hl { fill: #3d2b45; stroke: #f9e2af; stroke-width: 1.8; rx: 6px; }
+      .node-title { font-family: 'Consolas', monospace; font-size: 12px; fill: #cdd6f4; font-weight: 700; text-anchor: middle; }
+      .ptr-txt { font-family: 'Consolas', monospace; font-size: 10px; fill: #a6adc8; text-anchor: middle; }
+      .arrow-fwd { stroke: #a6e3a1; stroke-width: 1.8; marker-end: url(#arr-g); fill: none; }
+      .arrow-bwd { stroke: #f38ba8; stroke-width: 1.8; marker-end: url(#arr-r); fill: none; }
+      .arrow-move { stroke: #f9e2af; stroke-width: 2; stroke-dasharray: 4,4; marker-end: url(#arr-y); fill: none; }
+      .desc-text { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+    </style>
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+    <marker id="arr-y" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f9e2af" />
+    </marker>
+  </defs>
+
+  <rect width="940" height="400" rx="14" class="bg"/>
+
+  <text x="30" y="36" class="title">LinkedHashMap: Doubly-Linked Node Architecture &amp; Access Order</text>
+  <text x="30" y="56" class="subtitle">Maintains global order across hash buckets via 'before' &amp; 'after' pointers (LRU Cache engine)</text>
+
+  <!-- Section 1: Node Structure -->
+  <g transform="translate(30, 80)">
+    <rect width="880" height="135" class="card" stroke="#89b4fa"/>
+    <text x="20" y="25" class="card-title" fill="#89b4fa">1. LinkedHashMap.Entry&lt;K, V&gt; Doubly Linked Structure</text>
+
+    <!-- Node 1 -->
+    <g transform="translate(40, 45)">
+      <rect width="120" height="60" class="node-rect"/>
+      <text x="60" y="24" class="node-title">Key: 1 ("A")</text>
+      <text x="60" y="44" class="ptr-txt">before | after</text>
+    </g>
+
+    <!-- Doubly Arrows 1 -> 2 -->
+    <path d="M 160 65 L 235 65" class="arrow-fwd"/>
+    <path d="M 235 85 L 160 85" class="arrow-bwd"/>
+
+    <!-- Node 2 -->
+    <g transform="translate(240, 45)">
+      <rect width="120" height="60" class="node-rect"/>
+      <text x="60" y="24" class="node-title">Key: 21 ("B")</text>
+      <text x="60" y="44" class="ptr-txt">before | after</text>
+    </g>
+
+    <!-- Doubly Arrows 2 -> 3 -->
+    <path d="M 360 65 L 435 65" class="arrow-fwd"/>
+    <path d="M 435 85 L 360 85" class="arrow-bwd"/>
+
+    <!-- Node 3 -->
+    <g transform="translate(440, 45)">
+      <rect width="120" height="60" class="node-rect"/>
+      <text x="60" y="24" class="node-title">Key: 23 ("C")</text>
+      <text x="60" y="44" class="ptr-txt">before | after</text>
+    </g>
+
+    <!-- Doubly Arrows 3 -> 4 -->
+    <path d="M 560 65 L 635 65" class="arrow-fwd"/>
+    <path d="M 635 85 L 560 85" class="arrow-bwd"/>
+
+    <!-- Node 4 -->
+    <g transform="translate(640, 45)">
+      <rect width="120" height="60" class="node-rect"/>
+      <text x="60" y="24" class="node-title">Key: 141 ("D")</text>
+      <text x="60" y="44" class="ptr-txt">before | after</text>
+    </g>
+  </g>
+
+  <!-- Section 2: Access Order (LRU Cache) -->
+  <g transform="translate(30, 230)">
+    <rect width="880" height="145" class="card" stroke="#f9e2af"/>
+    <text x="20" y="25" class="card-title" fill="#f9e2af">2. Access-Order Mode (accessOrder = true) — LRU Cache Mechanism</text>
+
+    <!-- Initial State -->
+    <g transform="translate(40, 45)">
+      <text x="0" y="15" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#a6adc8">Before access: [1, 21, 23, 141, 25]</text>
+      <text x="0" y="40" class="desc-text">• When calling <tspan fill="#f9e2af" font-weight="700">map.get(23)</tspan> or <tspan fill="#f9e2af" font-weight="700">map.put(23, "C")</tspan>:</text>
+      <text x="0" y="60" class="desc-text">• Node 23 is detached and re-linked at the <tspan fill="#a6e3a1" font-weight="700">TAIL (Most Recently Used - MRU)</tspan>.</text>
+      <text x="0" y="80" class="desc-text">• Head remains <tspan fill="#f38ba8" font-weight="700">Least Recently Used (LRU)</tspan> → candidate for cache eviction!</text>
+    </g>
+
+    <!-- Visual Moved State -->
+    <g transform="translate(540, 40)">
+      <rect width="300" height="85" fill="#313244" rx="6"/>
+      <text x="15" y="22" font-family="'Segoe UI', sans-serif" font-size="11.5" font-weight="700" fill="#a6e3a1">Order After get(23):</text>
+      <text x="15" y="45" font-family="'Consolas', monospace" font-size="12" fill="#cdd6f4">1 → 21 → 141 → 25 → <tspan fill="#f9e2af" font-weight="700">23 (MRU)</tspan></text>
+      <text x="15" y="70" font-family="'Segoe UI', sans-serif" font-size="10.5" fill="#bac2de">Head (1) = LRU | Tail (23) = MRU</text>
+    </g>
+  </g>
+</svg>

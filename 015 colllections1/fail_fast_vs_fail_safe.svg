@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 400" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-fast { fill: #181825; stroke: #f38ba8; stroke-width: 1.5; rx: 10px; }
+      .card-safe { fill: #181825; stroke: #a6e3a1; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14.5px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11.5px; fill: #cdd6f4; }
+      .box-original { fill: #313244; stroke: #89b4fa; stroke-width: 1.5; rx: 6px; }
+      .box-copy { fill: #2e383f; stroke: #a6e3a1; stroke-width: 1.5; rx: 6px; }
+      .box-err { fill: #452b36; stroke: #f38ba8; stroke-width: 1.5; rx: 6px; }
+      .box-txt { font-family: 'Consolas', monospace; font-size: 12px; fill: #cdd6f4; font-weight: 600; text-anchor: middle; }
+      .arrow { stroke: #fab387; stroke-width: 2; marker-end: url(#arr-o); fill: none; }
+      .arrow-err { stroke: #f38ba8; stroke-width: 2; marker-end: url(#arr-r); fill: none; stroke-dasharray: 4,4; }
+      .arrow-grn { stroke: #a6e3a1; stroke-width: 2; marker-end: url(#arr-g); fill: none; }
+      .desc-text { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+  </defs>
+
+  <rect width="940" height="400" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">Fail-Fast vs Fail-Safe Iterators in Java</text>
+  <text x="30" y="58" class="subtitle">Direct memory traversal with modCount validation vs Snapshot-based decoupled traversal</text>
+
+  <!-- Left: Fail-Fast -->
+  <g transform="translate(30, 80)">
+    <rect width="430" height="295" class="card-fast"/>
+    <text x="20" y="28" class="card-title" fill="#f38ba8">1. Fail-Fast Iterator (Direct Collection)</text>
+    <line x1="20" y1="40" x2="410" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <!-- Direct Array -->
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="12" fill="#89b4fa" font-weight="600">Original ArrayList Memory:</text>
+      <rect x="0" y="10" width="60" height="32" class="box-original"/>
+      <text x="30" y="30" class="box-txt">A</text>
+      <rect x="65" y="10" width="60" height="32" class="box-original"/>
+      <text x="95" y="30" class="box-txt">B</text>
+      <rect x="130" y="10" width="60" height="32" class="box-original"/>
+      <text x="160" y="30" class="box-txt">C</text>
+
+      <!-- modCount check -->
+      <g transform="translate(210, 10)">
+        <rect width="180" height="32" fill="#313244" rx="4"/>
+        <text x="90" y="20" class="box-txt" fill="#f9e2af" font-size="11">modCount: 3 == 3</text>
+      </g>
+    </g>
+
+    <!-- Structural modification -->
+    <g transform="translate(20, 125)">
+      <path d="M 160 0 L 160 25" class="arrow-err"/>
+      <text x="0" y="42" class="code-line" fill="#f38ba8" font-weight="700">list.add("D"); // Increases modCount to 4!</text>
+    </g>
+
+    <!-- Exception result -->
+    <g transform="translate(20, 190)">
+      <rect width="390" height="85" class="box-err"/>
+      <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#f38ba8">💥 Throws ConcurrentModificationException</text>
+      <text x="12" y="42" class="desc-text">• Iterator detects: <tspan fill="#f38ba8" font-weight="600">modCount != expectedModCount</tspan></text>
+      <text x="12" y="60" class="desc-text">• Fails immediately to prevent non-deterministic behavior.</text>
+      <text x="12" y="76" class="desc-text">• Used in: <tspan fill="#89b4fa">ArrayList, Vector, HashSet, HashMap</tspan></text>
+    </g>
+  </g>
+
+  <!-- Right: Fail-Safe -->
+  <g transform="translate(480, 80)">
+    <rect width="430" height="295" class="card-safe"/>
+    <text x="20" y="28" class="card-title" fill="#a6e3a1">2. Fail-Safe Iterator (Cloned / Snapshot View)</text>
+    <line x1="20" y1="40" x2="410" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <!-- Cloned Array -->
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6e3a1" font-weight="600">Iterator Snapshot Copy:</text>
+      <rect x="0" y="10" width="55" height="32" class="box-copy"/>
+      <text x="27.5" y="30" class="box-txt">A</text>
+      <rect x="60" y="10" width="55" height="32" class="box-copy"/>
+      <text x="87.5" y="30" class="box-txt">B</text>
+      <rect x="120" y="10" width="55" height="32" class="box-copy"/>
+      <text x="147.5" y="30" class="box-txt">C</text>
+      <text x="200" y="30" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#a6e3a1">👈 Iterator reads here</text>
+    </g>
+
+    <!-- Structural modification on new copy -->
+    <g transform="translate(20, 125)">
+      <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="12" fill="#89b4fa" font-weight="600">New Copy-On-Write Array (Updated):</text>
+      <rect x="0" y="10" width="50" height="28" class="box-original"/>
+      <text x="25" y="28" class="box-txt" font-size="11">A</text>
+      <rect x="55" y="10" width="50" height="28" class="box-original"/>
+      <text x="80" y="28" class="box-txt" font-size="11">B</text>
+      <rect x="110" y="10" width="50" height="28" class="box-original"/>
+      <text x="135" y="28" class="box-txt" font-size="11">C</text>
+      <rect x="165" y="10" width="50" height="28" class="box-original"/>
+      <text x="190" y="28" class="box-txt" fill="#a6e3a1" font-size="11">D</text>
+      <text x="230" y="28" class="code-line" fill="#89b4fa">list.add("D");</text>
+    </g>
+
+    <!-- Safe result -->
+    <g transform="translate(20, 190)">
+      <rect width="390" height="85" fill="#313244" rx="6" stroke="#a6e3a1" stroke-width="1"/>
+      <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#a6e3a1">✅ No Exception Thrown!</text>
+      <text x="12" y="42" class="desc-text">• Iterator continues smoothly on its cloned snapshot.</text>
+      <text x="12" y="60" class="desc-text">• Extra memory cost during write operations.</text>
+      <text x="12" y="76" class="desc-text">• Used in: <tspan fill="#a6e3a1">CopyOnWriteArrayList, ConcurrentHashMap</tspan></text>
+    </g>
+  </g>
+</svg>

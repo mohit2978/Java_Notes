@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 370" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .phase-source { fill: #181825; stroke: #f38ba8; stroke-width: 1.5; rx: 10px; }
+      .phase-class { fill: #181825; stroke: #fab387; stroke-width: 1.5; rx: 10px; }
+      .phase-runtime { fill: #181825; stroke: #a6e3a1; stroke-width: 1.5; rx: 10px; }
+      .card-header { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14.5px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .pill { rx: 4px; font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 700; }
+      .desc-text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 12px; fill: #bac2de; }
+    </style>
+  </defs>
+
+  <rect width="920" height="370" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">Java @Retention Lifecycle Comparison</text>
+  <text x="30" y="58" class="subtitle">Where does an annotation survive? (Compilation → Bytecode → JVM Runtime Metaspace)</text>
+
+  <!-- Column 1: SOURCE -->
+  <g transform="translate(30, 80)">
+    <rect width="270" height="260" class="phase-source"/>
+    <rect x="15" y="15" width="60" height="20" fill="#f38ba8" fill-opacity="0.2" class="pill"/>
+    <text x="23" y="29" fill="#f38ba8" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="700">SOURCE</text>
+    <text x="85" y="30" class="card-header" fill="#cdd6f4">SOURCE Policy</text>
+    <line x1="15" y1="45" x2="255" y2="45" stroke="#313244" stroke-width="1"/>
+
+    <text x="15" y="70" class="desc-text">📄 <tspan font-weight="700">Java Source (.java):</tspan> Present</text>
+    <text x="15" y="95" class="desc-text">⚙️ <tspan font-weight="700">Bytecode (.class):</tspan> <tspan fill="#f38ba8">Discarded ❌</tspan></text>
+    <text x="15" y="120" class="desc-text">🚀 <tspan font-weight="700">JVM Runtime:</tspan> <tspan fill="#f38ba8">Not available ❌</tspan></text>
+    <text x="15" y="145" class="desc-text">🔍 <tspan font-weight="700">Reflection:</tspan> <tspan fill="#f38ba8">Returns null ❌</tspan></text>
+
+    <line x1="15" y1="165" x2="255" y2="165" stroke="#313244" stroke-width="1"/>
+    <text x="15" y="188" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#f9e2af">Used For:</text>
+    <text x="15" y="210" class="code-line">• @Override</text>
+    <text x="15" y="230" class="code-line">• @SuppressWarnings</text>
+    <text x="15" y="250" class="desc-text">(Compiler diagnostics only)</text>
+  </g>
+
+  <!-- Column 2: CLASS -->
+  <g transform="translate(325, 80)">
+    <rect width="270" height="260" class="phase-class"/>
+    <rect x="15" y="15" width="55" height="20" fill="#fab387" fill-opacity="0.2" class="pill"/>
+    <text x="25" y="29" fill="#fab387" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="700">CLASS</text>
+    <text x="80" y="30" class="card-header" fill="#cdd6f4">CLASS (Default)</text>
+    <line x1="15" y1="45" x2="255" y2="45" stroke="#313244" stroke-width="1"/>
+
+    <text x="15" y="70" class="desc-text">📄 <tspan font-weight="700">Java Source (.java):</tspan> Present</text>
+    <text x="15" y="95" class="desc-text">⚙️ <tspan font-weight="700">Bytecode (.class):</tspan> <tspan fill="#a6e3a1">Preserved ✅</tspan></text>
+    <text x="15" y="120" class="desc-text">🚀 <tspan font-weight="700">JVM Runtime:</tspan> <tspan fill="#fab387">Ignored by JVM ❌</tspan></text>
+    <text x="15" y="145" class="desc-text">🔍 <tspan font-weight="700">Reflection:</tspan> <tspan fill="#f38ba8">Returns null ❌</tspan></text>
+
+    <line x1="15" y1="165" x2="255" y2="165" stroke="#313244" stroke-width="1"/>
+    <text x="15" y="188" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#f9e2af">Used For:</text>
+    <text x="15" y="210" class="desc-text">• Bytecode manipulation tools</text>
+    <text x="15" y="230" class="desc-text">• Build tools / AST plugins</text>
+    <text x="15" y="250" class="desc-text">(Lombok bytecode agents)</text>
+  </g>
+
+  <!-- Column 3: RUNTIME -->
+  <g transform="translate(620, 80)">
+    <rect width="270" height="260" class="phase-runtime"/>
+    <rect x="15" y="15" width="70" height="20" fill="#a6e3a1" fill-opacity="0.2" class="pill"/>
+    <text x="21" y="29" fill="#a6e3a1" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="700">RUNTIME</text>
+    <text x="95" y="30" class="card-header" fill="#cdd6f4">RUNTIME Policy</text>
+    <line x1="15" y1="45" x2="255" y2="45" stroke="#313244" stroke-width="1"/>
+
+    <text x="15" y="70" class="desc-text">📄 <tspan font-weight="700">Java Source (.java):</tspan> Present</text>
+    <text x="15" y="95" class="desc-text">⚙️ <tspan font-weight="700">Bytecode (.class):</tspan> <tspan fill="#a6e3a1">Preserved ✅</tspan></text>
+    <text x="15" y="120" class="desc-text">🚀 <tspan font-weight="700">JVM Runtime:</tspan> <tspan fill="#a6e3a1">Loaded in VM ✅</tspan></text>
+    <text x="15" y="145" class="desc-text">🔍 <tspan font-weight="700">Reflection:</tspan> <tspan fill="#a6e3a1">Fully Readable ✅</tspan></text>
+
+    <line x1="15" y1="165" x2="255" y2="165" stroke="#313244" stroke-width="1"/>
+    <text x="15" y="188" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#f9e2af">Used For:</text>
+    <text x="15" y="210" class="code-line">• Spring (@Autowired, @Service)</text>
+    <text x="15" y="230" class="code-line">• Hibernate (@Entity, @Table)</text>
+    <text x="15" y="250" class="code-line">• JUnit (@Test), Jackson</text>
+  </g>
+</svg>

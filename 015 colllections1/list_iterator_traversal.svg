@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14.5px; }
+      .slot { fill: #313244; stroke: #89b4fa; stroke-width: 1.5; rx: 5px; }
+      .slot-sub { fill: #3d2b45; stroke: #f9e2af; stroke-width: 1.8; rx: 5px; }
+      .slot-txt { font-family: 'Consolas', monospace; font-size: 13px; fill: #cdd6f4; text-anchor: middle; font-weight: 600; }
+      .idx-txt { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #6c7086; text-anchor: middle; }
+      .arrow-fwd { stroke: #a6e3a1; stroke-width: 2; marker-end: url(#arr-green); fill: none; }
+      .arrow-bwd { stroke: #f38ba8; stroke-width: 2; marker-end: url(#arr-red); fill: none; }
+      .desc-text { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+    </style>
+    <marker id="arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">ListIterator Bidirectional Traversal &amp; subList() View</text>
+  <text x="30" y="58" class="subtitle">Moving forward/backward, index pointers, and shallow subList modification mechanics</text>
+
+  <!-- Section 1: Bidirectional Iterator -->
+  <g transform="translate(30, 80)">
+    <rect width="860" height="135" class="card" stroke="#89b4fa"/>
+    <text x="20" y="26" class="card-title" fill="#89b4fa">1. ListIterator Cursor Movement</text>
+
+    <!-- Array Elements -->
+    <g transform="translate(60, 45)">
+      <!-- Item 0 -->
+      <text x="30" y="-8" class="idx-txt">Index 0</text>
+      <rect x="0" y="0" width="60" height="38" class="slot"/>
+      <text x="30" y="24" class="slot-txt">100</text>
+
+      <!-- Item 1 -->
+      <text x="105" y="-8" class="idx-txt">Index 1</text>
+      <rect x="75" y="0" width="60" height="38" class="slot"/>
+      <text x="105" y="24" class="slot-txt">200</text>
+
+      <!-- Item 2 -->
+      <text x="180" y="-8" class="idx-txt">Index 2</text>
+      <rect x="150" y="0" width="60" height="38" class="slot"/>
+      <text x="180" y="24" class="slot-txt">300</text>
+
+      <!-- Item 3 -->
+      <text x="255" y="-8" class="idx-txt">Index 3</text>
+      <rect x="225" y="0" width="60" height="38" class="slot"/>
+      <text x="255" y="24" class="slot-txt">400</text>
+
+      <!-- Item 4 -->
+      <text x="330" y="-8" class="idx-txt">Index 4</text>
+      <rect x="300" y="0" width="60" height="38" class="slot"/>
+      <text x="330" y="24" class="slot-txt">500</text>
+    </g>
+
+    <!-- Forward Traversal -->
+    <path d="M 440 60 L 530 60" class="arrow-fwd"/>
+    <text x="540" y="64" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6e3a1" font-weight="600">next() → moves forward (hasNext)</text>
+
+    <!-- Backward Traversal -->
+    <path d="M 530 85 L 440 85" class="arrow-bwd"/>
+    <text x="540" y="89" font-family="'Segoe UI', sans-serif" font-size="12" fill="#f38ba8" font-weight="600">← previous() moves backward (hasPrevious)</text>
+
+    <text x="60" y="118" class="desc-text">• Supports <tspan fill="#89b4fa">set(element)</tspan> to replace current and <tspan fill="#89b4fa">add(element)</tspan> without invalidating cursor!</text>
+  </g>
+
+  <!-- Section 2: subList() Shallow View -->
+  <g transform="translate(30, 230)">
+    <rect width="860" height="130" class="card" stroke="#f9e2af"/>
+    <text x="20" y="26" class="card-title" fill="#f9e2af">2. subList(fromIndex, toIndex) — Shallow View Behavior</text>
+
+    <g transform="translate(60, 45)">
+      <rect x="0" y="0" width="60" height="34" class="slot"/>
+      <text x="30" y="22" class="slot-txt">100</text>
+
+      <!-- Sublist region (Index 1 to 3) -->
+      <rect x="70" y="0" width="60" height="34" class="slot-sub"/>
+      <text x="100" y="22" class="slot-txt" fill="#f9e2af">200</text>
+      <rect x="140" y="0" width="60" height="34" class="slot-sub"/>
+      <text x="170" y="22" class="slot-txt" fill="#f9e2af">300</text>
+      <rect x="210" y="0" width="60" height="34" class="slot-sub"/>
+      <text x="240" y="22" class="slot-txt" fill="#f9e2af">400</text>
+
+      <rect x="280" y="0" width="60" height="34" class="slot"/>
+      <text x="310" y="22" class="slot-txt">500</text>
+    </g>
+
+    <g transform="translate(420, 48)">
+      <text x="0" y="14" font-family="'Segoe UI', sans-serif" font-size="12.5" font-weight="700" fill="#f9e2af">⚠️ Crucial Rule:</text>
+      <text x="0" y="34" class="desc-text">• <tspan class="slot-txt" font-size="11.5">subList</tspan> does <tspan fill="#f38ba8" font-weight="700">NOT</tspan> create a new copy; it is a <tspan fill="#a6e3a1" font-weight="600">view</tspan> of the parent list.</text>
+      <text x="0" y="52" class="desc-text">• Modifying elements in <tspan fill="#f9e2af">subList</tspan> reflects directly in the <tspan fill="#89b4fa">parent list</tspan> and vice versa!</text>
+    </g>
+  </g>
+</svg>

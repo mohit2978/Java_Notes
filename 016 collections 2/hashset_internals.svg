@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-hs { fill: #181825; stroke: #89b4fa; stroke-width: 1.5; rx: 10px; }
+      .card-hm { fill: #181825; stroke: #cba6f7; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14.5px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .arrow { stroke: #fab387; stroke-width: 2; marker-end: url(#arr-o); fill: none; }
+      .desc-text { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+  </defs>
+
+  <rect width="940" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="36" class="title">How HashSet Internally Works (Backed by HashMap)</text>
+  <text x="30" y="56" class="subtitle">HashSet stores elements as HashMap keys paired with a shared dummy 'PRESENT' object</text>
+
+  <!-- Left: HashSet API -->
+  <g transform="translate(30, 80)">
+    <rect width="420" height="270" class="card-hs"/>
+    <text x="20" y="28" class="card-title" fill="#89b4fa">1. User Calling HashSet.add()</text>
+    <line x1="20" y1="40" x2="400" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" class="code-line">Set&lt;Integer&gt; set = <tspan fill="#89b4fa">new HashSet&lt;&gt;()</tspan>;</text>
+      <text x="0" y="25" class="code-line">set.<tspan fill="#a6e3a1">add(10)</tspan>;</text>
+      <text x="0" y="50" class="code-line">set.<tspan fill="#a6e3a1">add(20)</tspan>;</text>
+      <text x="0" y="75" class="code-line">set.<tspan fill="#f38ba8">add(10)</tspan>; <tspan fill="#6c7086">// Duplicate rejected!</tspan></text>
+
+      <line x1="0" y1="95" x2="380" y2="95" stroke="#313244" stroke-width="1"/>
+      <text x="0" y="118" class="desc-text">• User only provides single elements (keys).</text>
+      <text x="0" y="138" class="desc-text">• Guaranteed uniqueness.</text>
+      <text x="0" y="158" class="desc-text">• Allows at most 1 <tspan fill="#89b4fa">null</tspan> element.</text>
+      <text x="0" y="178" class="desc-text">• Constant average time <tspan fill="#a6e3a1">O(1)</tspan>.</text>
+    </g>
+  </g>
+
+  <!-- Middle Arrow -->
+  <path d="M 455 210 L 485 210" class="arrow"/>
+
+  <!-- Right: Internal HashMap -->
+  <g transform="translate(490, 80)">
+    <rect width="420" height="270" class="card-hm"/>
+    <text x="20" y="28" class="card-title" fill="#cba6f7">2. JDK Internal HashMap.put() Execution</text>
+    <line x1="20" y1="40" x2="400" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" class="code-line"><tspan fill="#6c7086">// JDK HashSet.java implementation:</tspan></text>
+      <text x="0" y="20" class="code-line"><tspan fill="#cba6f7">private transient</tspan> HashMap&lt;E,Object&gt; map;</text>
+      <text x="0" y="40" class="code-line"><tspan fill="#cba6f7">private static final</tspan> Object PRESENT = <tspan fill="#89b4fa">new Object()</tspan>;</text>
+
+      <text x="0" y="70" class="code-line"><tspan fill="#cba6f7">public boolean</tspan> <tspan fill="#89b4fa">add</tspan>(E e) {</text>
+      <text x="20" y="90" class="code-line">  <tspan fill="#cba6f7">return</tspan> map.<tspan fill="#fab387">put(e, PRESENT)</tspan> == <tspan fill="#89b4fa">null</tspan>;</text>
+      <text x="0" y="110" class="code-line">}</text>
+
+      <line x1="0" y1="125" x2="380" y2="125" stroke="#313244" stroke-width="1"/>
+      <text x="0" y="145" class="desc-text">• Element becomes the <tspan fill="#cba6f7" font-weight="700">HashMap Key</tspan>.</text>
+      <text x="0" y="165" class="desc-text">• Value is always the static dummy <tspan fill="#f9e2af" font-weight="700">PRESENT</tspan> object.</text>
+      <text x="0" y="185" class="desc-text">• Duplicate key overwrites previous value → keeps unique!</text>
+    </g>
+  </g>
+</svg>

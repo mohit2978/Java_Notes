@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .slot { fill: #313244; stroke: #89b4fa; stroke-width: 1.5; rx: 6px; }
+      .slot-target { fill: #3d2b45; stroke: #fab387; stroke-width: 2; rx: 6px; }
+      .slot-txt { font-family: 'Consolas', monospace; font-size: 13px; fill: #cdd6f4; text-anchor: middle; font-weight: 700; }
+      .idx-txt { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #a6adc8; text-anchor: middle; }
+      .callout-box { fill: #1e2030; stroke: #cba6f7; stroke-width: 1.2; rx: 6px; }
+      .callout-title { font-family: 'Segoe UI', sans-serif; font-size: 12px; font-weight: 700; }
+      .callout-desc { font-family: 'Consolas', monospace; font-size: 11.5px; fill: #cdd6f4; }
+    </style>
+  </defs>
+
+  <rect width="940" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="36" class="title">NavigableMap / TreeSet: Boundary Search Navigation Methods</text>
+  <text x="30" y="56" class="subtitle">Comparing lower (&lt;), floor (&lt;=), ceiling (&gt;=), and higher (&gt;) on a sorted key set</text>
+
+  <!-- Number Line / Key Array -->
+  <g transform="translate(60, 90)">
+    <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="#89b4fa">Sorted Keys in NavigableMap / TreeSet:</text>
+    
+    <!-- Key Slots: 1, 21, 23, 25, 141 -->
+    <g transform="translate(50, 20)">
+      <!-- 1 -->
+      <rect x="0" y="0" width="70" height="38" class="slot"/>
+      <text x="35" y="24" class="slot-txt">1</text>
+
+      <!-- 21 -->
+      <rect x="130" y="0" width="70" height="38" class="slot"/>
+      <text x="165" y="24" class="slot-txt">21</text>
+
+      <!-- 23 (Target) -->
+      <rect x="260" y="0" width="70" height="38" class="slot-target"/>
+      <text x="295" y="24" class="slot-txt" fill="#fab387">23</text>
+      <text x="295" y="55" class="idx-txt" fill="#fab387">Target: K = 23</text>
+
+      <!-- 25 -->
+      <rect x="390" y="0" width="70" height="38" class="slot"/>
+      <text x="425" y="24" class="slot-txt">25</text>
+
+      <!-- 141 -->
+      <rect x="520" y="0" width="70" height="38" class="slot"/>
+      <text x="555" y="24" class="slot-txt">141</text>
+    </g>
+  </g>
+
+  <!-- Method Cards (2x2 Grid) -->
+  <g transform="translate(60, 195)">
+    <!-- 1. lowerKey (< 23) -->
+    <g transform="translate(0, 0)">
+      <rect width="390" height="65" class="callout-box" stroke="#f38ba8"/>
+      <text x="15" y="22" class="callout-title" fill="#f38ba8">lowerKey(23) → Strictly LESS THAN (&lt; 23)</text>
+      <text x="15" y="45" class="callout-desc">Returns: <tspan fill="#a6e3a1" font-weight="700">21</tspan> (Entry: 21=B)</text>
+    </g>
+
+    <!-- 2. floorKey (<= 23 or <= 24) -->
+    <g transform="translate(430, 0)">
+      <rect width="390" height="65" class="callout-box" stroke="#89b4fa"/>
+      <text x="15" y="22" class="callout-title" fill="#89b4fa">floorKey(23) &amp; floorKey(24) → LESS THAN OR EQUAL (&lt;=)</text>
+      <text x="15" y="45" class="callout-desc">floorKey(23) → <tspan fill="#a6e3a1" font-weight="700">23</tspan> | floorKey(24) → <tspan fill="#a6e3a1" font-weight="700">23</tspan></text>
+    </g>
+
+    <!-- 3. ceilingKey (>= 23 or >= 24) -->
+    <g transform="translate(0, 80)">
+      <rect width="390" height="65" class="callout-box" stroke="#89b4fa"/>
+      <text x="15" y="22" class="callout-title" fill="#89b4fa">ceilingKey(23) &amp; ceilingKey(24) → GREATER OR EQUAL (&gt;=)</text>
+      <text x="15" y="45" class="callout-desc">ceilingKey(23) → <tspan fill="#a6e3a1" font-weight="700">23</tspan> | ceilingKey(24) → <tspan fill="#a6e3a1" font-weight="700">25</tspan></text>
+    </g>
+
+    <!-- 4. higherKey (> 23) -->
+    <g transform="translate(430, 80)">
+      <rect width="390" height="65" class="callout-box" stroke="#a6e3a1"/>
+      <text x="15" y="22" class="callout-title" fill="#a6e3a1">higherKey(23) → Strictly GREATER THAN (&gt; 23)</text>
+      <text x="15" y="45" class="callout-desc">Returns: <tspan fill="#a6e3a1" font-weight="700">25</tspan> (Entry: 25=E)</text>
+    </g>
+  </g>
+</svg>

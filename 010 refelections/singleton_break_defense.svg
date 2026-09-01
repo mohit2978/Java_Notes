@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-red { fill: #181825; stroke: #f38ba8; stroke-width: 1.5; rx: 10px; }
+      .card-green { fill: #181825; stroke: #a6e3a1; stroke-width: 1.5; rx: 10px; }
+      .section-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 15px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .code-kw { fill: #cba6f7; font-weight: 600; }
+      .code-fn { fill: #89b4fa; }
+      .code-str { fill: #a6e3a1; }
+      .code-cmt { fill: #6c7086; font-style: italic; }
+      .note-text { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+    </style>
+  </defs>
+
+  <rect width="920" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">How Reflection Breaks Singleton &amp; How to Defend</text>
+  <text x="30" y="58" class="subtitle">Bypassing private constructors with setAccessible(true) and proper mitigation</text>
+
+  <!-- Left Side: Breaking Singleton -->
+  <g transform="translate(30, 80)">
+    <rect width="420" height="275" class="card-red"/>
+    <text x="20" y="30" class="section-title" fill="#f38ba8">⚠️ The Attack: Breaking Singleton</text>
+    <line x1="20" y1="42" x2="400" y2="42" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 62)">
+      <text x="0" y="0" class="code-line"><tspan class="code-cmt">// Normal way: blocked by private constructor</tspan></text>
+      <text x="0" y="18" class="code-line"><tspan class="code-cmt">// Eagle obj = new Eagle(); ❌ Compiler Error</tspan></text>
+      <text x="0" y="42" class="code-line"><tspan class="code-cmt">// Reflection bypass:</tspan></text>
+      <text x="0" y="60" class="code-line">Constructor c = Eagle.class</text>
+      <text x="20" y="78" class="code-line">.getDeclaredConstructor();</text>
+      <text x="0" y="104" class="code-line" fill="#f38ba8" font-weight="700">c.setAccessible(true); <tspan fill="#fab387">// Bypasses private!</tspan></text>
+      <text x="0" y="130" class="code-line">Eagle obj2 = (Eagle) c.newInstance();</text>
+      <text x="0" y="152" class="code-line"><tspan class="code-cmt">// 💥 Result: 2 distinct instances in memory!</tspan></text>
+      <text x="0" y="172" class="code-line"><tspan class="code-cmt">// Breaks singleton contract completely</tspan></text>
+    </g>
+  </g>
+
+  <!-- Right Side: The Defense -->
+  <g transform="translate(470, 80)">
+    <rect width="420" height="275" class="card-green"/>
+    <text x="20" y="30" class="section-title" fill="#a6e3a1">🛡️ The Defense: 2 Solutions</text>
+    <line x1="20" y1="42" x2="400" y2="42" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 62)">
+      <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="12.5" font-weight="700" fill="#f9e2af">1. Check in Constructor (Throw Exception):</text>
+      <text x="0" y="22" class="code-line"><tspan class="code-kw">private</tspan> Eagle() {</text>
+      <text x="16" y="40" class="code-line">  <tspan class="code-kw">if</tspan> (instance != <tspan class="code-kw">null</tspan>) {</text>
+      <text x="32" y="58" class="code-line">    <tspan class="code-kw">throw new</tspan> RuntimeException(</text>
+      <text x="48" y="76" class="code-line">      <tspan class="code-str">"Instance already exists!"</tspan>);</text>
+      <text x="16" y="94" class="code-line">  }</text>
+      <text x="0" y="112" class="code-line">}</text>
+
+      <text x="0" y="140" font-family="'Segoe UI', sans-serif" font-size="12.5" font-weight="700" fill="#a6e3a1">2. Best Practice: Enum Singleton (Joshua Bloch)</text>
+      <text x="0" y="160" class="code-line"><tspan class="code-kw">public enum</tspan> EagleSingleton {</text>
+      <text x="16" y="178" class="code-line">  INSTANCE;</text>
+      <text x="0" y="196" class="code-line">}</text>
+      <text x="0" y="212" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#a6adc8">• JVM guarantees enum reflection is impossible!</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-public { fill: #181825; stroke: #89b4fa; stroke-width: 1.5; rx: 10px; }
+      .card-declared { fill: #181825; stroke: #f9e2af; stroke-width: 1.5; rx: 10px; }
+      .section-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 15px; }
+      .method-item { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12.5px; fill: #cdd6f4; }
+      .tag-pub { fill: #a6e3a1; font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; }
+      .tag-priv { fill: #f38ba8; font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; }
+      .note-box { fill: #313244; rx: 8px; }
+      .note-text { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+    </style>
+  </defs>
+
+  <rect width="920" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">getMethods() / getFields() vs getDeclaredMethods() / getDeclaredFields()</text>
+  <text x="30" y="58" class="subtitle">Understanding scope: Hierarchy vs Access Modifiers</text>
+
+  <!-- Left Column: getMethods() / getFields() -->
+  <g transform="translate(30, 80)">
+    <rect width="415" height="275" class="card-public"/>
+    <text x="20" y="30" class="section-title" fill="#89b4fa">getMethods() / getFields()</text>
+    <text x="20" y="48" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6adc8">Public members ONLY + Includes Superclasses &amp; Object</text>
+    <line x1="20" y1="58" x2="395" y2="58" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 75)">
+      <text x="0" y="0" class="method-item">✅ Eagle.fly()</text>
+      <text x="250" y="0" class="tag-pub">[PUBLIC - Eagle]</text>
+
+      <text x="0" y="24" class="method-item" fill="#6c7086">❌ Eagle.eat()</text>
+      <text x="250" y="24" class="tag-priv" fill="#6c7086">[PRIVATE - Skipped]</text>
+
+      <text x="0" y="48" class="method-item">✅ Object.wait(), notify()</text>
+      <text x="250" y="48" class="tag-pub">[PUBLIC - Super]</text>
+
+      <text x="0" y="72" class="method-item">✅ Object.equals(), hashCode()</text>
+      <text x="250" y="72" class="tag-pub">[PUBLIC - Super]</text>
+    </g>
+
+    <g transform="translate(15, 175)">
+      <rect width="385" height="85" class="note-box"/>
+      <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#89b4fa">Key Rule:</text>
+      <text x="12" y="42" class="note-text">• Fetches ALL <tspan fill="#a6e3a1" font-weight="600">PUBLIC</tspan> members</text>
+      <text x="12" y="60" class="note-text">• Climbs up the inheritance tree all the way to Object</text>
+      <text x="12" y="78" class="note-text">• Never returns private/protected/package-private</text>
+    </g>
+  </g>
+
+  <!-- Right Column: getDeclaredMethods() / getDeclaredFields() -->
+  <g transform="translate(475, 80)">
+    <rect width="415" height="275" class="card-declared"/>
+    <text x="20" y="30" class="section-title" fill="#f9e2af">getDeclaredMethods() / getDeclaredFields()</text>
+    <text x="20" y="48" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6adc8">ALL Access Modifiers ONLY for Currently Declared Class</text>
+    <line x1="20" y1="58" x2="395" y2="58" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 75)">
+      <text x="0" y="0" class="method-item">✅ Eagle.fly()</text>
+      <text x="250" y="0" class="tag-pub">[PUBLIC - Eagle]</text>
+
+      <text x="0" y="24" class="method-item">✅ Eagle.eat()</text>
+      <text x="250" y="24" class="tag-priv">[PRIVATE - Eagle]</text>
+
+      <text x="0" y="48" class="method-item" fill="#6c7086">❌ Object.wait(), notify()</text>
+      <text x="250" y="48" class="tag-priv" fill="#6c7086">[SUPER - Skipped]</text>
+
+      <text x="0" y="72" class="method-item" fill="#6c7086">❌ Object.equals(), hashCode()</text>
+      <text x="250" y="72" class="tag-priv" fill="#6c7086">[SUPER - Skipped]</text>
+    </g>
+
+    <g transform="translate(15, 175)">
+      <rect width="385" height="85" class="note-box"/>
+      <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#f9e2af">Key Rule:</text>
+      <text x="12" y="42" class="note-text">• Fetches <tspan fill="#f9e2af" font-weight="600">ALL</tspan> members (public, private, protected)</text>
+      <text x="12" y="60" class="note-text">• Restricted <tspan fill="#f38ba8" font-weight="600">STRICTLY</tspan> to current class</text>
+      <text x="12" y="78" class="note-text">• Does NOT include inherited superclass members</text>
+    </g>
+  </g>
+</svg>

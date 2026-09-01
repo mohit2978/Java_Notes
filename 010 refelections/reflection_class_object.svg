@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-bg { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 14px; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12.5px; fill: #89b4fa; }
+      .badge-bg { rx: 4px; }
+      .desc-text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 12px; fill: #bac2de; }
+      .center-box { fill: #313244; stroke: #cba6f7; stroke-width: 2; rx: 12px; }
+      .center-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: bold; font-size: 16px; fill: #cba6f7; }
+      .arrow { stroke: #fab387; stroke-width: 2; marker-end: url(#arrowhead); fill: none; stroke-dasharray: 4,4; }
+      .solid-arrow { stroke: #a6e3a1; stroke-width: 2; marker-end: url(#arrowhead-green); fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a6e3a1" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="880" height="340" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">3 Ways to Obtain a java.lang.Class Object</text>
+  <text x="30" y="58" class="subtitle">JVM creates exactly ONE Class object in Metaspace for every loaded type</text>
+
+  <!-- Left Side: 3 Ways -->
+  <!-- Way 1 -->
+  <g transform="translate(30, 80)">
+    <rect width="450" height="68" class="card-bg"/>
+    <rect x="12" y="10" width="70" height="20" fill="#f38ba8" fill-opacity="0.2" class="badge-bg"/>
+    <text x="17" y="24" class="card-title" fill="#f38ba8">WAY 1</text>
+    <text x="92" y="24" class="card-title" fill="#cdd6f4">Class.forName("className")</text>
+    <text x="14" y="44" class="code-text">Class birdClass = Class.forName("Bird");</text>
+    <text x="14" y="60" class="desc-text">• When class name is known at runtime dynamically as String</text>
+  </g>
+
+  <!-- Way 2 -->
+  <g transform="translate(30, 160)">
+    <rect width="450" height="68" class="card-bg"/>
+    <rect x="12" y="10" width="70" height="20" fill="#a6e3a1" fill-opacity="0.2" class="badge-bg"/>
+    <text x="17" y="24" class="card-title" fill="#a6e3a1">WAY 2</text>
+    <text x="92" y="24" class="card-title" fill="#cdd6f4">ClassName.class</text>
+    <text x="14" y="44" class="code-text">Class birdClass = Bird.class;</text>
+    <text x="14" y="60" class="desc-text">• When class type is known at compile time (No object required)</text>
+  </g>
+
+  <!-- Way 3 -->
+  <g transform="translate(30, 240)">
+    <rect width="450" height="68" class="card-bg"/>
+    <rect x="12" y="10" width="70" height="20" fill="#89dceb" fill-opacity="0.2" class="badge-bg"/>
+    <text x="17" y="24" class="card-title" fill="#89dceb">WAY 3</text>
+    <text x="92" y="24" class="card-title" fill="#cdd6f4">obj.getClass()</text>
+    <text x="14" y="44" class="code-text">Class birdClass = birdObj.getClass();</text>
+    <text x="14" y="60" class="desc-text">• When an instance of the class is already available</text>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M 480 114 C 530 114, 530 180, 565 180" class="arrow" />
+  <path d="M 480 194 C 530 194, 530 195, 565 195" class="arrow" />
+  <path d="M 480 274 C 530 274, 530 210, 565 210" class="arrow" />
+
+  <!-- Right Side: Class Object in Memory -->
+  <g transform="translate(575, 95)">
+    <rect width="275" height="200" class="center-box"/>
+    <text x="25" y="32" class="center-title">Class&lt;Bird&gt; Object</text>
+    <text x="25" y="52" class="subtitle">(Single instance in JVM)</text>
+
+    <line x1="20" y1="62" x2="255" y2="62" stroke="#45475a" stroke-width="1"/>
+
+    <text x="25" y="85" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="#f9e2af">Contains Metadata:</text>
+    <text x="35" y="110" font-family="'Consolas', monospace" font-size="12" fill="#cdd6f4">📦 Fields (breed, canSwim...)</text>
+    <text x="35" y="132" font-family="'Consolas', monospace" font-size="12" fill="#cdd6f4">⚙️ Methods (fly, eat...)</text>
+    <text x="35" y="154" font-family="'Consolas', monospace" font-size="12" fill="#cdd6f4">🔨 Constructors</text>
+    <text x="35" y="176" font-family="'Consolas', monospace" font-size="12" fill="#cdd6f4">🏷️ Modifiers &amp; Annotations</text>
+  </g>
+</svg>

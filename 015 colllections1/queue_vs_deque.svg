@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 15px; }
+      .slot { fill: #313244; stroke: #45475a; stroke-width: 1.5; rx: 4px; }
+      .slot-txt { font-family: 'Consolas', monospace; font-size: 13px; fill: #cdd6f4; text-anchor: middle; }
+      .arrow-in { stroke: #a6e3a1; stroke-width: 2; marker-end: url(#arr-green); fill: none; }
+      .arrow-out { stroke: #f38ba8; stroke-width: 2; marker-end: url(#arr-red); fill: none; }
+      .lbl { font-family: 'Segoe UI', sans-serif; font-size: 12px; font-weight: 600; }
+      .desc-text { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+    </style>
+    <marker id="arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">Queue (FIFO) vs Deque (Double Ended Queue)</text>
+  <text x="30" y="58" class="subtitle">Comparison of insertion and removal mechanics at queue boundaries</text>
+
+  <!-- Left: Standard Queue (FIFO) -->
+  <g transform="translate(30, 80)">
+    <rect width="420" height="275" class="card" stroke="#89b4fa"/>
+    <text x="20" y="30" class="card-title" fill="#89b4fa">1. Standard Queue (FIFO: First-In-First-Out)</text>
+    <line x1="20" y1="42" x2="400" y2="42" stroke="#313244" stroke-width="1.5"/>
+
+    <!-- Remove (Front) -->
+    <path d="M 60 120 L 20 120" class="arrow-out"/>
+    <text x="5" y="105" class="lbl" fill="#f38ba8">Remove (Front)</text>
+    <text x="5" y="145" class="desc-text">poll() / remove()</text>
+
+    <!-- Queue Slots -->
+    <g transform="translate(85, 100)">
+      <rect x="0" y="0" width="45" height="40" class="slot"/>
+      <text x="22.5" y="25" class="slot-txt">1</text>
+      <rect x="50" y="0" width="45" height="40" class="slot"/>
+      <text x="72.5" y="25" class="slot-txt">2</text>
+      <rect x="100" y="0" width="45" height="40" class="slot"/>
+      <text x="122.5" y="25" class="slot-txt">3</text>
+      <rect x="150" y="0" width="45" height="40" class="slot"/>
+      <text x="172.5" y="25" class="slot-txt">4</text>
+    </g>
+
+    <!-- Insert (Rear) -->
+    <path d="M 330 120 L 290 120" class="arrow-in"/>
+    <text x="300" y="105" class="lbl" fill="#a6e3a1">Insert (Rear)</text>
+    <text x="300" y="145" class="desc-text">offer() / add()</text>
+
+    <g transform="translate(20, 180)">
+      <rect width="380" height="75" fill="#313244" rx="6"/>
+      <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#89b4fa">Queue Contract:</text>
+      <text x="12" y="42" class="desc-text">• Insert at REAR only, Remove from FRONT only.</text>
+      <text x="12" y="60" class="desc-text">• Real-world: Printer jobs, task scheduling, BFS.</text>
+    </g>
+  </g>
+
+  <!-- Right: Deque (Double-Ended Queue) -->
+  <g transform="translate(470, 80)">
+    <rect width="420" height="275" class="card" stroke="#cba6f7"/>
+    <text x="20" y="30" class="card-title" fill="#cba6f7">2. Deque (Double Ended: FIFO + LIFO)</text>
+    <line x1="20" y1="42" x2="400" y2="42" stroke="#313244" stroke-width="1.5"/>
+
+    <!-- Front Operations -->
+    <path d="M 60 108 L 20 108" class="arrow-out"/>
+    <text x="5" y="98" class="lbl" fill="#f38ba8">pollFirst()</text>
+    <path d="M 20 132 L 60 132" class="arrow-in"/>
+    <text x="5" y="152" class="lbl" fill="#a6e3a1">offerFirst()</text>
+
+    <!-- Deque Slots -->
+    <g transform="translate(90, 100)">
+      <rect x="0" y="0" width="45" height="40" class="slot" stroke="#cba6f7"/>
+      <text x="22.5" y="25" class="slot-txt">1</text>
+      <rect x="50" y="0" width="45" height="40" class="slot" stroke="#cba6f7"/>
+      <text x="72.5" y="25" class="slot-txt">2</text>
+      <rect x="100" y="0" width="45" height="40" class="slot" stroke="#cba6f7"/>
+      <text x="122.5" y="25" class="slot-txt">3</text>
+      <rect x="150" y="0" width="45" height="40" class="slot" stroke="#cba6f7"/>
+      <text x="172.5" y="25" class="slot-txt">4</text>
+    </g>
+
+    <!-- Rear Operations -->
+    <path d="M 335 108 L 295 108" class="arrow-in"/>
+    <text x="300" y="98" class="lbl" fill="#a6e3a1">offerLast()</text>
+    <path d="M 295 132 L 335 132" class="arrow-out"/>
+    <text x="300" y="152" class="lbl" fill="#f38ba8">pollLast()</text>
+
+    <g transform="translate(20, 180)">
+      <rect width="380" height="75" fill="#313244" rx="6"/>
+      <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#cba6f7">Deque Capabilities:</text>
+      <text x="12" y="42" class="desc-text">• Insert &amp; remove at BOTH Front and Rear.</text>
+      <text x="12" y="60" class="desc-text">• Implemented by <tspan fill="#cba6f7" font-weight="600">ArrayDeque</tspan> &amp; <tspan fill="#cba6f7" font-weight="600">LinkedList</tspan> (Faster than Stack!).</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 19px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .interface-box { fill: #1e2030; stroke: #89b4fa; stroke-width: 1.8; rx: 8px; }
+      .class-box { fill: #2d1e3d; stroke: #cba6f7; stroke-width: 1.8; rx: 8px; }
+      .map-if-box { fill: #1e293b; stroke: #f9e2af; stroke-width: 1.8; rx: 8px; }
+      .map-cls-box { fill: #38241e; stroke: #fab387; stroke-width: 1.8; rx: 8px; }
+      .txt-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 13px; text-anchor: middle; }
+      .txt-badge { font-family: 'Segoe UI', sans-serif; font-size: 10px; font-weight: 600; text-anchor: middle; }
+      .line-ext { stroke: #89b4fa; stroke-width: 1.5; fill: none; marker-end: url(#arr); }
+      .line-imp { stroke: #cba6f7; stroke-width: 1.5; stroke-dasharray: 4,3; fill: none; marker-end: url(#arr-p); }
+      .line-map { stroke: #fab387; stroke-width: 1.5; fill: none; marker-end: url(#arr-o); }
+      .legend-txt { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #cdd6f4; }
+    </style>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+    <marker id="arr-p" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#cba6f7" />
+    </marker>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+  </defs>
+
+  <rect width="960" height="520" rx="14" class="bg"/>
+
+  <text x="30" y="36" class="title">Java Collections Framework (JCF) Hierarchy</text>
+  <text x="30" y="56" class="subtitle">Complete architecture: Iterable &amp; Collection tree vs Map tree (Interfaces &amp; Concrete Classes)</text>
+
+  <!-- Legend -->
+  <g transform="translate(680, 20)">
+    <rect x="0" y="0" width="16" height="12" rx="3" class="interface-box"/>
+    <text x="24" y="10" class="legend-txt">Interface</text>
+    <rect x="100" y="0" width="16" height="12" rx="3" class="class-box"/>
+    <text x="124" y="10" class="legend-txt">Class</text>
+    <line x1="180" y1="6" x2="205" y2="6" stroke="#89b4fa" stroke-width="1.5"/>
+    <text x="212" y="10" class="legend-txt">extends</text>
+  </g>
+
+  <!-- Root: Iterable (Java 1.5) -->
+  <g transform="translate(320, 80)">
+    <rect width="140" height="36" class="interface-box"/>
+    <text x="70" y="18" class="txt-title" fill="#89b4fa">&lt;&lt;interface&gt;&gt;</text>
+    <text x="70" y="30" class="txt-title" fill="#ffffff">Iterable (1.5)</text>
+  </g>
+
+  <!-- Collection (Java 1.2) -->
+  <g transform="translate(320, 140)">
+    <rect width="140" height="36" class="interface-box"/>
+    <text x="70" y="18" class="txt-title" fill="#89b4fa">&lt;&lt;interface&gt;&gt;</text>
+    <text x="70" y="30" class="txt-title" fill="#ffffff">Collection (1.2)</text>
+  </g>
+  <line x1="390" y1="116" x2="390" y2="140" class="line-ext"/>
+
+  <!-- Branches from Collection: Queue, List, Set -->
+  <!-- 1. Queue -->
+  <g transform="translate(80, 205)">
+    <rect width="120" height="34" class="interface-box"/>
+    <text x="60" y="22" class="txt-title" fill="#89b4fa">Queue</text>
+  </g>
+  <!-- 2. List -->
+  <g transform="translate(330, 205)">
+    <rect width="120" height="34" class="interface-box"/>
+    <text x="60" y="22" class="txt-title" fill="#89b4fa">List</text>
+  </g>
+  <!-- 3. Set -->
+  <g transform="translate(560, 205)">
+    <rect width="120" height="34" class="interface-box"/>
+    <text x="60" y="22" class="txt-title" fill="#89b4fa">Set</text>
+  </g>
+
+  <path d="M 390 176 L 390 190 L 140 190 L 140 205" class="line-ext"/>
+  <line x1="390" y1="176" x2="390" y2="205" class="line-ext"/>
+  <path d="M 390 176 L 390 190 L 620 190 L 620 205" class="line-ext"/>
+
+  <!-- Under Queue: Deque & PriorityQueue -->
+  <g transform="translate(80, 260)">
+    <rect width="120" height="34" class="interface-box"/>
+    <text x="60" y="22" class="txt-title" fill="#89b4fa">Deque</text>
+  </g>
+  <line x1="140" y1="239" x2="140" y2="260" class="line-ext"/>
+
+  <g transform="translate(20, 315)">
+    <rect width="115" height="32" class="class-box"/>
+    <text x="57" y="20" class="txt-title" fill="#cba6f7">PriorityQueue</text>
+  </g>
+  <path d="M 120 239 L 77 315" class="line-imp"/>
+
+  <g transform="translate(80, 370)">
+    <rect width="120" height="32" class="class-box"/>
+    <text x="60" y="20" class="txt-title" fill="#cba6f7">ArrayDeque</text>
+  </g>
+  <line x1="140" y1="294" x2="140" y2="370" class="line-imp"/>
+
+  <!-- Under List: ArrayList, Vector (Stack), LinkedList -->
+  <g transform="translate(235, 315)">
+    <rect width="95" height="32" class="class-box"/>
+    <text x="47" y="20" class="txt-title" fill="#cba6f7">ArrayList</text>
+  </g>
+  <g transform="translate(345, 315)">
+    <rect width="95" height="32" class="class-box"/>
+    <text x="47" y="20" class="txt-title" fill="#cba6f7">LinkedList</text>
+  </g>
+  <g transform="translate(455, 315)">
+    <rect width="90" height="32" class="class-box"/>
+    <text x="45" y="20" class="txt-title" fill="#cba6f7">Vector</text>
+  </g>
+  <g transform="translate(455, 370)">
+    <rect width="90" height="32" class="class-box"/>
+    <text x="45" y="20" class="txt-title" fill="#cba6f7">Stack</text>
+  </g>
+  <line x1="500" y1="347" x2="500" y2="370" class="line-ext"/>
+
+  <path d="M 390 239 L 282 315" class="line-imp"/>
+  <line x1="390" y1="239" x2="390" y2="315" class="line-imp"/>
+  <path d="M 390 239 L 500 315" class="line-imp"/>
+  <!-- LinkedList also implements Deque -->
+  <path d="M 180 294 L 350 315" stroke="#cba6f7" stroke-width="1.2" stroke-dasharray="3,3" fill="none"/>
+
+  <!-- Under Set: HashSet, LinkedHashSet, SortedSet -> NavigableSet -> TreeSet -->
+  <g transform="translate(560, 260)">
+    <rect width="110" height="34" class="interface-box"/>
+    <text x="55" y="22" class="txt-title" fill="#89b4fa">SortedSet</text>
+  </g>
+  <line x1="615" y1="239" x2="615" y2="260" class="line-ext"/>
+
+  <g transform="translate(560, 315)">
+    <rect width="110" height="34" class="interface-box"/>
+    <text x="55" y="22" class="txt-title" fill="#89b4fa">NavigableSet</text>
+  </g>
+  <line x1="615" y1="294" x2="615" y2="315" class="line-ext"/>
+
+  <g transform="translate(560, 370)">
+    <rect width="110" height="32" class="class-box"/>
+    <text x="55" y="20" class="txt-title" fill="#cba6f7">TreeSet</text>
+  </g>
+  <line x1="615" y1="349" x2="615" y2="370" class="line-imp"/>
+
+  <g transform="translate(685, 315)">
+    <rect width="100" height="32" class="class-box"/>
+    <text x="50" y="20" class="txt-title" fill="#cba6f7">HashSet</text>
+  </g>
+  <g transform="translate(685, 370)">
+    <rect width="115" height="32" class="class-box"/>
+    <text x="57" y="20" class="txt-title" fill="#cba6f7">LinkedHashSet</text>
+  </g>
+  <path d="M 640 239 L 735 315" class="line-imp"/>
+  <line x1="742" y1="347" x2="742" y2="370" class="line-ext"/>
+
+  <!-- Map Hierarchy (Separate Tree) -->
+  <g transform="translate(805, 80)">
+    <rect width="135" height="420" fill="#181825" stroke="#45475a" stroke-width="1.2" rx="8"/>
+    <text x="67" y="25" class="txt-title" fill="#fab387">Map Hierarchy</text>
+    <text x="67" y="40" class="txt-badge" fill="#6c7086">(Does NOT extend Iterable)</text>
+
+    <!-- Map Interface -->
+    <g transform="translate(12, 60)">
+      <rect width="110" height="32" class="map-if-box"/>
+      <text x="55" y="20" class="txt-title" fill="#f9e2af">Map</text>
+    </g>
+
+    <g transform="translate(12, 120)">
+      <rect width="110" height="30" class="map-cls-box"/>
+      <text x="55" y="19" class="txt-title" fill="#fab387">HashMap</text>
+    </g>
+    <line x1="67" y1="92" x2="67" y2="120" class="line-map"/>
+
+    <g transform="translate(12, 175)">
+      <rect width="110" height="30" class="map-cls-box"/>
+      <text x="55" y="19" class="txt-title" fill="#fab387">LinkedHashMap</text>
+    </g>
+    <line x1="67" y1="150" x2="67" y2="175" class="line-map"/>
+
+    <g transform="translate(12, 230)">
+      <rect width="110" height="30" class="map-if-box"/>
+      <text x="55" y="19" class="txt-title" fill="#f9e2af">SortedMap</text>
+    </g>
+    <line x1="67" y1="92" x2="67" y2="230" class="line-map"/>
+
+    <g transform="translate(12, 285)">
+      <rect width="110" height="30" class="map-cls-box"/>
+      <text x="55" y="19" class="txt-title" fill="#fab387">TreeMap</text>
+    </g>
+    <line x1="67" y1="260" x2="67" y2="285" class="line-map"/>
+
+    <g transform="translate(12, 340)">
+      <rect width="110" height="30" class="map-cls-box"/>
+      <text x="55" y="19" class="txt-title" fill="#fab387">Hashtable</text>
+    </g>
+    <line x1="67" y1="92" x2="67" y2="340" class="line-map"/>
+  </g>
+</svg>

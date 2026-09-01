@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-comp { fill: #181825; stroke: #89b4fa; stroke-width: 1.5; rx: 10px; }
+      .card-cmpr { fill: #181825; stroke: #f9e2af; stroke-width: 1.5; rx: 10px; }
+      .section-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14.5px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11.5px; fill: #cdd6f4; }
+      .code-kw { fill: #cba6f7; font-weight: 600; }
+      .code-fn { fill: #89b4fa; }
+      .code-str { fill: #a6e3a1; }
+      .code-cmt { fill: #6c7086; font-style: italic; }
+      .desc-text { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+    </style>
+  </defs>
+
+  <rect width="920" height="380" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">Comparable vs Comparator in Java</text>
+  <text x="30" y="58" class="subtitle">Internal single natural ordering vs external multiple customized sort strategies</text>
+
+  <!-- Left: Comparable -->
+  <g transform="translate(30, 80)">
+    <rect width="420" height="275" class="card-comp"/>
+    <text x="20" y="28" class="section-title" fill="#89b4fa">1. Comparable&lt;T&gt; (Natural Ordering)</text>
+    <line x1="20" y1="40" x2="400" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" class="code-line"><tspan class="code-kw">class</tspan> Car <tspan class="code-kw">implements</tspan> <tspan fill="#89b4fa">Comparable&lt;Car&gt;</tspan> {</text>
+      <text x="15" y="18" class="code-line">  String name; <tspan class="code-kw">int</tspan> price;</text>
+      <text x="15" y="40" class="code-line">  <tspan class="code-kw">public int</tspan> <tspan class="code-fn">compareTo</tspan>(Car other) {</text>
+      <text x="30" y="58" class="code-line">    <tspan class="code-kw">return</tspan> <tspan class="code-kw">this</tspan>.price - other.price;</text>
+      <text x="15" y="76" class="code-line">  }</text>
+      <text x="0" y="94" class="code-line">}</text>
+
+      <line x1="0" y1="110" x2="380" y2="110" stroke="#313244" stroke-width="1"/>
+      <text x="0" y="132" class="desc-text">• Package: <tspan fill="#89b4fa" font-weight="600">java.lang</tspan></text>
+      <text x="0" y="152" class="desc-text">• Defined <tspan fill="#89b4fa" font-weight="600">inside</tspan> the domain class itself.</text>
+      <text x="0" y="172" class="desc-text">• Single sort sequence (natural order).</text>
+      <text x="0" y="192" class="desc-text">• Usage: <tspan class="code-line" fill="#89b4fa">Collections.sort(cars);</tspan></text>
+    </g>
+  </g>
+
+  <!-- Right: Comparator -->
+  <g transform="translate(470, 80)">
+    <rect width="420" height="275" class="card-cmpr"/>
+    <text x="20" y="28" class="section-title" fill="#f9e2af">2. Comparator&lt;T&gt; (Custom Sort Strategy)</text>
+    <line x1="20" y1="40" x2="400" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" class="code-line"><tspan class="code-cmt">// Defined externally via Lambdas / Classes</tspan></text>
+      <text x="0" y="20" class="code-line">Comparator&lt;Car&gt; byPrice =</text>
+      <text x="20" y="38" class="code-line">(c1, c2) -&gt; c1.price - c2.price;</text>
+
+      <text x="0" y="62" class="code-line">Comparator&lt;Car&gt; byName =</text>
+      <text x="20" y="80" class="code-line">(c1, c2) -&gt; c1.name.compareTo(c2.name);</text>
+
+      <line x1="0" y1="110" x2="380" y2="110" stroke="#313244" stroke-width="1"/>
+      <text x="0" y="132" class="desc-text">• Package: <tspan fill="#f9e2af" font-weight="600">java.util</tspan></text>
+      <text x="0" y="152" class="desc-text">• Defined <tspan fill="#f9e2af" font-weight="600">outside</tspan> without modifying original class.</text>
+      <text x="0" y="172" class="desc-text">• Multiple sort criteria possible (price, name, rating).</text>
+      <text x="0" y="192" class="desc-text">• Usage: <tspan class="code-line" fill="#f9e2af">Collections.sort(cars, byName);</tspan></text>
+    </g>
+  </g>
+</svg>

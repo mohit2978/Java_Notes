@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 450" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .bucket-box { fill: #181825; stroke: #89b4fa; stroke-width: 1.5; rx: 6px; }
+      .bucket-num { font-family: 'Consolas', monospace; font-size: 12px; fill: #fab387; text-anchor: middle; font-weight: 700; }
+      .node-box { fill: #313244; stroke: #cba6f7; stroke-width: 1.2; rx: 4px; }
+      .tree-box { fill: #3d2432; stroke: #f38ba8; stroke-width: 1.5; rx: 4px; }
+      .node-txt { font-family: 'Consolas', monospace; font-size: 11px; fill: #cdd6f4; text-anchor: middle; }
+      .arrow { stroke: #89b4fa; stroke-width: 1.5; marker-end: url(#arr); fill: none; }
+      .arrow-tree { stroke: #f38ba8; stroke-width: 1.5; marker-end: url(#arr-red); fill: none; }
+      .card-info { fill: #181825; stroke: #45475a; stroke-width: 1.2; rx: 8px; }
+      .info-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 12.5px; }
+      .info-desc { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #bac2de; }
+    </style>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+    <marker id="arr-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+  </defs>
+
+  <rect width="960" height="450" rx="14" class="bg"/>
+
+  <text x="30" y="36" class="title">HashMap Internal Architecture &amp; Treeification (Java 8+)</text>
+  <text x="30" y="56" class="subtitle">Array of Buckets (Node&lt;K,V&gt;[] table) with Separate Chaining &amp; Red-Black Tree Conversion</text>
+
+  <!-- Left: Bucket Array -->
+  <g transform="translate(30, 80)">
+    <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="#89b4fa">Bucket Table (Capacity = 16)</text>
+    
+    <!-- Bucket 0 -->
+    <rect x="0" y="15" width="75" height="32" class="bucket-box"/>
+    <text x="37.5" y="35" class="bucket-num">Index 0</text>
+    <text x="85" y="35" font-family="'Segoe UI', sans-serif" font-size="11" fill="#6c7086">null</text>
+
+    <!-- Bucket 1 (Single Entry) -->
+    <rect x="0" y="55" width="75" height="32" class="bucket-box"/>
+    <text x="37.5" y="75" class="bucket-num">Index 1</text>
+    <line x1="75" y1="71" x2="110" y2="71" class="arrow"/>
+    <g transform="translate(110, 55)">
+      <rect width="110" height="32" class="node-box"/>
+      <text x="55" y="20" class="node-txt">Key: 1, Val: "SJ"</text>
+    </g>
+
+    <!-- Bucket 2 (Collision -> Linked List) -->
+    <rect x="0" y="95" width="75" height="32" class="bucket-box" stroke="#cba6f7"/>
+    <text x="37.5" y="115" class="bucket-num">Index 2</text>
+    <line x1="75" y1="111" x2="110" y2="111" class="arrow"/>
+    
+    <!-- Node 1 -->
+    <g transform="translate(110, 95)">
+      <rect width="110" height="32" class="node-box"/>
+      <text x="55" y="20" class="node-txt">Key: 2, Val: "A"</text>
+    </g>
+    <line x1="220" y1="111" x2="250" y2="111" class="arrow"/>
+    <!-- Node 2 -->
+    <g transform="translate(250, 95)">
+      <rect width="110" height="32" class="node-box"/>
+      <text x="55" y="20" class="node-txt">Key: 18, Val: "B"</text>
+    </g>
+    <line x1="360" y1="111" x2="390" y2="111" class="arrow"/>
+    <!-- Node 3 -->
+    <g transform="translate(390, 95)">
+      <rect width="110" height="32" class="node-box"/>
+      <text x="55" y="20" class="node-txt">Key: 34, Val: "C"</text>
+    </g>
+
+    <!-- Bucket 3...14 (ellipsis) -->
+    <rect x="0" y="135" width="75" height="24" fill="#181825" stroke="#313244" rx="4"/>
+    <text x="37.5" y="151" class="bucket-num" fill="#6c7086">...</text>
+
+    <!-- Bucket 15 (Treeified Bucket >= 8 nodes) -->
+    <rect x="0" y="170" width="75" height="32" class="bucket-box" stroke="#f38ba8"/>
+    <text x="37.5" y="190" class="bucket-num" fill="#f38ba8">Index 15</text>
+    <line x1="75" y1="186" x2="110" y2="186" class="arrow-tree"/>
+    
+    <!-- Red-Black Tree Visualization -->
+    <g transform="translate(110, 160)">
+      <rect width="400" height="150" fill="#251b29" stroke="#f38ba8" stroke-width="1.2" rx="6"/>
+      <text x="15" y="22" font-family="'Segoe UI', sans-serif" font-size="11.5" font-weight="700" fill="#f38ba8">Treeified Bucket (Red-Black Tree: TreeNode&lt;K,V&gt;)</text>
+      <text x="15" y="38" font-family="'Segoe UI', sans-serif" font-size="10.5" fill="#bac2de">Triggered when Bucket Nodes &gt;= 8 &amp; Table Capacity &gt;= 64</text>
+      
+      <!-- Tree Nodes -->
+      <g transform="translate(180, 50)">
+        <rect x="0" y="0" width="40" height="24" class="tree-box"/>
+        <text x="20" y="16" class="node-txt">N4</text>
+        
+        <!-- Left child -->
+        <line x1="10" y1="24" x2="-30" y2="45" stroke="#f38ba8" stroke-width="1.2"/>
+        <rect x="-55" y="45" width="40" height="24" class="tree-box"/>
+        <text x="-35" y="61" class="node-txt">N2</text>
+
+        <!-- Right child -->
+        <line x1="30" y1="24" x2="70" y2="45" stroke="#f38ba8" stroke-width="1.2"/>
+        <rect x="55" y="45" width="40" height="24" class="tree-box"/>
+        <text x="75" y="61" class="node-txt">N6</text>
+      </g>
+      <text x="15" y="138" font-family="'Segoe UI', sans-serif" font-size="11" fill="#a6e3a1">Search Complexity drops from O(n) to O(log n)!</text>
+    </g>
+  </g>
+
+  <!-- Right: Key Constants Summary -->
+  <g transform="translate(580, 80)">
+    <rect width="350" height="340" class="card-info"/>
+    <text x="20" y="30" class="info-title" fill="#f9e2af">Core HashMap Constants &amp; Defaults</text>
+    <line x1="20" y1="42" x2="330" y2="42" stroke="#313244" stroke-width="1.2"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" class="info-title" fill="#89b4fa">1. Default Initial Capacity:</text>
+      <text x="0" y="18" class="info-desc">• 1 &lt;&lt; 4 = <tspan fill="#ffffff" font-weight="700">16</tspan> buckets (indices 0 to 15).</text>
+
+      <text x="0" y="44" class="info-title" fill="#89b4fa">2. Default Load Factor:</text>
+      <text x="0" y="62" class="info-desc">• <tspan fill="#ffffff" font-weight="700">0.75f</tspan> (Threshold = 16 * 0.75 = 12 elements).</text>
+
+      <text x="0" y="88" class="info-title" fill="#89b4fa">3. Treeify Threshold:</text>
+      <text x="0" y="106" class="info-desc">• <tspan fill="#ffffff" font-weight="700">TREEIFY_THRESHOLD = 8</tspan></text>
+      <text x="0" y="122" class="info-desc">  Converts linked list into Red-Black Tree.</text>
+
+      <text x="0" y="148" class="info-title" fill="#89b4fa">4. Untreeify Threshold:</text>
+      <text x="0" y="166" class="info-desc">• <tspan fill="#ffffff" font-weight="700">UNTREEIFY_THRESHOLD = 6</tspan></text>
+      <text x="0" y="182" class="info-desc">  Converts Red-Black Tree back to linked list.</text>
+
+      <text x="0" y="208" class="info-title" fill="#89b4fa">5. Min Treeify Capacity:</text>
+      <text x="0" y="226" class="info-desc">• <tspan fill="#ffffff" font-weight="700">MIN_TREEIFY_CAPACITY = 64</tspan></text>
+      <text x="0" y="242" class="info-desc">  Table resizes if capacity &lt; 64 before treeifying.</text>
+    </g>
+  </g>
+</svg>

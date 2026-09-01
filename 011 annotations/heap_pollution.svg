@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 400" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-err { fill: #181825; stroke: #f38ba8; stroke-width: 1.5; rx: 10px; }
+      .section-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .cell-box { fill: #313244; stroke: #89b4fa; stroke-width: 1.5; rx: 6px; }
+      .cell-err { fill: #452b36; stroke: #f38ba8; stroke-width: 1.8; rx: 6px; }
+      .cell-label { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #a6adc8; }
+      .cell-text { font-family: 'Consolas', monospace; font-size: 12px; font-weight: 600; }
+      .arrow { stroke: #fab387; stroke-width: 2; marker-end: url(#arrowhead); fill: none; }
+      .arrow-err { stroke: #f38ba8; stroke-width: 2; marker-end: url(#arrowhead-red); fill: none; stroke-dasharray: 4,4; }
+      .badge-err { fill: #f38ba8; fill-opacity: 0.2; rx: 4px; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f38ba8" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="920" height="400" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">How Heap Pollution Occurs (Varargs + Generics)</text>
+  <text x="30" y="58" class="subtitle">A parameterized variable references an object of a different, incompatible type at runtime</text>
+
+  <!-- Left Side: Step-by-Step Code Flow -->
+  <g transform="translate(30, 80)">
+    <rect width="390" height="295" class="card"/>
+    <text x="20" y="28" class="section-title" fill="#89b4fa">1. Java Execution Flow</text>
+    <line x1="20" y1="40" x2="370" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" class="code-line" fill="#6c7086">// Step 1: Varargs converted to array</text>
+      <text x="0" y="20" class="code-line"><tspan fill="#cba6f7">void</tspan> print(<tspan fill="#89b4fa">List&lt;Integer&gt;...</tspan> list) {</text>
+
+      <text x="15" y="50" class="code-line" fill="#6c7086">// Step 2: Array aliasing via Object[]</text>
+      <text x="15" y="70" class="code-line">Object[] objArr = list;</text>
+
+      <text x="15" y="100" class="code-line" fill="#6c7086">// Step 3: Injecting List&lt;String&gt; into array</text>
+      <text x="15" y="120" class="code-line">List&lt;String&gt; strList = List.of(<tspan fill="#a6e3a1">"Hello"</tspan>);</text>
+      <text x="15" y="140" class="code-line" fill="#f38ba8" font-weight="700">objArr[0] = strList; <tspan fill="#fab387">// ⚠️ Polluted!</tspan></text>
+
+      <text x="15" y="170" class="code-line" fill="#6c7086">// Step 4: Compiler expects Integer</text>
+      <text x="15" y="190" class="code-line"><tspan fill="#f38ba8" font-weight="700">Integer num = list[0].get(0);</tspan></text>
+      <text x="15" y="210" class="code-line" fill="#f38ba8">💥 ClassCastException at Runtime!</text>
+      <text x="0" y="230" class="code-line">}</text>
+    </g>
+  </g>
+
+  <!-- Right Side: Visual Heap Memory State -->
+  <g transform="translate(450, 80)">
+    <rect width="440" height="295" class="card-err"/>
+    <text x="20" y="28" class="section-title" fill="#f38ba8">2. Heap Memory Representation</text>
+    <line x1="20" y1="40" x2="420" y2="40" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="12.5" font-weight="600" fill="#f9e2af">Underlying Array: List[] (Type Erased)</text>
+
+      <!-- Array Slots -->
+      <!-- Slot 0 (Polluted) -->
+      <g transform="translate(0, 18)">
+        <rect width="125" height="60" class="cell-err"/>
+        <text x="10" y="18" class="cell-label" fill="#f38ba8">Index 0 (Polluted ⚠️)</text>
+        <text x="10" y="42" class="cell-text" fill="#f38ba8">List&lt;String&gt;</text>
+      </g>
+
+      <!-- Slot 1 -->
+      <g transform="translate(135, 18)">
+        <rect width="125" height="60" class="cell-box"/>
+        <text x="10" y="18" class="cell-label">Index 1</text>
+        <text x="10" y="42" class="cell-text" fill="#a6e3a1">List&lt;Integer&gt;</text>
+      </g>
+
+      <!-- Slot 2 -->
+      <g transform="translate(270, 18)">
+        <rect width="125" height="60" class="cell-box"/>
+        <text x="10" y="18" class="cell-label">Index 2</text>
+        <text x="10" y="42" class="cell-text" fill="#a6e3a1">List&lt;Integer&gt;</text>
+      </g>
+
+      <!-- Reference Pointers -->
+      <g transform="translate(0, 100)">
+        <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="12" fill="#89b4fa">👉 <tspan font-weight="700">list</tspan> expects: <tspan fill="#cdd6f4">List&lt;Integer&gt;[]</tspan></text>
+        <text x="0" y="20" font-family="'Segoe UI', sans-serif" font-size="12" fill="#fab387">👉 <tspan font-weight="700">objArr</tspan> sees: <tspan fill="#cdd6f4">Object[]</tspan></text>
+
+        <!-- Warning Callout Box -->
+        <g transform="translate(0, 35)">
+          <rect width="395" height="85" fill="#313244" rx="8"/>
+          <text x="12" y="22" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#f38ba8">⚠️ The Heap Pollution Problem:</text>
+          <text x="12" y="44" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#cdd6f4">• Slot 0 holds a <tspan fill="#f38ba8" font-weight="600">String list</tspan> instead of an <tspan fill="#a6e3a1" font-weight="600">Integer list</tspan>.</text>
+          <text x="12" y="62" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#cdd6f4">• Code compiles without error because of type erasure.</text>
+          <text x="12" y="78" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#fab387">• Use <tspan fill="#a6e3a1" font-weight="700">@SafeVarargs</tspan> only when your method never modifies the array!</text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

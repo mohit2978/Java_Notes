@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 370" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 18px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-box { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 14px; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11.5px; fill: #cdd6f4; }
+      .code-kw { fill: #cba6f7; font-weight: 600; }
+      .code-ann { fill: #f9e2af; font-weight: 600; }
+      .code-str { fill: #a6e3a1; }
+      .code-cmt { fill: #6c7086; font-style: italic; }
+      .arrow { stroke: #fab387; stroke-width: 2; marker-end: url(#arrowhead); fill: none; stroke-dasharray: 4,4; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fab387" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="370" rx="14" class="bg"/>
+
+  <text x="30" y="38" class="title">Java 8 @Repeatable &amp; Container Annotation Architecture</text>
+  <text x="30" y="58" class="subtitle">How multiple identical annotations are grouped into a single container under the hood</text>
+
+  <!-- Step 1: Definition -->
+  <g transform="translate(30, 80)">
+    <rect width="270" height="260" class="card-box" stroke="#89b4fa"/>
+    <text x="15" y="28" class="card-title" fill="#89b4fa">1. Define Repeatable Pair</text>
+    <line x1="15" y1="40" x2="255" y2="40" stroke="#313244" stroke-width="1"/>
+
+    <text x="15" y="62" class="code-line"><tspan class="code-ann">@Retention</tspan>(RetentionPolicy.RUNTIME)</text>
+    <text x="15" y="80" class="code-line"><tspan class="code-ann">@Repeatable</tspan>(Categories.class)</text>
+    <text x="15" y="98" class="code-line"><tspan class="code-kw">public @interface</tspan> Category {</text>
+    <text x="25" y="116" class="code-line">  String name();</text>
+    <text x="15" y="134" class="code-line">}</text>
+
+    <line x1="15" y1="150" x2="255" y2="150" stroke="#313244" stroke-width="1"/>
+    <text x="15" y="172" class="code-line"><tspan class="code-cmt">// Container Annotation</tspan></text>
+    <text x="15" y="190" class="code-line"><tspan class="code-ann">@Retention</tspan>(RetentionPolicy.RUNTIME)</text>
+    <text x="15" y="208" class="code-line"><tspan class="code-kw">public @interface</tspan> Categories {</text>
+    <text x="25" y="226" class="code-line" fill="#f9e2af">  Category[] value();</text>
+    <text x="15" y="244" class="code-line">}</text>
+  </g>
+
+  <!-- Step 2: Usage on Class -->
+  <g transform="translate(325, 80)">
+    <rect width="270" height="260" class="card-box" stroke="#f9e2af"/>
+    <text x="15" y="28" class="card-title" fill="#f9e2af">2. Repeat Usage on Class</text>
+    <line x1="15" y1="40" x2="255" y2="40" stroke="#313244" stroke-width="1"/>
+
+    <text x="15" y="65" class="code-line"><tspan class="code-ann">@Category</tspan>(name = <tspan class="code-str">"Bird"</tspan>)</text>
+    <text x="15" y="85" class="code-line"><tspan class="code-ann">@Category</tspan>(name = <tspan class="code-str">"LivingThing"</tspan>)</text>
+    <text x="15" y="105" class="code-line"><tspan class="code-ann">@Category</tspan>(name = <tspan class="code-str">"Carnivorous"</tspan>)</text>
+    <text x="15" y="130" class="code-line"><tspan class="code-kw">public class</tspan> Eagle {</text>
+    <text x="25" y="150" class="code-line">  <tspan class="code-kw">public void</tspan> fly() { }</text>
+    <text x="15" y="170" class="code-line">}</text>
+
+    <line x1="15" y1="190" x2="255" y2="190" stroke="#313244" stroke-width="1"/>
+    <text x="15" y="212" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6adc8">• Java synthesizes</text>
+    <text x="15" y="230" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6adc8">  <tspan fill="#f9e2af">@Categories({...})</tspan> container</text>
+    <text x="15" y="248" font-family="'Segoe UI', sans-serif" font-size="12" fill="#a6adc8">  automatically in bytecode!</text>
+  </g>
+
+  <!-- Step 3: Reflection Reading -->
+  <g transform="translate(620, 80)">
+    <rect width="270" height="260" class="card-box" stroke="#a6e3a1"/>
+    <text x="15" y="28" class="card-title" fill="#a6e3a1">3. Read via Reflection</text>
+    <line x1="15" y1="40" x2="255" y2="40" stroke="#313244" stroke-width="1"/>
+
+    <text x="15" y="65" class="code-line"><tspan class="code-cmt">// Fetches all repeated items</tspan></text>
+    <text x="15" y="85" class="code-line">Category[] arr = Eagle.class</text>
+    <text x="15" y="105" class="code-line" fill="#a6e3a1"> .getAnnotationsByType(</text>
+    <text x="30" y="125" class="code-line" fill="#a6e3a1">   Category.class);</text>
+
+    <line x1="15" y1="145" x2="255" y2="145" stroke="#313244" stroke-width="1"/>
+    <text x="15" y="168" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#f9e2af">Iteration Output:</text>
+    <text x="15" y="192" class="code-line">1. "Bird"</text>
+    <text x="15" y="212" class="code-line">2. "LivingThing"</text>
+    <text x="15" y="232" class="code-line">3. "Carnivorous"</text>
+  </g>
+</svg>
