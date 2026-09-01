@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 15px; }
+      .subcard { fill: #11111b; stroke: #45475a; stroke-width: 1; rx: 8px; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .kw { fill: #cba6f7; font-weight: bold; }
+      .type { fill: #fab387; }
+      .fn { fill: #89b4fa; }
+      .str { fill: #a6e3a1; }
+      .comm { fill: #6c7086; font-style: italic; }
+      .desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11.5px; fill: #bac2de; }
+      .badge-eager { fill: #f38ba8; fill-opacity: 0.2; rx: 4px; }
+      .badge-lazy { fill: #a6e3a1; fill-opacity: 0.2; rx: 4px; }
+    </style>
+  </defs>
+
+  <rect width="960" height="480" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">Optional Lifecycle: Creation &amp; Fallback Extraction Strategies</text>
+  <text x="30" y="58" class="subtitle">Factory methods for wrapping values, and Eager vs Lazy extraction patterns</text>
+
+  <!-- Section 1: Creation Methods (Left Column) -->
+  <g transform="translate(30, 80)">
+    <rect width="435" height="370" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#cba6f7">1. Creation Methods (Factory)</text>
+
+    <!-- empty() -->
+    <g transform="translate(15, 45)">
+      <rect width="405" height="65" class="subcard"/>
+      <text x="12" y="22" class="code-text" fill="#f38ba8" font-weight="bold">Optional.empty()</text>
+      <text x="12" y="40" class="desc">• Returns the singleton empty container.</text>
+      <text x="12" y="55" class="code-text comm">Optional&lt;String&gt; opt = Optional.empty();</text>
+    </g>
+
+    <!-- of() -->
+    <g transform="translate(15, 120)">
+      <rect width="405" height="75" class="subcard"/>
+      <text x="12" y="22" class="code-text" fill="#89b4fa" font-weight="bold">Optional.of(value)</text>
+      <text x="12" y="40" class="desc">• Wraps guaranteed non-null value.</text>
+      <text x="12" y="56" class="desc" fill="#f38ba8">• ⚠️ Throws NullPointerException immediately if value is null!</text>
+      <text x="12" y="70" class="code-text comm">Optional&lt;String&gt; opt = Optional.of("Hello");</text>
+    </g>
+
+    <!-- ofNullable() -->
+    <g transform="translate(15, 205)">
+      <rect width="405" height="75" class="subcard"/>
+      <text x="12" y="22" class="code-text" fill="#a6e3a1" font-weight="bold">Optional.ofNullable(value)</text>
+      <text x="12" y="40" class="desc">• Safest &amp; most common creation method.</text>
+      <text x="12" y="56" class="desc">• Returns Optional(value) if non-null, else Optional.empty().</text>
+      <text x="12" y="70" class="code-text comm">Optional&lt;String&gt; opt = Optional.ofNullable(user.getName());</text>
+    </g>
+
+    <text x="15" y="310" class="desc" font-weight="bold" fill="#fab387">Golden Rule:</text>
+    <text x="15" y="330" class="desc">Use <tspan fill="#89b4fa">Optional.of()</tspan> when null is a bug. Use <tspan fill="#a6e3a1">Optional.ofNullable()</tspan> when</text>
+    <text x="15" y="348" class="desc">null is a valid business state (e.g. database column might be null).</text>
+  </g>
+
+  <!-- Section 2: Extraction & Fallbacks (Right Column) -->
+  <g transform="translate(495, 80)">
+    <rect width="435" height="370" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#89dceb">2. Extraction: orElse vs orElseGet</text>
+
+    <!-- orElse -->
+    <g transform="translate(15, 45)">
+      <rect width="405" height="95" class="subcard"/>
+      <rect x="12" y="8" width="130" height="18" class="badge-eager"/>
+      <text x="18" y="21" class="code-text" fill="#f38ba8" font-weight="bold">orElse(T other)</text>
+      <text x="150" y="22" class="desc" fill="#f38ba8">[EAGER EVALUATION]</text>
+      <text x="12" y="42" class="code-text">opt.<tspan class="fn">orElse</tspan>(<tspan class="fn">queryDatabase</tspan>());</text>
+      <text x="12" y="60" class="desc">• <tspan fill="#f38ba8">Evaluates argument EVERY SINGLE TIME</tspan>, even if full!</text>
+      <text x="12" y="78" class="desc">• Best for hardcoded constants: <tspan class="code-text" fill="#a6e3a1">opt.orElse("N/A")</tspan></text>
+    </g>
+
+    <!-- orElseGet -->
+    <g transform="translate(15, 150)">
+      <rect width="405" height="95" class="subcard"/>
+      <rect x="12" y="8" width="160" height="18" class="badge-lazy"/>
+      <text x="18" y="21" class="code-text" fill="#a6e3a1" font-weight="bold">orElseGet(Supplier&lt;T&gt;)</text>
+      <text x="180" y="22" class="desc" fill="#a6e3a1">[LAZY EVALUATION]</text>
+      <text x="12" y="42" class="code-text">opt.<tspan class="fn">orElseGet</tspan>(() -&gt; <tspan class="fn">queryDatabase</tspan>());</text>
+      <text x="12" y="60" class="desc">• <tspan fill="#a6e3a1">Executes lambda ONLY when the container is empty</tspan>.</text>
+      <text x="12" y="78" class="desc">• Best for DB lookups, API calls, or heavy computations.</text>
+    </g>
+
+    <!-- orElseThrow -->
+    <g transform="translate(15, 255)">
+      <rect width="405" height="95" class="subcard"/>
+      <text x="12" y="22" class="code-text" fill="#fab387" font-weight="bold">orElseThrow(Supplier&lt;? extends X&gt;)</text>
+      <text x="12" y="42" class="code-text">opt.<tspan class="fn">orElseThrow</tspan>(() -&gt; <tspan class="kw">new</tspan> <tspan class="type">NotFoundException</tspan>(<tspan class="str">"Missing"</tspan>));</text>
+      <text x="12" y="60" class="desc">• Throws custom exception if empty (clean Spring 404 handler).</text>
+      <text x="12" y="78" class="desc">• Stops execution safely without returning dangerous nulls.</text>
+    </g>
+  </g>
+</svg>

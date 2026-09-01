@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-box { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .highlight-box { fill: #11111b; stroke: #cba6f7; stroke-width: 1.5; rx: 8px; }
+      .mem-box { fill: #181825; stroke: #89b4fa; stroke-width: 1.5; rx: 10px; }
+      .title-accent { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 15px; fill: #cba6f7; }
+      .mem-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 14px; fill: #89b4fa; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .kw { fill: #cba6f7; font-weight: bold; }
+      .type { fill: #fab387; }
+      .fn { fill: #89b4fa; }
+      .comm { fill: #6c7086; font-style: italic; }
+      .point-text { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12px; fill: #bac2de; }
+      .pointer-line { stroke: #fab387; stroke-width: 2; stroke-dasharray: 4,4; fill: none; marker-end: url(#arrow-orange); }
+      .solid-line { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arrow-green); }
+    </style>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a6e3a1" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="480" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">Internal Architecture of java.util.Optional&lt;T&gt;</text>
+  <text x="30" y="58" class="subtitle">Anatomy of the final container class, immutability, and singleton empty memory optimization</text>
+
+  <!-- Left: JDK Implementation Anatomy -->
+  <g transform="translate(30, 80)">
+    <rect width="460" height="370" class="card-box"/>
+    <text x="20" y="30" class="title-accent">OpenJDK Source Code Breakdown</text>
+
+    <rect x="15" y="45" width="430" height="230" class="highlight-box"/>
+    <text x="25" y="70" class="code-text"><tspan class="kw">public final class</tspan> <tspan class="type">Optional</tspan>&lt;<tspan class="type">T</tspan>&gt; {</text>
+    <text x="45" y="92" class="code-text comm">// 1. Singleton instance for all empty optionals</text>
+    <text x="45" y="110" class="code-text"><tspan class="kw">private static final</tspan> <tspan class="type">Optional</tspan>&lt;?&gt; <tspan fill="#f38ba8">EMPTY</tspan> = <tspan class="kw">new</tspan> <tspan class="type">Optional</tspan>&lt;&gt;(<tspan class="kw">null</tspan>);</text>
+    <text x="45" y="132" class="code-text comm">// 2. Immutable internal value</text>
+    <text x="45" y="150" class="code-text"><tspan class="kw">private final</tspan> <tspan class="type">T</tspan> <tspan fill="#89dceb">value</tspan>;</text>
+    <text x="45" y="172" class="code-text comm">// 3. Private constructor: no direct new Optional()</text>
+    <text x="45" y="190" class="code-text"><tspan class="kw">private</tspan> <tspan class="fn">Optional</tspan>(<tspan class="type">T</tspan> value) { <tspan class="kw">this</tspan>.value = value; }</text>
+    <text x="45" y="212" class="code-text"><tspan class="kw">public static</tspan>&lt;<tspan class="type">T</tspan>&gt; <tspan class="type">Optional</tspan>&lt;<tspan class="type">T</tspan>&gt; <tspan class="fn">empty</tspan>() {</text>
+    <text x="65" y="232" class="code-text"><tspan class="kw">return</tspan> (<tspan class="type">Optional</tspan>&lt;<tspan class="type">T</tspan>&gt;) <tspan fill="#f38ba8">EMPTY</tspan>; <tspan class="comm">// Safe cast</tspan></text>
+    <text x="45" y="252" class="code-text">}</text>
+    <text x="25" y="270" class="code-text">}</text>
+
+    <!-- Key Design Principles -->
+    <text x="15" y="300" class="point-text">• <tspan fill="#cba6f7" font-weight="bold">Final Class:</tspan> Prevents malicious subclassing or overriding.</text>
+    <text x="15" y="322" class="point-text">• <tspan fill="#89dceb" font-weight="bold">Final Value:</tspan> Thread-safe &amp; completely immutable once created.</text>
+    <text x="15" y="344" class="point-text">• <tspan fill="#fab387" font-weight="bold">Private Constructor:</tspan> Enforces creation only via factory methods.</text>
+  </g>
+
+  <!-- Right: Heap Memory Model & Singleton EMPTY -->
+  <g transform="translate(510, 80)">
+    <rect width="420" height="370" class="card-box"/>
+    <text x="20" y="30" class="mem-title">JVM Heap: Singleton EMPTY Optimization</text>
+
+    <!-- Code invocation references -->
+    <rect x="20" y="50" width="380" height="65" class="highlight-box"/>
+    <text x="30" y="74" class="code-text"><tspan class="type">Optional</tspan>&lt;<tspan class="type">String</tspan>&gt; opt1 = <tspan class="type">Optional</tspan>.<tspan class="fn">empty</tspan>();</text>
+    <text x="30" y="96" class="code-text"><tspan class="type">Optional</tspan>&lt;<tspan class="type">Integer</tspan>&gt; opt2 = <tspan class="type">Optional</tspan>.<tspan class="fn">empty</tspan>();</text>
+
+    <!-- Stack References -->
+    <g transform="translate(30, 140)">
+      <rect width="110" height="50" fill="#313244" rx="6"/>
+      <text x="15" y="25" class="code-text" fill="#cdd6f4">Stack: opt1</text>
+      <text x="15" y="42" class="code-text" fill="#6c7086">(Optional&lt;String&gt;)</text>
+
+      <rect y="70" width="110" height="50" fill="#313244" rx="6"/>
+      <text x="15" y="95" class="code-text" fill="#cdd6f4">Stack: opt2</text>
+      <text x="15" y="112" class="code-text" fill="#6c7086">(Optional&lt;Int&gt;)</text>
+    </g>
+
+    <!-- Heap Object -->
+    <g transform="translate(230, 160)">
+      <rect width="160" height="85" fill="#181825" stroke="#f38ba8" stroke-width="2" rx="10"/>
+      <text x="12" y="25" class="code-text" fill="#f38ba8" font-weight="bold">HEAP: EMPTY Instance</text>
+      <text x="12" y="45" class="code-text" fill="#cdd6f4">Optional&lt;?&gt;</text>
+      <text x="12" y="65" class="code-text" fill="#a6adc8">value = <tspan fill="#f38ba8">null</tspan></text>
+    </g>
+
+    <!-- Arrows from stack to heap -->
+    <path d="M 145 165 L 225 195" class="solid-line"/>
+    <path d="M 145 235 L 225 210" class="solid-line"/>
+
+    <!-- Explanatory note -->
+    <text x="20" y="295" class="point-text" font-weight="bold" fill="#a6e3a1">Why this is genius for performance:</text>
+    <text x="20" y="320" class="point-text">• If an app returns 100,000 empty results/sec, it does</text>
+    <text x="20" y="340" class="point-text">  <tspan fill="#f38ba8">NOT</tspan> create 100k objects. It shares ONE static instance.</text>
+    <text x="20" y="360" class="point-text">• Zero Heap flood &amp; zero Garbage Collector churn!</text>
+  </g>
+</svg>

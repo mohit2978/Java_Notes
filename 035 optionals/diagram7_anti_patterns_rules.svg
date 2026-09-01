@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .sin-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 13.5px; fill: #f38ba8; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11px; fill: #cdd6f4; }
+      .desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11.5px; fill: #bac2de; }
+      .fix-text { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11.5px; fill: #a6e3a1; font-weight: 600; }
+      .pill-wrong { fill: #f38ba8; fill-opacity: 0.15; rx: 4px; }
+      .pill-right { fill: #a6e3a1; fill-opacity: 0.15; rx: 4px; }
+    </style>
+  </defs>
+
+  <rect width="960" height="520" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">When NOT to Use Optional: The 5 Anti-Patterns</text>
+  <text x="30" y="58" class="subtitle">Brian Goetz's rule: Use Optional as a shield on return values, never as a burden on fields or inputs</text>
+
+  <!-- Card 1: Class Fields -->
+  <g transform="translate(30, 80)">
+    <rect width="435" height="125" class="card"/>
+    <text x="15" y="24" class="sin-title">1. NEVER Use as Class/DTO Fields</text>
+    <text x="15" y="44" class="code-text" fill="#f38ba8">❌ private Optional&lt;String&gt; email;</text>
+    <text x="15" y="64" class="desc">• Not Serializable: Breaks Redis caching, network transfers.</text>
+    <text x="15" y="82" class="desc">• Jackson JSON issue: creates nested {"email": {"present": true}}.</text>
+    <text x="15" y="104" class="fix-text">✔ Fix: Keep field raw String; wrap at getter: getEmail() -&gt; Optional</text>
+  </g>
+
+  <!-- Card 2: Method Parameters -->
+  <g transform="translate(495, 80)">
+    <rect width="435" height="125" class="card"/>
+    <text x="15" y="24" class="sin-title">2. NEVER Use as Method Parameters</text>
+    <text x="15" y="44" class="code-text" fill="#f38ba8">❌ public void save(Optional&lt;User&gt; user)</text>
+    <text x="15" y="64" class="desc">• Forces callers to wrap values: save(Optional.of(u)) or Optional.empty().</text>
+    <text x="15" y="82" class="desc">• Pollutes caller code and violates API ergonomics.</text>
+    <text x="15" y="104" class="fix-text">✔ Fix: Accept raw type, use method overloading or null checks inside.</text>
+  </g>
+
+  <!-- Card 3: Inside Collections -->
+  <g transform="translate(30, 220)">
+    <rect width="435" height="125" class="card"/>
+    <text x="15" y="24" class="sin-title">3. NEVER Put Inside Collections</text>
+    <text x="15" y="44" class="code-text" fill="#f38ba8">❌ List&lt;Optional&lt;User&gt;&gt; or Map&lt;String, Optional&lt;V&gt;&gt;</text>
+    <text x="15" y="64" class="desc">• Collections already represent 0 to N items naturally.</text>
+    <text x="15" y="82" class="desc">• Storing empty containers causes double-looping and double-unpacking.</text>
+    <text x="15" y="104" class="fix-text">✔ Fix: Use empty List / Map, or filter with flatMap(Optional::stream).</text>
+  </g>
+
+  <!-- Card 4: Returning null -->
+  <g transform="translate(495, 220)">
+    <rect width="435" height="125" class="card"/>
+    <text x="15" y="24" class="sin-title">4. NEVER Return null From Optional Methods</text>
+    <text x="15" y="44" class="code-text" fill="#f38ba8">❌ public Optional&lt;User&gt; find() { return null; }</text>
+    <text x="15" y="64" class="desc">• The ultimate betrayal: violates the guarantee of safety to callers.</text>
+    <text x="15" y="82" class="desc">• Caller chaining opt.map(...) will immediately crash with NPE!</text>
+    <text x="15" y="104" class="fix-text">✔ Fix: Always return Optional.empty() when value is absent.</text>
+  </g>
+
+  <!-- Card 5: Low-Level DAO Layer (Full Width) -->
+  <g transform="translate(30, 360)">
+    <rect width="900" height="135" class="card" stroke="#fab387"/>
+    <text x="20" y="25" class="sin-title" fill="#fab387">5. Low-Level DAO vs Service Layer Consideration</text>
+    <text x="20" y="48" class="code-text" fill="#fab387">SQL NULL ➔ JDBC Java null (Contract: ResultSet.getString() returns null)</text>
+    <text x="20" y="70" class="desc">• In low-level JDBC DAO queries, converting every column to Optional adds object allocation overhead.</text>
+    <text x="20" y="88" class="desc">• <tspan font-weight="bold" fill="#cdd6f4">Architectural Rule:</tspan> Keep low-level data layer direct. Introduce <tspan fill="#a6e3a1" font-weight="bold">Optional at the Service Layer / Domain Boundary</tspan></text>
+    <text x="20" y="106" class="desc">  where business logic decides what to present to clients and callers.</text>
+    <text x="20" y="124" class="fix-text">✔ Summary: Use Optional as a RETURN TYPE at API boundaries and service layer methods.</text>
+  </g>
+</svg>

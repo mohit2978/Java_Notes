@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card-danger { fill: #181825; stroke: #f38ba8; stroke-width: 1.5; rx: 12px; }
+      .card-success { fill: #181825; stroke: #a6e3a1; stroke-width: 1.5; rx: 12px; }
+      .badge-danger { fill: #f38ba8; fill-opacity: 0.2; rx: 6px; }
+      .badge-success { fill: #a6e3a1; fill-opacity: 0.2; rx: 6px; }
+      .badge-text-danger { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 12px; fill: #f38ba8; }
+      .badge-text-success { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 12px; fill: #a6e3a1; }
+      .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 600; font-size: 15px; fill: #cdd6f4; }
+      .code-block { fill: #11111b; rx: 8px; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .kw { fill: #cba6f7; font-weight: bold; }
+      .type { fill: #fab387; }
+      .fn { fill: #89b4fa; }
+      .str { fill: #a6e3a1; }
+      .comm { fill: #6c7086; font-style: italic; }
+      .warn-text { fill: #f38ba8; font-weight: bold; }
+      .point-text { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12.5px; fill: #bac2de; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="440" rx="14" class="bg"/>
+
+  <!-- Title & Subtitle -->
+  <text x="30" y="38" class="title">Why Optional? Pre-Java 8 (Raw Null) vs Java 8+ (Optional&lt;T&gt;)</text>
+  <text x="30" y="58" class="subtitle">Defeating the "Billion Dollar Mistake" by making absence explicit at compile time</text>
+
+  <!-- Left Card: Pre-Java 8 -->
+  <g transform="translate(30, 80)">
+    <rect width="435" height="330" class="card-danger"/>
+    
+    <!-- Badge -->
+    <rect x="20" y="16" width="135" height="24" class="badge-danger"/>
+    <text x="28" y="32" class="badge-text-danger">PRE-JAVA 8 (OLD WAY)</text>
+    <text x="165" y="33" class="card-title">Implicit Null Return</text>
+
+    <!-- Code Area -->
+    <rect x="20" y="52" width="395" height="110" class="code-block"/>
+    <text x="32" y="74" class="code-text"><tspan class="kw">public</tspan> <tspan class="type">User</tspan> <tspan class="fn">findById</tspan>(<tspan class="type">int</tspan> id) { ... }</text>
+    <text x="32" y="96" class="code-text"><tspan class="type">User</tspan> u = repo.<tspan class="fn">findById</tspan>(<tspan class="kw">1</tspan>);</text>
+    <text x="32" y="118" class="code-text">System.out.<tspan class="fn">println</tspan>(u.<tspan class="fn">getName</tspan>());</text>
+    <text x="32" y="140" class="code-text comm">// ❌ Throws NullPointerException if user is null!</text>
+
+    <!-- Flaws List -->
+    <text x="20" y="185" class="point-text" font-weight="bold" fill="#f38ba8">Major Problems:</text>
+    <text x="20" y="210" class="point-text">• <tspan fill="#f38ba8">Hidden Risk:</tspan> Method signature doesn't reveal if null can return.</text>
+    <text x="20" y="235" class="point-text">• <tspan fill="#f38ba8">Silent Trap:</tspan> Caller has to guess or remember to add <tspan class="code-text" fill="#f38ba8">if (u != null)</tspan>.</text>
+    <text x="20" y="260" class="point-text">• <tspan fill="#f38ba8">Runtime Crashes:</tspan> Forgetting a check causes production NPEs.</text>
+    <text x="20" y="285" class="point-text">• <tspan fill="#f38ba8">Ugly Boilerplate:</tspan> Deeply nested defensive if-null conditions.</text>
+  </g>
+
+  <!-- Right Card: Java 8+ Optional -->
+  <g transform="translate(495, 80)">
+    <rect width="435" height="330" class="card-success"/>
+
+    <!-- Badge -->
+    <rect x="20" y="16" width="130" height="24" class="badge-success"/>
+    <text x="28" y="32" class="badge-text-success">JAVA 8+ (MODERN)</text>
+    <text x="160" y="33" class="card-title">Explicit Container Object</text>
+
+    <!-- Code Area -->
+    <rect x="20" y="52" width="395" height="110" class="code-block"/>
+    <text x="32" y="74" class="code-text"><tspan class="kw">public</tspan> <tspan class="type">Optional</tspan>&lt;<tspan class="type">User</tspan>&gt; <tspan class="fn">findById</tspan>(<tspan class="type">int</tspan> id) { ... }</text>
+    <text x="32" y="96" class="code-text"><tspan class="type">Optional</tspan>&lt;<tspan class="type">User</tspan>&gt; opt = repo.<tspan class="fn">findById</tspan>(<tspan class="kw">1</tspan>);</text>
+    <text x="32" y="118" class="code-text"><tspan class="comm">// opt.getName() -> ❌ DOES NOT COMPILE!</tspan></text>
+    <text x="32" y="140" class="code-text">opt.<tspan class="fn">ifPresent</tspan>(u -&gt; System.out.<tspan class="fn">println</tspan>(u.<tspan class="fn">getName</tspan>())); <tspan fill="#a6e3a1">✔ Safe</tspan></text>
+
+    <!-- Benefits List -->
+    <text x="20" y="185" class="point-text" font-weight="bold" fill="#a6e3a1">Core Advantages:</text>
+    <text x="20" y="210" class="point-text">• <tspan fill="#a6e3a1">Self-Documenting:</tspan> Signature says: "Value might be absent!"</text>
+    <text x="20" y="235" class="point-text">• <tspan fill="#a6e3a1">Compiler Enforced:</tspan> Caller cannot access methods directly.</text>
+    <text x="20" y="260" class="point-text">• <tspan fill="#a6e3a1">Forced Handling:</tspan> Must unwrap via <tspan class="code-text" fill="#89b4fa">orElse</tspan>, <tspan class="code-text" fill="#89b4fa">orElseThrow</tspan>, etc.</text>
+    <text x="20" y="285" class="point-text">• <tspan fill="#a6e3a1">Functional Fluent Pipelines:</tspan> Chain <tspan class="code-text" fill="#89b4fa">map()</tspan>, <tspan class="code-text" fill="#89b4fa">filter()</tspan> without if blocks.</text>
+  </g>
+</svg>

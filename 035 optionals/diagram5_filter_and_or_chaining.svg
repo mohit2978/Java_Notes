@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 15px; }
+      .step-box { fill: #11111b; stroke: #45475a; stroke-width: 1; rx: 8px; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12px; fill: #bac2de; }
+      .arrow-right { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arrow-blue); }
+    </style>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#89b4fa" />
+    </marker>
+  </defs>
+
+  <rect width="960" height="480" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">Filtering &amp; Multi-Tier Fallback: filter() &amp; Java 9 or()</text>
+  <text x="30" y="58" class="subtitle">Conditional state filtering (The Bouncer Pattern) and lazy secondary supplier chaining</text>
+
+  <!-- Left Card: filter() -->
+  <g transform="translate(30, 80)">
+    <rect width="435" height="370" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#a6e3a1">1. filter(Predicate&lt;T&gt; predicate)</text>
+    <text x="20" y="50" class="desc">Acts as a <tspan fill="#a6e3a1" font-weight="bold">"Bouncer"</tspan> for the Optional container</text>
+
+    <!-- Visual Decision Box -->
+    <g transform="translate(20, 70)">
+      <rect width="395" height="110" class="step-box"/>
+      <text x="12" y="24" class="code-text" fill="#fab387">Optional&lt;User&gt; opt = Optional.of(user);</text>
+      <text x="12" y="44" class="code-text">opt.<tspan fill="#a6e3a1">filter</tspan>(u -&gt; u.<tspan fill="#89b4fa">getAge</tspan>() &gt;= <tspan fill="#cba6f7">18</tspan>);</text>
+      
+      <!-- True branch -->
+      <text x="12" y="74" class="desc" fill="#a6e3a1">✔ If test(value) == TRUE:</text>
+      <text x="165" y="74" class="desc">Container keeps the value as is</text>
+      
+      <!-- False branch -->
+      <text x="12" y="96" class="desc" fill="#f38ba8">✖ If test(value) == FALSE:</text>
+      <text x="165" y="96" class="desc">Container turns into Optional.empty()</text>
+    </g>
+
+    <!-- Code Explanation -->
+    <g transform="translate(20, 200)">
+      <text x="0" y="16" class="desc" font-weight="bold" fill="#cba6f7">Under the Hood (JDK source):</text>
+      <rect y="25" width="395" height="75" fill="#11111b" rx="6"/>
+      <text x="10" y="45" class="code-text"><tspan fill="#cba6f7">if</tspan> (!isPresent()) <tspan fill="#cba6f7">return this</tspan>;</text>
+      <text x="10" y="65" class="code-text"><tspan fill="#cba6f7">return</tspan> predicate.<tspan fill="#89b4fa">test</tspan>(value) ? <tspan fill="#cba6f7">this</tspan> : <tspan fill="#f38ba8">empty</tspan>();</text>
+    </g>
+
+    <text x="20" y="325" class="desc">• Avoids imperative if-else checks before processing.</text>
+    <text x="20" y="345" class="desc">• Seamlessly transforms invalid data into empty Optional.</text>
+  </g>
+
+  <!-- Right Card: or() -->
+  <g transform="translate(495, 80)">
+    <rect width="435" height="370" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#89dceb">2. Java 9+ or(Supplier&lt;Optional&lt;T&gt;&gt;)</text>
+    <text x="20" y="50" class="desc">Chaining <tspan fill="#89dceb" font-weight="bold">backup Optionals</tspan> lazily without unwrapping</text>
+
+    <!-- Pipeline Visual -->
+    <g transform="translate(20, 70)">
+      <!-- Tier 1: Cache -->
+      <rect width="115" height="55" fill="#11111b" stroke="#a6e3a1" rx="6"/>
+      <text x="10" y="24" class="code-text" fill="#a6e3a1" font-weight="bold">1. L1 Cache</text>
+      <text x="10" y="42" class="desc" font-size="10px">Fastest lookup</text>
+
+      <path d="M 120 28 L 140 28" class="arrow-right"/>
+
+      <!-- Tier 2: DB -->
+      <rect x="145" y="0" width="115" height="55" fill="#11111b" stroke="#fab387" rx="6"/>
+      <text x="155" y="24" class="code-text" fill="#fab387" font-weight="bold">2. Database</text>
+      <text x="155" y="42" class="desc" font-size="10px">If Cache Miss</text>
+
+      <path d="M 265 28 L 285 28" class="arrow-right"/>
+
+      <!-- Tier 3: External API -->
+      <rect x="290" y="0" width="115" height="55" fill="#11111b" stroke="#f38ba8" rx="6"/>
+      <text x="300" y="24" class="code-text" fill="#f38ba8" font-weight="bold">3. Ext. API</text>
+      <text x="300" y="42" class="desc" font-size="10px">If DB Miss</text>
+    </g>
+
+    <!-- Code Block -->
+    <g transform="translate(20, 145)">
+      <rect width="395" height="100" fill="#11111b" rx="8"/>
+      <text x="12" y="22" class="code-text"><tspan fill="#fab387">Optional</tspan>&lt;User&gt; user = cache.<tspan fill="#89b4fa">findUser</tspan>(id)</text>
+      <text x="24" y="42" class="code-text">.<tspan fill="#89dceb">or</tspan>(() -&gt; db.<tspan fill="#89b4fa">findUser</tspan>(id)) <tspan class="code-text" fill="#6c7086">// Lazy</tspan></text>
+      <text x="24" y="62" class="code-text">.<tspan fill="#89dceb">or</tspan>(() -&gt; remoteApi.<tspan fill="#89b4fa">findUser</tspan>(id)); <tspan class="code-text" fill="#6c7086">// Lazy</tspan></text>
+      <text x="24" y="82" class="code-text">.<tspan fill="#fab387">orElseThrow</tspan>(UserNotFoundException::<tspan class="kw">new</tspan>);</text>
+    </g>
+
+    <text x="20" y="275" class="desc" font-weight="bold" fill="#a6e3a1">Key Difference vs orElse / orElseGet:</text>
+    <text x="20" y="295" class="desc">• <tspan class="code-text" fill="#89b4fa">orElse</tspan> / <tspan class="code-text" fill="#89b4fa">orElseGet</tspan> unwrap to raw type <tspan fill="#a6e3a1">T</tspan>.</text>
+    <text x="20" y="315" class="desc">• <tspan class="code-text" fill="#89dceb">or()</tspan> stays inside the container, returning <tspan fill="#89dceb">Optional&lt;T&gt;</tspan>.</text>
+    <text x="20" y="335" class="desc">• Subsequent suppliers are evaluated <tspan fill="#a6e3a1">ONLY if preceding ones are empty</tspan>.</text>
+  </g>
+</svg>

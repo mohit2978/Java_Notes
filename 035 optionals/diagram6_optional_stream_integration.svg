@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 15px; }
+      .code-box { fill: #11111b; rx: 8px; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .kw { fill: #cba6f7; font-weight: bold; }
+      .type { fill: #fab387; }
+      .fn { fill: #89b4fa; }
+      .str { fill: #a6e3a1; }
+      .comm { fill: #6c7086; font-style: italic; }
+      .desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12px; fill: #bac2de; }
+      .flow-box { fill: #1e1e2e; stroke: #45475a; rx: 6px; }
+      .arrow { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arrow-green); }
+    </style>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a6e3a1" />
+    </marker>
+  </defs>
+
+  <rect width="960" height="460" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">Stream &amp; Optional Integration: flatMap(Optional::stream)</text>
+  <text x="30" y="58" class="subtitle">Converting Optional into Stream (Java 9+) to filter out missing elements automatically</text>
+
+  <!-- Left: How Optional.stream() Works -->
+  <g transform="translate(30, 80)">
+    <rect width="435" height="350" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#89dceb">1. Optional.stream() Mechanics</text>
+
+    <!-- Source logic -->
+    <rect x="20" y="50" width="395" height="110" class="code-box"/>
+    <text x="30" y="72" class="code-text"><tspan class="kw">public</tspan> <tspan class="type">Stream</tspan>&lt;<tspan class="type">T</tspan>&gt; <tspan class="fn">stream</tspan>() {</text>
+    <text x="45" y="94" class="code-text"><tspan class="kw">if</tspan> (<tspan class="fn">isEmpty</tspan>()) {</text>
+    <text x="65" y="114" class="code-text"><tspan class="kw">return</tspan> <tspan class="type">Stream</tspan>.<tspan class="fn">empty</tspan>(); <tspan class="comm">// 0 elements</tspan></text>
+    <text x="45" y="134" class="code-text">} <tspan class="kw">else</tspan> {</text>
+    <text x="65" y="150" class="code-text"><tspan class="kw">return</tspan> <tspan class="type">Stream</tspan>.<tspan class="fn">of</tspan>(value); <tspan class="comm">// 1 element</tspan></text>
+    <text x="45" y="166" class="code-text">}</text>
+    <text x="30" y="182" class="code-text">}</text>
+
+    <!-- Visual mapping -->
+    <g transform="translate(20, 210)">
+      <rect width="180" height="45" class="flow-box" stroke="#a6e3a1"/>
+      <text x="10" y="20" class="code-text" fill="#a6e3a1">Optional.of("A")</text>
+      <text x="10" y="36" class="desc" font-size="11px">➔ Stream.of("A") (size 1)</text>
+
+      <rect y="55" width="180" height="45" class="flow-box" stroke="#f38ba8"/>
+      <text x="10" y="75" class="code-text" fill="#f38ba8">Optional.empty()</text>
+      <text x="10" y="91" class="desc" font-size="11px">➔ Stream.empty() (size 0)</text>
+    </g>
+
+    <text x="20" y="330" class="desc">• Turns an Optional container into an executable single-element pipe.</text>
+  </g>
+
+  <!-- Right: Stream Pipeline Transformation -->
+  <g transform="translate(495, 80)">
+    <rect width="435" height="350" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#a6e3a1">2. Filtering Collections with flatMap</text>
+
+    <!-- Code Block -->
+    <rect x="20" y="50" width="395" height="150" class="code-box"/>
+    <text x="30" y="72" class="code-text"><tspan class="type">List</tspan>&lt;<tspan class="type">Integer</tspan>&gt; userIds = <tspan class="type">List</tspan>.<tspan class="fn">of</tspan>(<tspan class="kw">1</tspan>, <tspan class="kw">2</tspan>, <tspan class="kw">3</tspan>);</text>
+    <text x="30" y="95" class="code-text"><tspan class="type">List</tspan>&lt;<tspan class="type">String</tspan>&gt; emails = userIds.<tspan class="fn">stream</tspan>()</text>
+    <text x="50" y="115" class="code-text">.<tspan class="fn">map</tspan>(id -&gt; db.<tspan class="fn">findEmailById</tspan>(id))</text>
+    <text x="50" y="132" class="code-text comm">// Stream&lt;Optional&lt;String&gt;&gt; with some empty</text>
+    <text x="50" y="152" class="code-text">.<tspan class="fn" fill="#a6e3a1">flatMap</tspan>(<tspan class="type">Optional</tspan>::<tspan class="fn">stream</tspan>)</text>
+    <text x="50" y="172" class="code-text comm">// Flattens &amp; automatically drops empties!</text>
+    <text x="50" y="190" class="code-text">.<tspan class="fn">toList</tspan>();</text>
+
+    <!-- Visual Diagram of Flattening -->
+    <g transform="translate(20, 220)">
+      <rect width="90" height="35" class="flow-box"/>
+      <text x="8" y="22" class="code-text" fill="#a6e3a1">["alice@m"]</text>
+
+      <rect x="100" y="0" width="70" height="35" class="flow-box"/>
+      <text x="12" y="22" class="code-text" fill="#f38ba8">[ ]</text>
+
+      <rect x="180" y="0" width="90" height="35" class="flow-box"/>
+      <text x="8" y="22" class="code-text" fill="#a6e3a1">["bob@m"]</text>
+
+      <path d="M 280 18 L 310 18" class="arrow"/>
+
+      <rect x="320" y="0" width="75" height="35" fill="#11111b" stroke="#a6e3a1" rx="6"/>
+      <text x="6" y="22" class="code-text" fill="#a6e3a1">alice, bob</text>
+    </g>
+
+    <text x="20" y="295" class="desc" font-weight="bold" fill="#fab387">Why this beats Java 8 filter + get:</text>
+    <text x="20" y="315" class="desc">• Pre-Java 9 needed: <tspan class="code-text" fill="#6c7086">.filter(Optional::isPresent).map(Optional::get)</tspan></text>
+    <text x="20" y="335" class="desc">• Java 9+ is a single, bulletproof, expressive line: <tspan class="code-text" fill="#a6e3a1">.flatMap(Optional::stream)</tspan></text>
+  </g>
+</svg>

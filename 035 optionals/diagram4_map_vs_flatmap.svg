@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 15px; }
+      .box-outer { fill: #11111b; stroke: #89b4fa; stroke-width: 1.5; rx: 8px; }
+      .box-inner { fill: #313244; stroke: #cba6f7; stroke-width: 1.5; rx: 6px; }
+      .code-text { font-family: 'Consolas', 'Fira Code', monospace; font-size: 12px; fill: #cdd6f4; }
+      .desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12px; fill: #bac2de; }
+      .arrow { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arrow-green); }
+      .arrow-flat { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arrow-orange); }
+    </style>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fab387" />
+    </marker>
+  </defs>
+
+  <rect width="960" height="480" rx="14" class="bg"/>
+
+  <!-- Title -->
+  <text x="30" y="38" class="title">Transformation: Optional map() vs flatMap()</text>
+  <text x="30" y="58" class="subtitle">Understanding automatic wrapping vs unwrapping when chaining methods</text>
+
+  <!-- Left Card: map() -->
+  <g transform="translate(30, 80)">
+    <rect width="435" height="370" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#89b4fa">map(Function&lt;T, U&gt; mapper)</text>
+    <text x="20" y="50" class="desc">For methods returning a <tspan fill="#a6e3a1" font-weight="bold">RAW value</tspan> (e.g. String, Integer)</text>
+
+    <!-- Visual Box Flow -->
+    <g transform="translate(20, 70)">
+      <!-- Input Box -->
+      <rect width="100" height="60" class="box-outer"/>
+      <text x="14" y="24" class="code-text" fill="#89b4fa">Optional</text>
+      <text x="24" y="44" class="code-text" fill="#cdd6f4">"ALICE"</text>
+
+      <!-- Arrow -->
+      <path d="M 110 30 L 150 30" class="arrow"/>
+      <text x="110" y="20" class="desc" font-size="10px" fill="#a6e3a1">length()</text>
+
+      <!-- Output Box -->
+      <rect x="160" y="0" width="100" height="60" class="box-outer" stroke="#a6e3a1"/>
+      <text x="174" y="24" class="code-text" fill="#a6e3a1">Optional</text>
+      <text x="195" y="44" class="code-text" fill="#cdd6f4">5</text>
+    </g>
+
+    <!-- Code Sample -->
+    <g transform="translate(20, 150)">
+      <rect width="395" height="85" fill="#11111b" rx="8"/>
+      <text x="12" y="25" class="code-text" fill="#6c7086">// User.getName() returns raw String</text>
+      <text x="12" y="45" class="code-text"><tspan fill="#fab387">Optional</tspan>&lt;User&gt; opt = repo.find(1);</text>
+      <text x="12" y="65" class="code-text"><tspan fill="#fab387">Optional</tspan>&lt;<tspan fill="#fab387">String</tspan>&gt; name = opt.<tspan fill="#89b4fa">map</tspan>(User::getName);</text>
+    </g>
+
+    <!-- Map Trap note -->
+    <text x="20" y="260" class="desc" font-weight="bold" fill="#f38ba8">The Trap if method returns Optional:</text>
+    <text x="20" y="280" class="desc">If <tspan class="code-text" fill="#cdd6f4">User.getAddress()</tspan> returns <tspan class="code-text" fill="#fab387">Optional&lt;Address&gt;</tspan>,</text>
+    <text x="20" y="300" class="desc"><tspan class="code-text" fill="#89b4fa">opt.map(User::getAddress)</tspan> produces a nested nightmare:</text>
+    <text x="20" y="325" class="code-text" fill="#f38ba8">Optional&lt;Optional&lt;Address&gt;&gt; ❌</text>
+  </g>
+
+  <!-- Right Card: flatMap() -->
+  <g transform="translate(495, 80)">
+    <rect width="435" height="370" class="card"/>
+    <text x="20" y="30" class="card-title" fill="#fab387">flatMap(Function&lt;T, Optional&lt;U&gt;&gt; mapper)</text>
+    <text x="20" y="50" class="desc">For methods that <tspan fill="#fab387" font-weight="bold">ALREADY return an Optional</tspan></text>
+
+    <!-- Visual Box Flow -->
+    <g transform="translate(20, 70)">
+      <!-- Nested Box -->
+      <rect width="140" height="60" class="box-outer"/>
+      <text x="10" y="22" class="code-text" fill="#89b4fa">Optional&lt;</text>
+      <rect x="70" y="8" width="60" height="42" class="box-inner"/>
+      <text x="75" y="25" class="code-text" fill="#cba6f7" font-size="10px">Optional</text>
+      <text x="80" y="40" class="code-text" fill="#cdd6f4" font-size="11px">"NYC"</text>
+      <text x="10" y="48" class="code-text" fill="#89b4fa">&gt;</text>
+
+      <!-- Arrow -->
+      <path d="M 150 30 L 190 30" class="arrow-flat"/>
+      <text x="150" y="20" class="desc" font-size="10px" fill="#fab387">Flattens</text>
+
+      <!-- Single Flattened Box -->
+      <rect x="200" y="0" width="100" height="60" class="box-outer" stroke="#fab387"/>
+      <text x="214" y="24" class="code-text" fill="#fab387">Optional</text>
+      <text x="230" y="44" class="code-text" fill="#cdd6f4">"NYC"</text>
+    </g>
+
+    <!-- Code Sample -->
+    <g transform="translate(20, 150)">
+      <rect width="395" height="85" fill="#11111b" rx="8"/>
+      <text x="12" y="25" class="code-text" fill="#6c7086">// User.getAddress() returns Optional&lt;Address&gt;</text>
+      <text x="12" y="45" class="code-text"><tspan fill="#fab387">Optional</tspan>&lt;User&gt; opt = repo.find(1);</text>
+      <text x="12" y="65" class="code-text"><tspan fill="#fab387">Optional</tspan>&lt;<tspan fill="#fab387">Address</tspan>&gt; addr = opt.<tspan fill="#fab387">flatMap</tspan>(User::getAddress);</text>
+    </g>
+
+    <!-- Summary Rule -->
+    <text x="20" y="260" class="desc" font-weight="bold" fill="#a6e3a1">Golden Rule of Thumb for Interviews:</text>
+    <text x="20" y="285" class="desc">• Method returns <tspan fill="#a6e3a1">Raw Value (T)</tspan> ➔ Use <tspan class="code-text" fill="#89b4fa">map()</tspan></text>
+    <text x="20" y="310" class="desc">• Method returns <tspan fill="#fab387">Optional&lt;T&gt;</tspan> ➔ Use <tspan class="code-text" fill="#fab387">flatMap()</tspan></text>
+    <text x="20" y="335" class="desc">• Prevents double-wrapped containers and keeps pipeline fluent.</text>
+  </g>
+</svg>
