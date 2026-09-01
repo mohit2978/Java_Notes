@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gradBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="gradObj" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="gradProp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="gradBeh" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#gradBg)" rx="16" />
+
+  <!-- Title -->
+  <text x="400" y="45" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, -apple-system, sans-serif" font-size="22" font-weight="700">Anatomy of an Object (Real-World Entity)</text>
+  <text x="400" y="70" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Class represents the Blueprint (Noun), Object is the Real-World Instance</text>
+
+  <!-- Central Object Box -->
+  <g filter="url(#shadow)">
+    <rect x="280" y="110" width="240" height="110" rx="14" fill="url(#gradObj)" stroke="#60a5fa" stroke-width="2" />
+    <text x="400" y="155" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, -apple-system, sans-serif" font-size="20" font-weight="700">OBJECT</text>
+    <text x="400" y="185" text-anchor="middle" fill="#dbeafe" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Instance of a Class (Noun)</text>
+    <text x="400" y="202" text-anchor="middle" fill="#93c5fd" font-family="Segoe UI, -apple-system, sans-serif" font-size="11">e.g., Car, BankAccount, Student</text>
+  </g>
+
+  <!-- Left Branch: Properties / State -->
+  <path d="M 280 165 C 190 165, 170 240, 170 260" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="6,4" />
+  <polygon points="170,270 164,258 176,258" fill="#10b981" />
+
+  <g filter="url(#shadow)">
+    <rect x="50" y="270" width="240" height="85" rx="10" fill="url(#gradProp)" stroke="#34d399" stroke-width="1.5" />
+    <text x="170" y="300" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, -apple-system, sans-serif" font-size="16" font-weight="700">Properties / State</text>
+    <text x="170" y="323" text-anchor="middle" fill="#d1fae5" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Variables / Data Fields</text>
+    <text x="170" y="342" text-anchor="middle" fill="#a7f3d0" font-family="Segoe UI, -apple-system, sans-serif" font-size="11">e.g., speed, balance, model, name</text>
+  </g>
+
+  <!-- Right Branch: Behavior / Methods -->
+  <path d="M 520 165 C 610 165, 630 240, 630 260" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6,4" />
+  <polygon points="630,270 624,258 636,258" fill="#f59e0b" />
+
+  <g filter="url(#shadow)">
+    <rect x="510" y="270" width="240" height="85" rx="10" fill="url(#gradBeh)" stroke="#fbbf24" stroke-width="1.5" />
+    <text x="630" y="300" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, -apple-system, sans-serif" font-size="16" font-weight="700">Behaviour / Actions</text>
+    <text x="630" y="323" text-anchor="middle" fill="#fef3c7" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Methods / Functions `fn()`</text>
+    <text x="630" y="342" text-anchor="middle" fill="#fde68a" font-family="Segoe UI, -apple-system, sans-serif" font-size="11">e.g., accelerate(), deposit(), eat()</text>
+  </g>
+</svg>

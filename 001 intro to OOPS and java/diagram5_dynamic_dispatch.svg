@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="cardGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+    <filter id="shadow5" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#bgGrad5)" rx="16" />
+
+  <!-- Title -->
+  <text x="450" y="42" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, -apple-system, sans-serif" font-size="22" font-weight="700">Dynamic Method Dispatch in Java</text>
+  <text x="450" y="68" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Parent Reference holding Child Object: `A obj = new B(); obj.f();`</text>
+
+  <!-- Step 1: Compile Time Check -->
+  <g filter="url(#shadow5)">
+    <rect x="40" y="95" width="380" height="335" rx="12" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" />
+    <rect x="40" y="95" width="380" height="42" rx="12" fill="#1d4ed8" />
+    <text x="230" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">1. Compile-Time Verification</text>
+
+    <text x="60" y="165" fill="#93c5fd" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">Declaration:</text>
+    <rect x="60" y="175" width="340" height="35" rx="6" fill="#0f172a" stroke="#475569" />
+    <text x="75" y="198" fill="#38bdf8" font-family="Courier New, monospace" font-size="13">A obj = new B();</text>
+
+    <text x="60" y="240" fill="#93c5fd" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">Compiler Check on Reference `A`:</text>
+    <text x="60" y="265" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Does class <tspan fill="#38bdf8" font-weight="700">A</tspan> have method <tspan fill="#f59e0b" font-weight="700">f()</tspan>?</text>
+    <text x="60" y="290" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">✓ YES → Code compiles successfully!</text>
+    
+    <text x="60" y="325" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• If class A didn't have `f()`, compiler</text>
+    <text x="60" y="345" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">  would reject with compile error.</text>
+    
+    <rect x="60" y="370" width="340" height="40" rx="6" fill="#0369a1" />
+    <text x="230" y="395" text-anchor="middle" fill="#e0f2fe" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">Role of Reference Type = Symbol Lookup</text>
+  </g>
+
+  <!-- Step 2: Runtime Dispatch -->
+  <g filter="url(#shadow5)">
+    <rect x="480" y="95" width="380" height="335" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
+    <rect x="480" y="95" width="380" height="42" rx="12" fill="#047857" />
+    <text x="670" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">2. Runtime Execution (JVM)</text>
+
+    <text x="500" y="165" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">Method Invocation:</text>
+    <rect x="500" y="175" width="340" height="35" rx="6" fill="#0f172a" stroke="#475569" />
+    <text x="515" y="198" fill="#4ade80" font-family="Courier New, monospace" font-size="13">obj.f(); // Which version runs?</text>
+
+    <text x="500" y="240" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">JVM Dynamic Dispatch Resolution:</text>
+    <text x="500" y="265" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• JVM inspects actual object in heap → <tspan fill="#4ade80" font-weight="700">B</tspan></text>
+    <text x="500" y="290" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">✓ Calls B's overridden f() [returns a * b]</text>
+
+    <text x="500" y="325" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Decided at RUNTIME via virtual method table</text>
+    <text x="500" y="345" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">  (vtable), NOT at compile time!</text>
+
+    <rect x="500" y="370" width="340" height="40" rx="6" fill="#065f46" />
+    <text x="670" y="395" text-anchor="middle" fill="#d1fae5" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">Role of Actual Object = Method Execution</text>
+  </g>
+</svg>

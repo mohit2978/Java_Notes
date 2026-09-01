@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 460" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b132b" />
+      <stop offset="100%" stop-color="#1c2541" />
+    </linearGradient>
+    <filter id="shadow4" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#bgGrad4)" rx="16" />
+
+  <!-- Title -->
+  <text x="440" y="42" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, -apple-system, sans-serif" font-size="22" font-weight="700">The Diamond Problem in Java (Why Multiple Class Inheritance is Prohibited)</text>
+  <text x="440" y="68" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Ambiguity in Method Resolution vs Clean Resolution via Interfaces</text>
+
+  <!-- Left: The Problem (Classes) -->
+  <g filter="url(#shadow4)">
+    <rect x="40" y="90" width="370" height="340" rx="12" fill="#1e1528" stroke="#ef4444" stroke-width="1.5" />
+    <text x="225" y="120" text-anchor="middle" fill="#f87171" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">❌ Class-Level Multiple Inheritance</text>
+    
+    <!-- Class A Box -->
+    <rect x="70" y="145" width="130" height="60" rx="8" fill="#3b0764" stroke="#c084fc" />
+    <text x="135" y="170" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700">Class A</text>
+    <text x="135" y="190" text-anchor="middle" fill="#e9d5ff" font-family="Courier New, monospace" font-size="11">setEngine()</text>
+
+    <!-- Class B Box -->
+    <rect x="250" y="145" width="130" height="60" rx="8" fill="#3b0764" stroke="#c084fc" />
+    <text x="315" y="170" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700">Class B</text>
+    <text x="315" y="190" text-anchor="middle" fill="#e9d5ff" font-family="Courier New, monospace" font-size="11">setEngine()</text>
+
+    <!-- Class C Box -->
+    <rect x="150" y="270" width="150" height="70" rx="8" fill="#7f1d1d" stroke="#f87171" />
+    <text x="225" y="295" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700">Class C</text>
+    <text x="225" y="315" text-anchor="middle" fill="#fecaca" font-family="Segoe UI, sans-serif" font-size="11">extends A, B (NOT ALLOWED!)</text>
+    <text x="225" y="330" text-anchor="middle" fill="#fca5a5" font-family="Courier New, monospace" font-size="10">obj.setEngine() ? → AMBIGUOUS</text>
+
+    <!-- Connecting Arrows -->
+    <path d="M 135 205 L 185 270" stroke="#f87171" stroke-width="2" stroke-dasharray="4,4" />
+    <path d="M 315 205 L 265 270" stroke="#f87171" stroke-width="2" stroke-dasharray="4,4" />
+
+    <text x="225" y="375" text-anchor="middle" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="12">Compiler cannot decide which</text>
+    <text x="225" y="395" text-anchor="middle" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="12">implementation to inherit!</text>
+  </g>
+
+  <!-- Right: The Solution (Interfaces) -->
+  <g filter="url(#shadow4)">
+    <rect x="470" y="90" width="370" height="340" rx="12" fill="#0f291e" stroke="#10b981" stroke-width="1.5" />
+    <text x="655" y="120" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">✔️ Solution: Java Interfaces</text>
+    
+    <!-- Interface A Box -->
+    <rect x="500" y="145" width="130" height="60" rx="8" fill="#064e3b" stroke="#34d399" />
+    <text x="565" y="170" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700">&lt;&lt;interface&gt;&gt; A</text>
+    <text x="565" y="190" text-anchor="middle" fill="#a7f3d0" font-family="Courier New, monospace" font-size="11">setEngine(); (no body)</text>
+
+    <!-- Interface B Box -->
+    <rect x="680" y="145" width="130" height="60" rx="8" fill="#064e3b" stroke="#34d399" />
+    <text x="745" y="170" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700">&lt;&lt;interface&gt;&gt; B</text>
+    <text x="745" y="190" text-anchor="middle" fill="#a7f3d0" font-family="Courier New, monospace" font-size="11">setEngine(); (no body)</text>
+
+    <!-- Class C Box -->
+    <rect x="580" y="270" width="150" height="70" rx="8" fill="#047857" stroke="#6ee7b7" />
+    <text x="655" y="295" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700">Class C</text>
+    <text x="655" y="315" text-anchor="middle" fill="#d1fae5" font-family="Segoe UI, sans-serif" font-size="11">implements A, B</text>
+    <text x="655" y="330" text-anchor="middle" fill="#a7f3d0" font-family="Segoe UI, sans-serif" font-size="10">Provides single concrete body</text>
+
+    <!-- Connecting Arrows -->
+    <path d="M 565 205 L 615 270" stroke="#10b981" stroke-width="2" />
+    <path d="M 745 205 L 695 270" stroke="#10b981" stroke-width="2" />
+
+    <text x="655" y="375" text-anchor="middle" fill="#a7f3d0" font-family="Segoe UI, sans-serif" font-size="12">Class C provides its own single</text>
+    <text x="655" y="395" text-anchor="middle" fill="#a7f3d0" font-family="Segoe UI, sans-serif" font-size="12">definition → Zero ambiguity!</text>
+  </g>
+</svg>

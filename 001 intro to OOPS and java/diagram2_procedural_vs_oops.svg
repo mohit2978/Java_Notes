@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="procCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d1515" />
+      <stop offset="100%" stop-color="#451a1a" />
+    </linearGradient>
+    <linearGradient id="oopCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f291e" />
+      <stop offset="100%" stop-color="#144230" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)" rx="16" />
+
+  <!-- Title -->
+  <text x="450" y="45" text-anchor="middle" fill="#f1f5f9" font-family="Segoe UI, -apple-system, sans-serif" font-size="24" font-weight="700">Procedural Programming vs Object-Oriented Programming (OOP)</text>
+  <text x="450" y="72" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Why OOP was introduced: Tightly Coupled Functions &amp; Free Data vs Encapsulated Objects</text>
+
+  <!-- Left: Procedural Box -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="95" width="390" height="350" rx="14" fill="url(#procCard)" stroke="#ef4444" stroke-width="1.5" />
+    <rect x="40" y="95" width="390" height="50" rx="14" fill="#7f1d1d" />
+    <text x="235" y="128" text-anchor="middle" fill="#fecaca" font-family="Segoe UI, -apple-system, sans-serif" font-size="18" font-weight="700">Procedural Programming (C, Pascal)</text>
+    
+    <!-- Content points -->
+    <text x="60" y="175" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Divided into Functions (Verbs)</text>
+    <text x="60" y="215" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• No Data Hiding (Data moves freely b/w functions)</text>
+    <text x="60" y="255" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Tightly Coupled Architecture</text>
+    <text x="60" y="295" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• No Overloading or Inheritance Support ❌</text>
+    <text x="60" y="335" fill="#fca5a5" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Poor Code Reusability</text>
+    
+    <!-- Footer badge -->
+    <rect x="60" y="375" width="350" height="45" rx="8" fill="#581c1c" stroke="#991b1b" />
+    <text x="235" y="403" text-anchor="middle" fill="#fed7aa" font-family="Segoe UI, sans-serif" font-size="13">Functions are 1st class; Data is unprotected</text>
+  </g>
+
+  <!-- Right: OOP Box -->
+  <g filter="url(#shadow)">
+    <rect x="470" y="95" width="390" height="350" rx="14" fill="url(#oopCard)" stroke="#10b981" stroke-width="1.5" />
+    <rect x="470" y="95" width="390" height="50" rx="14" fill="#064e3b" />
+    <text x="665" y="128" text-anchor="middle" fill="#a7f3d0" font-family="Segoe UI, -apple-system, sans-serif" font-size="18" font-weight="700">OOP (Java, Python, C++, C#)</text>
+    
+    <!-- Content points -->
+    <text x="490" y="175" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Divided into Objects &amp; Classes (Nouns)</text>
+    <text x="490" y="215" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Strong Data Hiding &amp; Encapsulation</text>
+    <text x="490" y="255" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Loosely Coupled Architecture</text>
+    <text x="490" y="295" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• Supports Overloading &amp; Inheritance ✔️</text>
+    <text x="490" y="335" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">• High Code Reusability &amp; Maintainability</text>
+    
+    <!-- Footer badge -->
+    <rect x="490" y="375" width="350" height="45" rx="8" fill="#065f46" stroke="#047857" />
+    <text x="665" y="403" text-anchor="middle" fill="#d1fae5" font-family="Segoe UI, sans-serif" font-size="13">Entities wrap both Data &amp; Behaviour together</text>
+  </g>
+</svg>

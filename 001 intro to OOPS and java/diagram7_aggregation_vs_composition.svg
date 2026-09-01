@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <filter id="shadow7" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#bgGrad7)" rx="16" />
+
+  <!-- Title -->
+  <text x="460" y="42" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, -apple-system, sans-serif" font-size="22" font-weight="700">HAS-A Breakdown: Aggregation vs Composition</text>
+  <text x="460" y="68" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Weak Lifecycle Dependency (Independent) vs Strong Lifecycle Dependency ("Saath Marenge Saath Jeeyenge")</text>
+
+  <!-- Aggregation Box (Left) -->
+  <g filter="url(#shadow7)">
+    <rect x="35" y="95" width="400" height="360" rx="14" fill="#132a24" stroke="#10b981" stroke-width="1.5" />
+    <rect x="35" y="95" width="400" height="42" rx="14" fill="#047857" />
+    <text x="235" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">Aggregation (Weak Association ♢)</text>
+
+    <text x="55" y="160" fill="#a7f3d0" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">LIFECYCLE DEPENDENCY:</text>
+    <text x="55" y="180" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="12">Weak / Independent lifecycle.</text>
+    <text x="55" y="198" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="12">• If School destroyed → Student survives (No effect)</text>
+    <text x="55" y="216" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="12">• If Student leaves → School still exists</text>
+
+    <text x="55" y="245" fill="#a7f3d0" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">CODE PATTERN (Dependency Injection):</text>
+    <rect x="55" y="255" width="360" height="95" rx="6" fill="#0b1714" stroke="#059669" />
+    <text x="65" y="275" fill="#34d399" font-family="Courier New, monospace" font-size="11">// Object passed from outside (No internal `new`)</text>
+    <text x="65" y="293" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">class Car {</text>
+    <text x="65" y="310" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">  Engine engine;</text>
+    <text x="65" y="327" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">  Car(String m, Engine e) { this.engine = e; }</text>
+    <text x="65" y="342" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">}</text>
+
+    <rect x="55" y="365" width="360" height="35" rx="6" fill="#064e3b" />
+    <text x="235" y="387" text-anchor="middle" fill="#fde047" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Engine can exist independently without Car</text>
+  </g>
+
+  <!-- Composition Box (Right) -->
+  <g filter="url(#shadow7)">
+    <rect x="485" y="95" width="400" height="360" rx="14" fill="#311928" stroke="#f43f5e" stroke-width="1.5" />
+    <rect x="485" y="95" width="400" height="42" rx="14" fill="#be123c" />
+    <text x="685" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">Composition (Strong Association ◆)</text>
+
+    <text x="505" y="160" fill="#fecdd3" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">LIFECYCLE DEPENDENCY:</text>
+    <text x="505" y="180" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="12">Strong / Co-dependent lifecycle.</text>
+    <text x="505" y="198" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="12">• "Saath Marenge Saath Jeeyenge!!"</text>
+    <text x="505" y="216" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="12">• If Person destroyed → Address destroyed too</text>
+
+    <text x="505" y="245" fill="#fecdd3" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">CODE PATTERN (Internal Creation via `new`):</text>
+    <rect x="505" y="255" width="360" height="95" rx="6" fill="#1c0b14" stroke="#e11d48" />
+    <text x="515" y="275" fill="#fb7185" font-family="Courier New, monospace" font-size="11">// Object instantiated internally (`new` used)</text>
+    <text x="515" y="293" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">class Person {</text>
+    <text x="515" y="310" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">  Address address;</text>
+    <text x="515" y="327" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">  Person(String name, String city) {</text>
+    <text x="515" y="342" fill="#e2e8f0" font-family="Courier New, monospace" font-size="11">    this.address = new Address(city); } }</text>
+
+    <rect x="505" y="365" width="360" height="35" rx="6" fill="#881337" />
+    <text x="685" y="387" text-anchor="middle" fill="#fde047" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Address lifecycle is strictly tied to Person</text>
+  </g>
+</svg>

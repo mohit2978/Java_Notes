@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg002_3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b132b" />
+      <stop offset="100%" stop-color="#1c2541" />
+    </linearGradient>
+    <filter id="drop002_3" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#bg002_3)" rx="16" />
+
+  <!-- Title -->
+  <text x="450" y="40" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, -apple-system, sans-serif" font-size="22" font-weight="700">The 3 Major Java Editions</text>
+  <text x="450" y="65" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, -apple-system, sans-serif" font-size="13">Specialized platforms targeting standard applications, enterprise systems, and mobile/embedded devices</text>
+
+  <!-- Card 1: JSE -->
+  <g filter="url(#drop002_3)">
+    <rect x="40" y="95" width="250" height="250" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5" />
+    <rect x="40" y="95" width="250" height="42" rx="12" fill="#3730a3" />
+    <text x="165" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700">Java SE (Standard Edition)</text>
+    
+    <text x="55" y="165" fill="#a5b4fc" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">Core Java Platform</text>
+    <text x="55" y="195" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Core APIs &amp; Language Syntax</text>
+    <text x="55" y="220" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Collections, Math, I/O, Threads</text>
+    <text x="55" y="245" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Desktop Applications</text>
+    <text x="55" y="270" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Foundation for all other editions</text>
+    
+    <rect x="55" y="295" width="220" height="32" rx="6" fill="#312e81" />
+    <text x="165" y="316" text-anchor="middle" fill="#fde047" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Base: Standard Computing</text>
+  </g>
+
+  <!-- Card 2: JEE -->
+  <g filter="url(#drop002_3)">
+    <rect x="325" y="95" width="250" height="250" rx="12" fill="#0f291e" stroke="#34d399" stroke-width="1.5" />
+    <rect x="325" y="95" width="250" height="42" rx="12" fill="#065f46" />
+    <text x="450" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700">Jakarta EE (Enterprise Edition)</text>
+    
+    <text x="340" y="165" fill="#6ee7b7" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">Enterprise Web Platforms</text>
+    <text x="340" y="195" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• <tspan fill="#34d399" font-weight="600">JSE + Transactional APIs</tspan></text>
+    <text x="340" y="220" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• JSP, Servlets, EJB, JPA</text>
+    <text x="340" y="245" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Transactions (Commit/Rollback)</text>
+    <text x="340" y="270" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Large-Scale Distributed Apps</text>
+
+    <rect x="340" y="295" width="220" height="32" rx="6" fill="#064e3b" />
+    <text x="450" y="316" text-anchor="middle" fill="#fde047" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Scale: Enterprise &amp; Web Services</text>
+  </g>
+
+  <!-- Card 3: JME -->
+  <g filter="url(#drop002_3)">
+    <rect x="610" y="95" width="250" height="250" rx="12" fill="#2e1424" stroke="#fb7185" stroke-width="1.5" />
+    <rect x="610" y="95" width="250" height="42" rx="12" fill="#881337" />
+    <text x="735" y="122" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700">Java ME (Micro Edition)</text>
+    
+    <text x="625" y="165" fill="#fda4af" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">Mobile &amp; Embedded Devices</text>
+    <text x="625" y="195" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Lightweight Virtual Machine</text>
+    <text x="625" y="220" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Constrained Memory &amp; CPU</text>
+    <text x="625" y="245" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Embedded Sensors, Smart Cards</text>
+    <text x="625" y="270" fill="#cbd5e1" font-family="Segoe UI, sans-serif" font-size="12">• Legacy Mobile Applications</text>
+
+    <rect x="625" y="295" width="220" height="32" rx="6" fill="#4c0519" />
+    <text x="735" y="316" text-anchor="middle" fill="#fde047" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Target: IoT &amp; Embedded</text>
+  </g>
+</svg>
