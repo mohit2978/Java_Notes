@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .obj-card { fill: #181825; stroke: #f9e2af; stroke-width: 2; rx: 12px; }
+      .owner-box { fill: #2d3843; stroke: #a6e3a1; stroke-width: 2; rx: 8px; }
+      .entry-box { fill: #452b36; stroke: #f38ba8; stroke-width: 2; rx: 8px; }
+      .bypass-box { fill: #263347; stroke: #89b4fa; stroke-width: 2; rx: 8px; }
+      .mono-txt { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11px; fill: #fab387; }
+      .body-txt { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+      .head-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 14px; }
+      .arrow { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-o); }
+      .arrow-green { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arr-g); }
+      .arrow-red { stroke: #f38ba8; stroke-width: 2; fill: none; marker-end: url(#arr-r); }
+      .arrow-blue { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-b); }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+    <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Java Monitor Lock (Intrinsic Lock) Architecture</text>
+  <text x="35" y="58" class="subtitle">Every Java object has an intrinsic monitor lock. Synchronization locks the OBJECT, not the method.</text>
+
+  <!-- Left: Target Object with Monitor Lock -->
+  <g transform="translate(35, 85)">
+    <rect width="460" height="360" class="obj-card"/>
+    <text x="25" y="30" class="head-title" fill="#f9e2af">&#128274; Object Instance: MonitorLockExample obj = new ...</text>
+    <text x="25" y="48" class="body-txt">Shared instance whose Header (Mark Word) stores lock state</text>
+    <line x1="25" y1="58" x2="435" y2="58" stroke="#313244"/>
+
+    <!-- Section 1: Active Lock Owner -->
+    <g transform="translate(25, 70)">
+      <rect width="410" height="75" class="owner-box"/>
+      <text x="20" y="24" class="head-title" fill="#a6e3a1">&#10004; Active Lock Owner: Thread-1</text>
+      <text x="20" y="44" class="mono-txt">synchronized void task1() { Thread.sleep(10000); }</text>
+      <text x="20" y="62" class="body-txt">&#8226; Thread-1 acquired the monitor lock; currently inside method.</text>
+    </g>
+
+    <!-- Section 2: Entry Set (BLOCKED Threads) -->
+    <g transform="translate(25, 160)">
+      <rect width="410" height="90" class="entry-box"/>
+      <text x="20" y="24" class="head-title" fill="#f38ba8">&#9888; Entry Set: Thread-2 (BLOCKED State)</text>
+      <text x="20" y="44" class="mono-txt">void task2() { synchronized(this) { ... } }</text>
+      <text x="20" y="62" class="body-txt">&#8226; Thread-2 printed before synchronized, then tried to enter.</text>
+      <text x="20" y="78" class="body-txt">&#8226; <tspan fill="#f38ba8" font-weight="700">Blocked:</tspan> Must wait until Thread-1 releases object lock!</text>
+    </g>
+
+    <!-- Section 3: Non-Synchronized Bypass -->
+    <g transform="translate(25, 265)">
+      <rect width="410" height="75" class="bypass-box"/>
+      <text x="20" y="24" class="head-title" fill="#89b4fa">&#128640; Non-Synchronized Bypass: Thread-3</text>
+      <text x="20" y="44" class="mono-txt">void task3() { System.out.println(&quot;task3&quot;); }</text>
+      <text x="20" y="62" class="body-txt">&#8226; No <tspan class="mono-txt">synchronized</tspan> keyword &#8594; Executes immediately with 0 delay!</text>
+    </g>
+  </g>
+
+  <!-- Right: Object-Level vs Class-Level Isolation -->
+  <g transform="translate(520, 85)">
+    <rect width="445" height="360" class="card"/>
+    <text x="25" y="30" class="head-title" fill="#cdd6f4">&#128161; Single Instance vs. Distinct Instances</text>
+    <line x1="25" y1="42" x2="420" y2="42" stroke="#313244"/>
+
+    <!-- Scenario A: Same Object (Contention) -->
+    <g transform="translate(20, 55)">
+      <rect width="405" height="135" fill="#1e1e2e" stroke="#f38ba8" rx="8"/>
+      <text x="15" y="24" class="head-title" fill="#f38ba8">Scenario A: Both Threads Target Same 'obj'</text>
+      <text x="15" y="44" class="mono-txt">T1 -&gt; obj.task1(); | T2 -&gt; obj.task2();</text>
+      <text x="15" y="68" class="body-txt">&#8226; Both methods lock on <tspan class="mono-txt">this</tspan> (<tspan fill="#fab387">same object</tspan>).</text>
+      <text x="15" y="88" class="body-txt">&#8226; Only <tspan fill="#a6e3a1" font-weight="700">1 thread</tspan> can enter at any given instant.</text>
+      <text x="15" y="108" class="body-txt">&#8226; T2 blocks until T1 completes its 10-second sleep.</text>
+    </g>
+
+    <!-- Scenario B: Distinct Objects (No Contention) -->
+    <g transform="translate(20, 205)">
+      <rect width="405" height="135" fill="#1e1e2e" stroke="#a6e3a1" rx="8"/>
+      <text x="15" y="24" class="head-title" fill="#a6e3a1">Scenario B: Distinct Objects 'obj1' and 'obj2'</text>
+      <text x="15" y="44" class="mono-txt">T1 -&gt; obj1.task1(); | T2 -&gt; obj2.task1();</text>
+      <text x="15" y="68" class="body-txt">&#8226; T1 locks <tspan class="mono-txt">obj1</tspan>; T2 locks <tspan class="mono-txt">obj2</tspan>.</text>
+      <text x="15" y="88" class="body-txt">&#8226; Locks belong to <tspan fill="#a6e3a1" font-weight="700">independent heap instances</tspan>.</text>
+      <text x="15" y="108" class="body-txt">&#8226; Both execute simultaneously with <tspan fill="#a6e3a1" font-weight="700">zero blocking!</tspan></text>
+    </g>
+  </g>
+
+  <!-- Bottom Key Rule Banner -->
+  <g transform="translate(35, 465)">
+    <rect width="930" height="105" class="card" stroke="#f9e2af"/>
+    <text x="25" y="30" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="14" fill="#f9e2af">&#128273; Golden Rule of Java Synchronized Locks:</text>
+    <text x="25" y="55" class="body-txt">A synchronized method does <tspan fill="#f38ba8" font-weight="700">NOT</tspan> lock the code or method itself; it acquires the monitor lock on the <tspan fill="#a6e3a1" font-weight="700">calling Object instance (this)</tspan>.</text>
+    <text x="25" y="75" class="body-txt">If two threads invoke two completely different synchronized methods on the <tspan fill="#fab387" font-weight="700">same instance</tspan>, one will still block the other!</text>
+  </g>
+</svg>

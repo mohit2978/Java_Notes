@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .card-accent { fill: #181825; stroke: #89b4fa; stroke-width: 2; rx: 10px; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .badge-txt { font-family: 'Segoe UI', sans-serif; font-weight: 600; font-size: 12px; }
+      .label-head { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 14px; fill: #89b4fa; }
+      .body-txt { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+      .code-txt { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11.5px; fill: #fab387; }
+      .highlight-txt { font-family: 'Segoe UI', sans-serif; font-weight: 600; font-size: 12px; fill: #a6e3a1; }
+      .warn-txt { font-family: 'Segoe UI', sans-serif; font-weight: 600; font-size: 12px; fill: #f38ba8; }
+      .arrow { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-peach); }
+      .arrow-blue { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-blue); }
+      .arrow-green { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arr-green); }
+      .inner-box { fill: #313244; stroke: #45475a; stroke-width: 1; rx: 6px; }
+    </style>
+    <marker id="arr-peach" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+    <marker id="arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="520" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Java Execution &amp; JVM Process Lifecycle</text>
+  <text x="35" y="58" class="subtitle">From source code compilation to OS process creation, heap configuration, and initial thread launch</text>
+
+  <!-- Step 1: Compilation -->
+  <g transform="translate(35, 85)">
+    <rect width="260" height="230" class="card"/>
+    <rect x="15" y="15" width="100" height="24" rx="12" fill="#89b4fa" fill-opacity="0.2"/>
+    <text x="65" y="31" class="badge-txt" fill="#89b4fa" text-anchor="middle">1. Compilation</text>
+    
+    <!-- Source file -->
+    <rect x="15" y="55" width="230" height="60" class="inner-box"/>
+    <text x="25" y="77" class="code-txt">Test.java</text>
+    <text x="25" y="98" class="body-txt" font-size="11">Source Code written by Developer</text>
+
+    <!-- Arrow down -->
+    <line x1="130" y1="115" x2="130" y2="145" class="arrow"/>
+    <text x="140" y="135" class="code-txt" font-size="11">javac Test.java</text>
+
+    <!-- Bytecode file -->
+    <rect x="15" y="148" width="230" height="60" class="inner-box"/>
+    <text x="25" y="170" class="code-txt">Test.class</text>
+    <text x="25" y="191" class="body-txt" font-size="11">Platform-Independent Bytecode</text>
+  </g>
+
+  <!-- Connector from Compilation to Execution -->
+  <path d="M 295 200 L 345 200" class="arrow-peach" stroke="#fab387" stroke-width="2" fill="none" marker-end="url(#arr-peach)"/>
+
+  <!-- Step 2: Execution & Process Spawning -->
+  <g transform="translate(355, 85)">
+    <rect width="610" height="230" class="card-accent"/>
+    <rect x="20" y="15" width="180" height="24" rx="12" fill="#a6e3a1" fill-opacity="0.2"/>
+    <text x="110" y="31" class="badge-txt" fill="#a6e3a1" text-anchor="middle">2. Execution &amp; Process Launch</text>
+
+    <!-- Launch Command -->
+    <rect x="20" y="50" width="570" height="42" class="inner-box"/>
+    <text x="35" y="76" class="code-txt" font-size="13">java -Xms256m -Xmx2g MainClassName</text>
+
+    <!-- Split info: OS Process vs JVM Instance -->
+    <g transform="translate(20, 105)">
+      <rect width="275" height="110" class="inner-box"/>
+      <text x="15" y="24" class="label-head">OS Operating System</text>
+      <text x="15" y="45" class="body-txt">• Creates a brand-new <tspan fill="#89b4fa" font-weight="700">OS Process</tspan></text>
+      <text x="15" y="65" class="body-txt">• Allocates private address space</text>
+      <text x="15" y="85" class="body-txt">• Two OS processes <tspan fill="#f38ba8" font-weight="700">never</tspan> share memory</text>
+    </g>
+
+    <g transform="translate(315, 105)">
+      <rect width="275" height="110" class="inner-box"/>
+      <text x="15" y="24" class="label-head" fill="#a6e3a1">JVM Instance Created</text>
+      <text x="15" y="45" class="body-txt">• Spawns dedicated JVM inside process</text>
+      <text x="15" y="65" class="body-txt">• Allocates heap bounds according to flags</text>
+      <text x="15" y="85" class="body-txt">• Starts initial execution: <tspan fill="#f9e2af" font-weight="700">&quot;main&quot; Thread</tspan></text>
+    </g>
+  </g>
+
+  <!-- Step 3: Bottom Cards (Memory Flags & Main Thread) -->
+  <!-- Memory Bounds Card -->
+  <g transform="translate(35, 335)">
+    <rect width="580" height="160" class="card"/>
+    <text x="20" y="26" class="label-head" fill="#cba6f7">JVM Memory Allocation Flags</text>
+
+    <!-- Visual Bar -->
+    <g transform="translate(20, 42)">
+      <rect width="540" height="26" fill="#313244" rx="6"/>
+      <rect width="180" height="26" fill="#89b4fa" fill-opacity="0.35" rx="6"/>
+      <text x="10" y="17" class="code-txt" fill="#89b4fa">-Xms: 256MB (Initial)</text>
+      <rect x="180" width="270" height="26" fill="#cba6f7" fill-opacity="0.2"/>
+      <text x="220" y="17" class="code-txt" fill="#cba6f7">Dynamic Expansion Space</text>
+      <rect x="450" width="90" height="26" fill="#f38ba8" fill-opacity="0.35" rx="6"/>
+      <text x="460" y="17" class="code-txt" fill="#f38ba8">-Xmx: 2GB</text>
+    </g>
+
+    <text x="20" y="98" class="body-txt"><tspan class="code-txt">-Xms256m</tspan> : Initial heap allocated at process creation (256 MB).</text>
+    <text x="20" y="118" class="body-txt"><tspan class="code-txt">-Xmx2g</tspan>   : Maximum heap the JVM process can ever expand to (2 GB).</text>
+    <text x="20" y="138" class="warn-txt">⚠ If memory usage exceeds -Xmx, JVM throws java.lang.OutOfMemoryError (OOM).</text>
+  </g>
+
+  <!-- Initial Thread Card -->
+  <g transform="translate(635, 335)">
+    <rect width="330" height="160" class="card"/>
+    <text x="20" y="26" class="label-head" fill="#f9e2af">Initial &quot;main&quot; Thread</text>
+    
+    <rect x="20" y="40" width="290" height="65" class="inner-box"/>
+    <text x="30" y="58" class="code-txt" fill="#cdd6f4">Thread.currentThread()</text>
+    <text x="45" y="76" class="code-txt" fill="#cdd6f4">.getName();</text>
+    <text x="30" y="94" class="highlight-txt">&#8594; &quot;main&quot;</text>
+
+    <text x="20" y="125" class="body-txt">Every Java process starts with exactly</text>
+    <text x="20" y="143" class="body-txt"><tspan fill="#a6e3a1" font-weight="700">1 thread</tspan> from which all child threads spawn.</text>
+  </g>
+</svg>

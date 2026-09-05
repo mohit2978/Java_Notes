@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .interface-box { fill: #2d3843; stroke: #a6e3a1; stroke-width: 2; rx: 8px; }
+      .class-box { fill: #263347; stroke: #89b4fa; stroke-width: 1.5; rx: 8px; }
+      .thread-class-box { fill: #383145; stroke: #cba6f7; stroke-width: 1.5; rx: 8px; }
+      .warn-box { fill: #452b36; stroke: #f38ba8; stroke-width: 1.5; rx: 8px; }
+      .code-card { fill: #181825; stroke: #45475a; stroke-width: 1.5; rx: 8px; }
+      .box-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 14px; text-anchor: middle; }
+      .box-sub { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #a6adc8; text-anchor: middle; }
+      .mono-txt { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11.5px; fill: #fab387; }
+      .body-txt { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+      .arrow { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-o); }
+      .arrow-green { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arr-g); }
+      .arrow-blue { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-b); }
+      .dash-arrow { stroke: #a6e3a1; stroke-width: 2; fill: none; stroke-dasharray: 4,4; marker-end: url(#arr-g); }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="560" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Thread Creation: Runnable Interface vs. Thread Class</text>
+  <text x="35" y="58" class="subtitle">Architecture, single inheritance constraints, and why industry favors the Runnable interface</text>
+
+  <!-- Top Center: Runnable Functional Interface -->
+  <g transform="translate(370, 85)">
+    <rect width="260" height="75" class="interface-box"/>
+    <text x="130" y="24" class="box-title" fill="#a6e3a1">&lt;&lt;interface&gt;&gt; Runnable</text>
+    <text x="130" y="40" class="box-sub">@FunctionalInterface (Single Abstract Method)</text>
+    <line x1="15" y1="48" x2="245" y2="48" stroke="#313244"/>
+    <text x="130" y="64" class="mono-txt" text-anchor="middle">+ run() : void</text>
+  </g>
+
+  <!-- Left: Approach 1 (implements Runnable) -->
+  <g transform="translate(35, 195)">
+    <rect width="445" height="335" class="card"/>
+    <rect x="15" y="15" width="200" height="24" rx="12" fill="#a6e3a1" fill-opacity="0.2"/>
+    <text x="115" y="31" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="12" fill="#a6e3a1" text-anchor="middle">Approach 1: implements Runnable</text>
+
+    <!-- Class Box -->
+    <g transform="translate(20, 50)">
+      <rect width="405" height="60" class="class-box"/>
+      <text x="202" y="24" class="box-title" fill="#89b4fa">MyServiceTask</text>
+      <text x="202" y="44" class="mono-txt" text-anchor="middle">implements Runnable</text>
+    </g>
+
+    <!-- Benefits List -->
+    <g transform="translate(20, 125)">
+      <rect width="405" height="185" fill="#1e1e2e" stroke="#313244" rx="8"/>
+      <text x="15" y="25" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#a6e3a1">&#10004; Architectural Advantages (Industry Standard):</text>
+      
+      <text x="15" y="52" class="body-txt">&#8226; <tspan fill="#cdd6f4" font-weight="700">No Inheritance Trap:</tspan> Java allows single class inheritance.</text>
+      <text x="28" y="70" class="mono-txt">class Task extends BaseEntity implements Runnable</text>
+      
+      <text x="15" y="98" class="body-txt">&#8226; <tspan fill="#cdd6f4" font-weight="700">Decouples Task from Runner:</tspan> Separates the work</text>
+      <text x="28" y="116" class="body-txt">(what to do) from the thread execution engine (how to run).</text>
+
+      <text x="15" y="142" class="body-txt">&#8226; <tspan fill="#cdd6f4" font-weight="700">Thread Pool Compatible:</tspan> Required by <tspan class="mono-txt">ExecutorService</tspan>,</text>
+      <text x="28" y="160" class="body-txt"><tspan class="mono-txt">Callable</tspan>, and modern Java concurrency frameworks.</text>
+    </g>
+  </g>
+
+  <!-- Dashed connector to Approach 1 -->
+  <path d="M 430 160 C 350 175, 260 175, 260 195" class="dash-arrow"/>
+
+  <!-- Right: Approach 2 (extends Thread) -->
+  <g transform="translate(520, 195)">
+    <rect width="445" height="335" class="card"/>
+    <rect x="15" y="15" width="180" height="24" rx="12" fill="#fab387" fill-opacity="0.2"/>
+    <text x="105" y="31" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="12" fill="#fab387" text-anchor="middle">Approach 2: extends Thread</text>
+
+    <!-- Thread Subclass Box -->
+    <g transform="translate(20, 50)">
+      <rect width="405" height="60" class="thread-class-box"/>
+      <text x="202" y="24" class="box-title" fill="#cba6f7">Thread (JDK Base Class)</text>
+      <text x="202" y="44" class="mono-txt" text-anchor="middle">public class Thread implements Runnable</text>
+    </g>
+
+    <!-- Down arrow -->
+    <line x1="222" y1="110" x2="222" y2="135" class="arrow"/>
+
+    <!-- User Class Box -->
+    <g transform="translate(20, 135)">
+      <rect width="405" height="50" class="class-box" stroke="#f38ba8"/>
+      <text x="202" y="22" class="box-title" fill="#f38ba8">MyWorkerThread</text>
+      <text x="202" y="40" class="mono-txt" text-anchor="middle">extends Thread</text>
+    </g>
+
+    <!-- Drawback Warning Box -->
+    <g transform="translate(20, 200)">
+      <rect width="405" height="110" class="warn-box"/>
+      <text x="15" y="24" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#f38ba8">&#9888; Severe Limitations (Discouraged):</text>
+      <text x="15" y="46" class="body-txt">&#8226; <tspan fill="#f9e2af" font-weight="700">Multiple Inheritance Prohibited:</tspan> Because Java does not</text>
+      <text x="28" y="64" class="body-txt">support extending multiple classes, your class <tspan fill="#f38ba8" font-weight="700">cannot</tspan> extend any</text>
+      <text x="28" y="82" class="body-txt">other business parent class (e.g. <tspan class="mono-txt">extends BaseService</tspan>).</text>
+    </g>
+  </g>
+
+  <!-- Arrow from Runnable to Thread Class -->
+  <path d="M 570 160 C 650 175, 740 175, 740 195" class="arrow-blue"/>
+</svg>

@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 10px; }
+      .seg-stack { fill: #313244; stroke: #89b4fa; stroke-width: 2; rx: 8px; }
+      .seg-heap { fill: #2d3843; stroke: #a6e3a1; stroke-width: 2; rx: 8px; }
+      .seg-data { fill: #383145; stroke: #cba6f7; stroke-width: 2; rx: 8px; }
+      .seg-text { fill: #3f2d35; stroke: #f38ba8; stroke-width: 2; rx: 8px; }
+      .seg-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 15px; }
+      .seg-desc { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #a6adc8; }
+      .code-line { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11px; fill: #fab387; }
+      .badge-txt { font-family: 'Segoe UI', sans-serif; font-weight: 600; font-size: 11px; fill: #bac2de; }
+      .arrow { stroke: #fab387; stroke-width: 2.5; fill: none; marker-end: url(#arr-peach); }
+      .arrow-blue { stroke: #89b4fa; stroke-width: 2.5; fill: none; marker-end: url(#arr-blue); }
+      .arrow-green { stroke: #a6e3a1; stroke-width: 2.5; fill: none; marker-end: url(#arr-green); }
+      .mem-addr { font-family: 'Consolas', monospace; font-size: 11px; fill: #6c7086; }
+    </style>
+    <marker id="arr-peach" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+    <marker id="arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="520" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Standard OS Process Memory Layout</text>
+  <text x="35" y="58" class="subtitle">Virtual address space allocated to an executing program / process by the Operating System</text>
+
+  <!-- Memory Address Rail -->
+  <g transform="translate(45, 90)">
+    <!-- Memory bracket -->
+    <line x1="20" y1="15" x2="20" y2="395" stroke="#45475a" stroke-width="2"/>
+    <line x1="12" y1="15" x2="28" y2="15" stroke="#45475a" stroke-width="2"/>
+    <line x1="12" y1="395" x2="28" y2="395" stroke="#45475a" stroke-width="2"/>
+    <text x="0" y="20" class="mem-addr" transform="rotate(-90 0 20)">High Memory (0xFFFFFFFF)</text>
+    <text x="-370" y="20" class="mem-addr" transform="rotate(-90 -370 20)">Low Memory (0x00000000)</text>
+
+    <!-- Stack Segment -->
+    <g transform="translate(45, 10)">
+      <rect width="440" height="75" class="seg-stack"/>
+      <text x="20" y="28" class="seg-title" fill="#89b4fa">Stack Segment</text>
+      <text x="20" y="46" class="seg-desc">• Call frames, local variables, function parameters, return addresses</text>
+      <text x="20" y="63" class="code-line">int x = 10; | references | method frames</text>
+      
+      <!-- Growth indicator -->
+      <line x1="400" y1="40" x2="400" y2="70" class="arrow-blue"/>
+      <text x="345" y="60" class="badge-txt" fill="#89b4fa">Grows &#8595;</text>
+    </g>
+
+    <!-- Free Memory Space between Stack and Heap -->
+    <g transform="translate(45, 95)">
+      <rect width="440" height="85" fill="#181825" stroke="#45475a" stroke-dasharray="4,4" stroke-width="1.5" rx="8"/>
+      <text x="220" y="38" font-family="'Segoe UI', sans-serif" font-size="12" fill="#6c7086" text-anchor="middle" font-weight="600">Unallocated / Free Virtual Memory</text>
+      
+      <!-- Arrows pointing towards each other -->
+      <line x1="150" y1="15" x2="150" y2="40" class="arrow-blue"/>
+      <line x1="290" y1="70" x2="290" y2="45" class="arrow-green"/>
+      <text x="220" y="58" font-family="'Segoe UI', sans-serif" font-size="11" fill="#a6adc8" text-anchor="middle">Stack grows downward &#8226; Heap grows upward</text>
+    </g>
+
+    <!-- Heap Segment -->
+    <g transform="translate(45, 190)">
+      <rect width="440" height="75" class="seg-heap"/>
+      <text x="20" y="28" class="seg-title" fill="#a6e3a1">Heap Segment</text>
+      <text x="20" y="46" class="seg-desc">• Dynamically allocated memory at runtime via <tspan class="code-line">new</tspan> keyword</text>
+      <text x="20" y="63" class="code-line">MyObject obj = new MyObject(); | All class instances &amp; arrays</text>
+
+      <!-- Growth indicator -->
+      <line x1="400" y1="55" x2="400" y2="25" class="arrow-green"/>
+      <text x="345" y="45" class="badge-txt" fill="#a6e3a1">Grows &#8593;</text>
+    </g>
+
+    <!-- Data Segment -->
+    <g transform="translate(45, 275)">
+      <rect width="440" height="60" class="seg-data"/>
+      <text x="20" y="26" class="seg-title" fill="#cba6f7">Data Segment</text>
+      <text x="20" y="46" class="seg-desc">• Static variables, global variables, constant pool (initialized &amp; BSS uninitialized)</text>
+    </g>
+
+    <!-- Text / Code Segment -->
+    <g transform="translate(45, 345)">
+      <rect width="440" height="60" class="seg-text"/>
+      <text x="20" y="26" class="seg-title" fill="#f38ba8">Text / Code Segment (Read-Only)</text>
+      <text x="20" y="46" class="seg-desc">• Compiled binary machine instructions to be executed by CPU (Read-only protection)</text>
+    </g>
+  </g>
+
+  <!-- Right Side: Architectural Summary Card -->
+  <g transform="translate(565, 100)">
+    <rect width="300" height="395" class="card"/>
+    <text x="20" y="30" class="seg-title" fill="#f9e2af">Key Process Characteristics</text>
+    <line x1="20" y1="45" x2="280" y2="45" stroke="#313244" stroke-width="1.5"/>
+
+    <g transform="translate(20, 60)">
+      <text x="0" y="15" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#89b4fa">1. Memory Isolation</text>
+      <text x="0" y="35" class="seg-desc">Each process receives its own virtual</text>
+      <text x="0" y="52" class="seg-desc">address space from OS. One process</text>
+      <text x="0" y="69" class="seg-desc"><tspan fill="#f38ba8" font-weight="700">cannot</tspan> access another's memory.</text>
+    </g>
+
+    <g transform="translate(20, 145)">
+      <text x="0" y="15" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#a6e3a1">2. Dynamic Growth</text>
+      <text x="0" y="35" class="seg-desc">Stack &amp; Heap expand into the middle</text>
+      <text x="0" y="52" class="seg-desc">free memory space. If they collide or</text>
+      <text x="0" y="69" class="seg-desc">exceed limits &#8594; StackOverflow or OOM.</text>
+    </g>
+
+    <g transform="translate(20, 230)">
+      <text x="0" y="15" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#cba6f7">3. Protection Domains</text>
+      <text x="0" y="35" class="seg-desc">Code segment is marked strictly</text>
+      <text x="0" y="52" class="seg-desc"><tspan fill="#fab387" font-weight="700">READ-ONLY</tspan> to prevent accidental or</text>
+      <text x="0" y="69" class="seg-desc">malicious runtime code tampering.</text>
+    </g>
+
+    <g transform="translate(20, 315)">
+      <text x="0" y="15" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#fab387">4. Heavyweight Entity</text>
+      <text x="0" y="35" class="seg-desc">Creating &amp; switching processes is slow</text>
+      <text x="0" y="52" class="seg-desc">due to OS PCB (Process Control Block)</text>
+      <text x="0" y="69" class="seg-desc">and page table context switches.</text>
+    </g>
+  </g>
+</svg>

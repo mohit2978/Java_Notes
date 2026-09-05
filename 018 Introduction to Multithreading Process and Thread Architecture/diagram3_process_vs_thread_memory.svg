@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .outer-card { fill: #181825; stroke: #45475a; stroke-width: 1.5; rx: 14px; }
+      .shared-box { fill: #2d3843; stroke: #a6e3a1; stroke-width: 1.5; rx: 8px; }
+      .code-box { fill: #3f2d35; stroke: #f38ba8; stroke-width: 1.5; rx: 8px; }
+      .data-box { fill: #383145; stroke: #cba6f7; stroke-width: 1.5; rx: 8px; }
+      .thread-col { fill: #1e1e2e; stroke: #89b4fa; stroke-width: 1.5; rx: 10px; }
+      .private-box { fill: #313244; stroke: #89b4fa; stroke-width: 1; rx: 6px; }
+      .pc-box { fill: #3d352a; stroke: #f9e2af; stroke-width: 1; rx: 6px; }
+      .card-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 15px; }
+      .box-head { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 13px; text-anchor: middle; }
+      .box-sub { font-family: 'Segoe UI', sans-serif; font-size: 10.5px; fill: #a6adc8; text-anchor: middle; }
+      .code-txt { font-family: 'Consolas', monospace; font-size: 11px; fill: #cdd6f4; }
+      .wavy { stroke: #a6e3a1; stroke-width: 2.5; fill: none; }
+      .wavy-multi1 { stroke: #89b4fa; stroke-width: 2.5; fill: none; }
+      .wavy-multi2 { stroke: #fab387; stroke-width: 2.5; fill: none; }
+      .wavy-multi3 { stroke: #cba6f7; stroke-width: 2.5; fill: none; }
+      .alert-box { fill: #452b36; stroke: #f38ba8; stroke-width: 1.5; rx: 8px; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="560" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Process vs. Thread: Memory Sharing Architecture</text>
+  <text x="35" y="58" class="subtitle">Threads share Code, Data, and Heap within a process, while retaining independent Stacks, Registers, and Program Counters</text>
+
+  <!-- LEFT: Single-Threaded Process -->
+  <g transform="translate(35, 80)">
+    <rect width="380" height="385" class="outer-card"/>
+    <text x="20" y="30" class="card-title" fill="#89b4fa">1. Single-Threaded Process</text>
+    <text x="20" y="48" font-family="'Segoe UI', sans-serif" font-size="11.5px" fill="#a6adc8">1 process containing 1 single thread of execution</text>
+
+    <!-- Top segments: Code, Data, Heap -->
+    <g transform="translate(20, 65)">
+      <rect width="105" height="55" class="code-box"/>
+      <text x="52" y="26" class="box-head" fill="#f38ba8">Code</text>
+      <text x="52" y="44" class="box-sub">Segment</text>
+
+      <rect x="115" width="105" height="55" class="data-box"/>
+      <text x="167" y="26" class="box-head" fill="#cba6f7">Data</text>
+      <text x="167" y="44" class="box-sub">Segment</text>
+
+      <rect x="230" width="110" height="55" class="shared-box"/>
+      <text x="285" y="26" class="box-head" fill="#a6e3a1">Heap</text>
+      <text x="285" y="44" class="box-sub">Memory</text>
+    </g>
+
+    <!-- Middle segments: Stack and Registers -->
+    <g transform="translate(20, 130)">
+      <rect width="165" height="50" class="private-box"/>
+      <text x="82" y="25" class="box-head" fill="#89b4fa">Stack</text>
+      <text x="82" y="41" class="box-sub">Local variables</text>
+
+      <rect x="175" width="165" height="50" class="private-box"/>
+      <text x="257" y="25" class="box-head" fill="#89b4fa">Registers &amp; PC</text>
+      <text x="257" y="41" class="box-sub">Instruction pointer</text>
+    </g>
+
+    <!-- Execution stream (wavy line) -->
+    <g transform="translate(20, 195)">
+      <rect width="340" height="170" fill="#1e1e2e" stroke="#313244" rx="8"/>
+      <path d="M 170 20 Q 195 55 170 85 T 170 145" class="wavy"/>
+      <text x="170" y="160" font-family="'Segoe UI', sans-serif" font-size="13px" fill="#a6e3a1" font-weight="700" text-anchor="middle">Single Thread of Execution</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: Multi-Threaded Process -->
+  <g transform="translate(440, 80)">
+    <rect width="525" height="385" class="outer-card"/>
+    <text x="20" y="30" class="card-title" fill="#a6e3a1">2. Multi-Threaded Process</text>
+    <text x="20" y="48" font-family="'Segoe UI', sans-serif" font-size="11.5px" fill="#a6adc8">Multiple threads concurrently sharing process memory</text>
+
+    <!-- Shared Top Segments Header -->
+    <g transform="translate(20, 65)">
+      <rect width="485" height="55" fill="#181825" stroke="#a6e3a1" stroke-width="1.5" stroke-dasharray="3,3" rx="8"/>
+      
+      <!-- Inside items -->
+      <rect x="10" y="7" width="145" height="40" class="code-box"/>
+      <text x="82" y="25" class="box-head" fill="#f38ba8">Code Segment</text>
+      <text x="82" y="38" class="box-sub">Shared (Read-Only)</text>
+
+      <rect x="165" y="7" width="150" height="40" class="data-box"/>
+      <text x="240" y="25" class="box-head" fill="#cba6f7">Data Segment</text>
+      <text x="240" y="38" class="box-sub">Shared (Static / Globals)</text>
+
+      <rect x="325" y="7" width="150" height="40" class="shared-box"/>
+      <text x="400" y="25" class="box-head" fill="#a6e3a1">Heap Memory</text>
+      <text x="400" y="38" class="box-sub">Shared (All Objects)</text>
+    </g>
+
+    <!-- Per-Thread Private Columns -->
+    <!-- Thread 1 -->
+    <g transform="translate(20, 130)">
+      <rect width="155" height="235" class="thread-col" stroke="#89b4fa"/>
+      <text x="77" y="20" class="box-head" fill="#89b4fa">Thread 1</text>
+
+      <rect x="10" y="30" width="135" height="34" class="private-box"/>
+      <text x="77" y="46" class="box-head" fill="#cdd6f4" font-size="11">Thread Stack</text>
+      <text x="77" y="58" class="box-sub" font-size="9">Local vars / frames</text>
+
+      <rect x="10" y="70" width="135" height="34" class="pc-box"/>
+      <text x="77" y="86" class="box-head" fill="#f9e2af" font-size="11">Registers &amp; PC</text>
+      <text x="77" y="98" class="box-sub" font-size="9">PC = 0x0100</text>
+
+      <!-- Execution stream -->
+      <path d="M 77 120 Q 95 145 77 170 T 77 210" class="wavy-multi1"/>
+      <text x="77" y="226" font-family="'Segoe UI', sans-serif" font-size="11px" fill="#89b4fa" font-weight="600" text-anchor="middle">Execution Stream</text>
+    </g>
+
+    <!-- Thread 2 -->
+    <g transform="translate(185, 130)">
+      <rect width="155" height="235" class="thread-col" stroke="#fab387"/>
+      <text x="77" y="20" class="box-head" fill="#fab387">Thread 2</text>
+
+      <rect x="10" y="30" width="135" height="34" class="private-box" stroke="#fab387"/>
+      <text x="77" y="46" class="box-head" fill="#cdd6f4" font-size="11">Thread Stack</text>
+      <text x="77" y="58" class="box-sub" font-size="9">Local vars / frames</text>
+
+      <rect x="10" y="70" width="135" height="34" class="pc-box"/>
+      <text x="77" y="86" class="box-head" fill="#f9e2af" font-size="11">Registers &amp; PC</text>
+      <text x="77" y="98" class="box-sub" font-size="9">PC = 0x0450</text>
+
+      <!-- Execution stream -->
+      <path d="M 77 120 Q 95 145 77 170 T 77 210" class="wavy-multi2"/>
+      <text x="77" y="226" font-family="'Segoe UI', sans-serif" font-size="11px" fill="#fab387" font-weight="600" text-anchor="middle">Execution Stream</text>
+    </g>
+
+    <!-- Thread 3 -->
+    <g transform="translate(350, 130)">
+      <rect width="155" height="235" class="thread-col" stroke="#cba6f7"/>
+      <text x="77" y="20" class="box-head" fill="#cba6f7">Thread 3</text>
+
+      <rect x="10" y="30" width="135" height="34" class="private-box" stroke="#cba6f7"/>
+      <text x="77" y="46" class="box-head" fill="#cdd6f4" font-size="11">Thread Stack</text>
+      <text x="77" y="58" class="box-sub" font-size="9">Local vars / frames</text>
+
+      <rect x="10" y="70" width="135" height="34" class="pc-box"/>
+      <text x="77" y="86" class="box-head" fill="#f9e2af" font-size="11">Registers &amp; PC</text>
+      <text x="77" y="98" class="box-sub" font-size="9">PC = 0x0820</text>
+
+      <!-- Execution stream -->
+      <path d="M 77 120 Q 95 145 77 170 T 77 210" class="wavy-multi3"/>
+      <text x="77" y="226" font-family="'Segoe UI', sans-serif" font-size="11px" fill="#cba6f7" font-weight="600" text-anchor="middle">Execution Stream</text>
+    </g>
+  </g>
+
+  <!-- Bottom Alert Bar: Concurrency Issue Callout -->
+  <g transform="translate(35, 480)">
+    <rect width="930" height="60" class="alert-box"/>
+    <text x="20" y="25" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13px" fill="#f38ba8">⚡ The Root Cause of Concurrency Issues &amp; Race Conditions:</text>
+    <text x="20" y="45" font-family="'Segoe UI', sans-serif" font-size="12px" fill="#cdd6f4">Because the <tspan fill="#a6e3a1" font-weight="700">Heap</tspan> and <tspan fill="#cba6f7" font-weight="700">Data Segment</tspan> are SHARED among all threads, simultaneous read/write access without synchronization triggers data race, dirty reads, and inconsistencies!</text>
+  </g>
+</svg>

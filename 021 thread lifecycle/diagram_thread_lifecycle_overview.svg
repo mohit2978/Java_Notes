@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 620" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 19px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 12.5px; fill: #a6adc8; }
+      .container-box { fill: #181825; stroke: #45475a; stroke-width: 1.5; rx: 12px; }
+      
+      /* State Ovals */
+      .oval-new { fill: #263347; stroke: #89b4fa; stroke-width: 2; }
+      .oval-runnable { fill: #1e2e38; stroke: #89b4fa; stroke-width: 2; }
+      .oval-running { fill: #1e332d; stroke: #a6e3a1; stroke-width: 2; }
+      .oval-term { fill: #313244; stroke: #cdd6f4; stroke-width: 2; }
+      .oval-blocked { fill: #3a222c; stroke: #f38ba8; stroke-width: 2; }
+      .oval-waiting { fill: #3a3022; stroke: #fab387; stroke-width: 2; }
+      .oval-timed { fill: #33233a; stroke: #cba6f7; stroke-width: 2; }
+
+      /* Typography */
+      .state-txt { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 15px; text-anchor: middle; }
+      .state-sub { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #a6adc8; font-style: italic; text-anchor: middle; }
+      .lbl-green { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #a6e3a1; font-weight: 600; }
+      .lbl-peach { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #fab387; font-weight: 600; }
+      .lbl-blue { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #89b4fa; font-weight: 600; }
+      .lbl-red { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #f38ba8; font-weight: 600; }
+      .lbl-gray { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; font-weight: 600; }
+
+      /* Transition Lines */
+      .arr-green { stroke: #a6e3a1; stroke-width: 1.8; fill: none; marker-end: url(#arr-g); }
+      .arr-peach { stroke: #fab387; stroke-width: 1.8; fill: none; marker-end: url(#arr-o); }
+      .arr-red { stroke: #f38ba8; stroke-width: 1.8; fill: none; marker-end: url(#arr-r); }
+      .arr-stop { stroke: #f38ba8; stroke-width: 1.5; fill: none; stroke-dasharray: 4,4; }
+      .arr-stop-head { stroke: #f38ba8; stroke-width: 1.5; fill: none; stroke-dasharray: 4,4; marker-end: url(#arr-r); }
+    </style>
+
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1020" height="620" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="36" class="title">Java Thread Lifecycle (Process / OS Perspective)</text>
+  <text x="35" y="54" class="subtitle">Complete transition flow between New, Runnable, Running, Blocked, Waiting, Timed Waiting, and Terminated</text>
+
+  <!-- TOP DEPRECATED STOP PATH (Red) -->
+  <!-- Line from New top -->
+  <path d="M 85 190 L 85 95 L 910 95 L 910 185" class="arr-stop-head"/>
+  <text x="95" y="115" class="lbl-red" font-size="10.5">stop()</text>
+  
+  <!-- Line from Runnable top connecting to stop path -->
+  <path d="M 330 150 L 330 95" class="arr-stop"/>
+  <text x="338" y="115" class="lbl-red" font-size="10.5">stop()</text>
+
+  <rect x="420" y="82" width="230" height="26" rx="6" fill="#452b36" stroke="#f38ba8" stroke-width="1"/>
+  <text x="535" y="99" font-family="'Segoe UI', sans-serif" font-size="11" fill="#f38ba8" font-weight="700" text-anchor="middle">&#9888; stop() is deprecated &amp; unsafe</text>
+
+  <!-- 1. NEW STATE (Oval) -->
+  <g transform="translate(85, 225)">
+    <ellipse rx="52" ry="32" class="oval-new"/>
+    <text y="5" class="state-txt" fill="#89b4fa">New</text>
+  </g>
+
+  <!-- Arrow: New -> Runnable -->
+  <line x1="137" y1="225" x2="242" y2="225" class="arr-green"/>
+  <text x="190" y="215" class="lbl-green" text-anchor="middle">start()</text>
+
+  <!-- 2. CENTER CONTAINER: RUNNABLE & RUNNING -->
+  <g transform="translate(245, 150)">
+    <rect width="425" height="150" class="container-box"/>
+
+    <!-- Inner Oval 1: Runnable -->
+    <g transform="translate(90, 75)">
+      <ellipse rx="72" ry="42" class="oval-runnable"/>
+      <text y="-2" class="state-txt" fill="#cdd6f4">Runnable</text>
+      <text y="18" class="state-sub">(waiting for CPU)</text>
+    </g>
+
+    <!-- Inner Oval 2: Running -->
+    <g transform="translate(330, 75)">
+      <ellipse rx="72" ry="42" class="oval-running"/>
+      <text y="-2" class="state-txt" fill="#a6e3a1">Running</text>
+      <text y="18" class="state-sub">(got CPU)</text>
+    </g>
+
+    <!-- Transition: Runnable -> Running (run() / schedule) -->
+    <path d="M 162 60 L 258 60" class="arr-green"/>
+    <text x="210" y="52" class="lbl-green" text-anchor="middle">run()</text>
+
+    <!-- Transition: Running -> Runnable (yield()) -->
+    <path d="M 258 90 L 162 90" class="arr-green"/>
+    <text x="210" y="105" class="lbl-green" text-anchor="middle">yield()</text>
+  </g>
+
+  <!-- Arrow: Running -> Terminated -->
+  <line x1="670" y1="225" x2="840" y2="225" class="arr-red"/>
+  <text x="755" y="205" class="lbl-gray" text-anchor="middle" font-size="11">Run() method</text>
+  <text x="755" y="219" class="lbl-gray" text-anchor="middle" font-size="11">execution finish</text>
+
+  <!-- 3. TERMINATED STATE (Oval) -->
+  <g transform="translate(910, 225)">
+    <ellipse rx="68" ry="34" class="oval-term"/>
+    <text y="5" class="state-txt" fill="#cdd6f4">Terminated</text>
+  </g>
+
+  <!-- LOWER LEVEL: THREE SUSPENDED STATES -->
+
+  <!-- Left Lower: Blocked -->
+  <g transform="translate(180, 450)">
+    <ellipse rx="70" ry="36" class="oval-blocked"/>
+    <text y="5" class="state-txt" fill="#f38ba8">Blocked</text>
+  </g>
+
+  <!-- Transitions between Center Box and Blocked -->
+  <!-- Down to Blocked: I/O task or acquire lock -->
+  <path d="M 265 300 L 175 414" class="arr-peach"/>
+  <text x="145" y="340" class="lbl-peach" text-anchor="end" font-size="11">I/O task or</text>
+  <text x="145" y="355" class="lbl-peach" text-anchor="end" font-size="11">acquire lock</text>
+
+  <!-- Up to Runnable: I/O done / lock acquired -->
+  <path d="M 210 414 L 305 300" class="arr-green"/>
+  <text x="315" y="360" class="lbl-green" font-size="11">I/O done /</text>
+  <text x="315" y="375" class="lbl-green" font-size="11">lock acquired</text>
+
+  <!-- Center Lower: Waiting -->
+  <g transform="translate(485, 450)">
+    <ellipse rx="72" ry="36" class="oval-waiting"/>
+    <text y="5" class="state-txt" fill="#fab387">Waiting</text>
+  </g>
+
+  <!-- Transitions between Center Box and Waiting -->
+  <!-- Down to Waiting: wait() -->
+  <line x1="495" y1="300" x2="495" y2="414" class="arr-peach"/>
+  <text x="502" y="355" class="lbl-peach" font-size="11.5">wait()</text>
+
+  <!-- Up to Runnable: notify() -->
+  <line x1="465" y1="414" x2="465" y2="300" class="arr-green"/>
+  <text x="458" y="355" class="lbl-green" text-anchor="end" font-size="11.5">notify()</text>
+
+  <!-- Right Lower: Timed Waiting -->
+  <g transform="translate(780, 450)">
+    <ellipse rx="72" ry="36" class="oval-timed"/>
+    <text y="-2" class="state-txt" fill="#cba6f7">Timed</text>
+    <text y="17" class="state-txt" fill="#cba6f7">Waiting</text>
+  </g>
+
+  <!-- Transitions between Center Box and Timed Waiting -->
+  <!-- Down to Timed Waiting: sleep() / join() -->
+  <path d="M 630 300 L 745 414" class="arr-peach"/>
+  <text x="660" y="360" class="lbl-peach" font-size="11">sleep() /</text>
+  <text x="660" y="375" class="lbl-peach" font-size="11">join()</text>
+
+  <!-- Up to Runnable: sleep time expires / join complete -->
+  <path d="M 785 414 L 675 300" class="arr-green"/>
+  <text x="770" y="338" class="lbl-green" font-size="11">sleep time expires /</text>
+  <text x="770" y="353" class="lbl-green" font-size="11">join complete</text>
+
+  <!-- BOTTOM DEPRECATED STOP PATH (Red) -->
+  <path d="M 180 486 L 180 545 L 940 545 L 940 260" class="arr-stop-head"/>
+  <text x="190" y="530" class="lbl-red" font-size="10.5">stop()</text>
+
+  <!-- Connectors from Waiting and Timed Waiting to bottom stop path -->
+  <path d="M 485 486 L 485 545" class="arr-stop"/>
+  <text x="495" y="530" class="lbl-red" font-size="10.5">stop()</text>
+
+  <path d="M 780 486 L 780 545" class="arr-stop"/>
+  <text x="790" y="530" class="lbl-red" font-size="10.5">stop()</text>
+
+  <!-- Up connector from bottom red path into Terminated -->
+  <line x1="940" y1="260" x2="940" y2="235" class="arr-stop"/>
+  <path d="M 940 235 L 978 235" class="arr-stop"/>
+
+  <!-- Footer explanation note -->
+  <text x="510" y="585" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#a6adc8" text-anchor="middle">💡 Threads transition between <tspan fill="#89b4fa" font-weight="700">Runnable</tspan> (waiting in OS queue) and <tspan fill="#a6e3a1" font-weight="700">Running</tspan> (executing on physical core). From <tspan fill="#f38ba8" font-weight="700">Terminated</tspan>, threads can never return.</text>
+</svg>

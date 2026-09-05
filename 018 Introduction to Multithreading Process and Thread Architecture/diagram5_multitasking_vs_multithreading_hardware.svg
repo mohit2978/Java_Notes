@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .core-box { fill: #2d3843; stroke: #89b4fa; stroke-width: 1.5; rx: 8px; }
+      .reg-box { fill: #313244; stroke: #fab387; stroke-width: 1; rx: 6px; }
+      .cache-box { fill: #383145; stroke: #cba6f7; stroke-width: 1; rx: 6px; }
+      .ram-box { fill: #232a36; stroke: #a6e3a1; stroke-width: 1.5; rx: 8px; }
+      .sec-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 14.5px; }
+      .mono-txt { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11px; fill: #cdd6f4; }
+      .body-txt { font-family: 'Segoe UI', sans-serif; font-size: 11.5px; fill: #bac2de; }
+      .badge-proc { fill: #f38ba8; }
+      .badge-thrd { fill: #a6e3a1; }
+      .arrow { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-o); }
+      .arrow-blue { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-b); }
+      .switch-box { fill: #452b36; stroke: #f38ba8; stroke-width: 1.5; rx: 6px; stroke-dasharray: 4,4; }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="620" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">CPU Architecture, Scheduling &amp; Context Switching</text>
+  <text x="35" y="58" class="subtitle">How OS and CPU hardware execute single-core time-slicing vs multi-core true parallelism</text>
+
+  <!-- Top Left: Single Core Scheduling & Context Switching -->
+  <g transform="translate(35, 85)">
+    <rect width="455" height="315" class="card"/>
+    <text x="20" y="28" class="sec-title" fill="#fab387">1. Single Core CPU (Concurrency via Time Slicing)</text>
+    <text x="20" y="46" class="body-txt">OS preemptive scheduler allocates CPU time slices (quanta):</text>
+
+    <!-- Timeline / Step 1: Thread 1 runs -->
+    <g transform="translate(20, 60)">
+      <rect width="415" height="60" fill="#313244" rx="6"/>
+      <text x="12" y="22" class="mono-txt" fill="#89b4fa" font-weight="700">[Time Quantum: e.g., 100ms] &#8594; Thread 1 executing</text>
+      <text x="12" y="40" class="body-txt">• T1 loads instructions into CPU Registers, accumulates intermediate results.</text>
+      <text x="12" y="54" class="body-txt">• Quantum expires before T1 completes its entire task.</text>
+    </g>
+
+    <!-- Context Switch Event -->
+    <g transform="translate(20, 130)">
+      <rect width="415" height="52" class="switch-box"/>
+      <text x="207" y="22" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="12px" fill="#f38ba8" text-anchor="middle">⚡ OS CONTEXT SWITCH TRIGGERED</text>
+      <text x="207" y="40" font-family="'Segoe UI', sans-serif" font-size="11px" fill="#cdd6f4" text-anchor="middle">1. CPU saves T1 registers/state to memory &#8226; 2. CPU loads T2 saved state into registers</text>
+    </g>
+
+    <!-- Timeline / Step 2: Thread 2 runs -->
+    <g transform="translate(20, 192)">
+      <rect width="415" height="60" fill="#313244" rx="6"/>
+      <text x="12" y="22" class="mono-txt" fill="#a6e3a1" font-weight="700">[Next Quantum: e.g., 100ms] &#8594; Thread 2 executing</text>
+      <text x="12" y="40" class="body-txt">• T2 resumes from where its saved Program Counter (PC) left off.</text>
+      <text x="12" y="54" class="body-txt">• Temporary variables stored in Thread 2 registers are re-hydrated.</text>
+    </g>
+
+    <!-- Bottom summary on single-core -->
+    <text x="20" y="280" class="body-txt" fill="#f9e2af">💡 <tspan font-weight="700">Illusion of Parallelism:</tspan> On 1 CPU core, threads run concurrently via</text>
+    <text x="20" y="298" class="body-txt" fill="#f9e2af">rapid context-switching, NOT simultaneously at the exact same clock cycle.</text>
+  </g>
+
+  <!-- Top Right: Multi-Core Hardware True Parallelism -->
+  <g transform="translate(510, 85)">
+    <rect width="455" height="315" class="card"/>
+    <text x="20" y="28" class="sec-title" fill="#a6e3a1">2. Multi-Core CPU (True Physical Parallelism)</text>
+    <text x="20" y="46" class="body-txt">Multiple CPU cores executing instructions simultaneously:</text>
+
+    <!-- Core 1 -->
+    <g transform="translate(20, 60)">
+      <rect width="195" height="115" class="core-box"/>
+      <text x="97" y="24" class="sec-title" fill="#89b4fa" text-anchor="middle">CPU Core 1</text>
+      <rect x="15" y="35" width="165" height="32" class="reg-box"/>
+      <text x="97" y="55" class="mono-txt" fill="#fab387" text-anchor="middle">Registers (T1 State)</text>
+      <rect x="15" y="73" width="165" height="30" class="cache-box"/>
+      <text x="97" y="92" class="mono-txt" fill="#cba6f7" text-anchor="middle">L1 / L2 Cache</text>
+    </g>
+
+    <!-- Core 2 -->
+    <g transform="translate(240, 60)">
+      <rect width="195" height="115" class="core-box" stroke="#a6e3a1"/>
+      <text x="97" y="24" class="sec-title" fill="#a6e3a1" text-anchor="middle">CPU Core 2</text>
+      <rect x="15" y="35" width="165" height="32" class="reg-box"/>
+      <text x="97" y="55" class="mono-txt" fill="#fab387" text-anchor="middle">Registers (T2 State)</text>
+      <rect x="15" y="73" width="165" height="30" class="cache-box"/>
+      <text x="97" y="92" class="mono-txt" fill="#cba6f7" text-anchor="middle">L1 / L2 Cache</text>
+    </g>
+
+    <!-- Down arrows to Main Memory -->
+    <line x1="117" y1="180" x2="117" y2="200" class="arrow-blue"/>
+    <line x1="337" y1="180" x2="337" y2="200" class="arrow"/>
+
+    <!-- Shared RAM / Main Memory -->
+    <g transform="translate(20, 205)">
+      <rect width="415" height="50" class="ram-box"/>
+      <text x="207" y="25" class="sec-title" fill="#a6e3a1" text-anchor="middle">Shared Main Memory (RAM) &amp; L3 Cache</text>
+      <text x="207" y="42" class="body-txt" text-anchor="middle">JVM Process Heap (Objects) &amp; Data Segment (Static Variables)</text>
+    </g>
+
+    <!-- Bottom summary on multi-core -->
+    <text x="20" y="280" class="body-txt" fill="#a6e3a1">✔ <tspan font-weight="700">Zero Context Switch Overhead:</tspan> Thread 1 &amp; Thread 2 execute at the</text>
+    <text x="20" y="298" class="body-txt" fill="#a6e3a1">exact same microsecond without time-sliced swapping interruptions!</text>
+  </g>
+
+  <!-- Bottom: Multitasking vs Multithreading Architectural Matrix -->
+  <g transform="translate(35, 415)">
+    <rect width="930" height="185" class="card"/>
+    <text x="25" y="28" class="sec-title" fill="#cdd6f4">Multitasking vs. Multithreading Comparison Matrix</text>
+
+    <!-- Table Header -->
+    <g transform="translate(25, 42)">
+      <rect width="880" height="28" fill="#313244" rx="4"/>
+      <text x="15" y="19" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="12" fill="#89b4fa">Attribute</text>
+      <text x="200" y="19" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="12" fill="#f38ba8">Multitasking (OS Processes)</text>
+      <text x="560" y="19" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="12" fill="#a6e3a1">Multithreading (Threads within Process)</text>
+    </g>
+
+    <!-- Row 1: Definition -->
+    <g transform="translate(25, 74)">
+      <text x="15" y="15" class="body-txt" font-weight="700">Execution Unit</text>
+      <text x="200" y="15" class="body-txt">Multiple independent OS processes running concurrently</text>
+      <text x="560" y="15" class="body-txt">Multiple threads of execution within the same process</text>
+    </g>
+    <line x1="25" y1="98" x2="905" y2="98" stroke="#313244"/>
+
+    <!-- Row 2: Memory Sharing -->
+    <g transform="translate(25, 106)">
+      <text x="15" y="15" class="body-txt" font-weight="700">Resource Sharing</text>
+      <text x="200" y="15" class="body-txt"><tspan fill="#f38ba8" font-weight="700">Isolated:</tspan> Processes do NOT share heap, code, or memory</text>
+      <text x="560" y="15" class="body-txt"><tspan fill="#a6e3a1" font-weight="700">Shared:</tspan> Threads share Heap, Code, &amp; Data segments</text>
+    </g>
+    <line x1="25" y1="130" x2="905" y2="130" stroke="#313244"/>
+
+    <!-- Row 3: Context Switching & Overhead -->
+    <g transform="translate(25, 138)">
+      <text x="15" y="15" class="body-txt" font-weight="700">Context Switch Cost</text>
+      <text x="200" y="15" class="body-txt"><tspan fill="#fab387" font-weight="700">Heavy:</tspan> OS switches page tables, memory maps, PCB</text>
+      <text x="560" y="15" class="body-txt"><tspan fill="#a6e3a1" font-weight="700">Lightweight:</tspan> Only thread registers &amp; PC are swapped</text>
+    </g>
+    <line x1="25" y1="162" x2="905" y2="162" stroke="#313244"/>
+
+    <!-- Row 4: Concurrency Issues -->
+    <g transform="translate(25, 170)">
+      <text x="15" y="15" class="body-txt" font-weight="700">Data Safety Risk</text>
+      <text x="200" y="15" class="body-txt">No data race (requires IPC: sockets, pipes to communicate)</text>
+      <text x="560" y="15" class="body-txt"><tspan fill="#f38ba8" font-weight="700">High race condition risk</tspan> &#8212; requires synchronized locks</text>
+    </g>
+  </g>
+</svg>

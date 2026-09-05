@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .step-card { fill: #1e1e2e; stroke: #45475a; stroke-width: 1.5; rx: 8px; }
+      .cons-card { fill: #263347; stroke: #89b4fa; stroke-width: 1.5; rx: 8px; }
+      .prod-card { fill: #2d3843; stroke: #a6e3a1; stroke-width: 1.5; rx: 8px; }
+      .wait-set-box { fill: #3d352a; stroke: #fab387; stroke-width: 1.5; rx: 8px; }
+      .warn-box { fill: #452b36; stroke: #f38ba8; stroke-width: 1.5; rx: 8px; }
+      .mono-txt { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11px; fill: #fab387; }
+      .body-txt { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+      .head-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 13.5px; }
+      .arrow-o { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-o); }
+      .arrow-g { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arr-g); }
+      .arrow-b { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-b); }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="620" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Producer-Consumer Inter-Thread Communication &amp; Spurious Wakeup</text>
+  <text x="35" y="58" class="subtitle">Lock releasing via wait(), thread notification via notifyAll(), and defensive loop condition checking</text>
+
+  <!-- Flow Steps Layout (Top Section) -->
+  <g transform="translate(35, 85)">
+    <!-- Column 1: Consumer calls wait() -->
+    <g transform="translate(0, 0)">
+      <rect width="290" height="235" class="cons-card"/>
+      <text x="15" y="24" class="head-title" fill="#89b4fa">1. Consumer Thread</text>
+      <text x="15" y="44" class="mono-txt">consumeItem()</text>
+      <text x="15" y="66" class="body-txt">&#8226; Acquires monitor lock on <tspan class="mono-txt">resource</tspan>.</text>
+      <text x="15" y="86" class="body-txt">&#8226; Checks <tspan class="mono-txt">while(!itemAvailable)</tspan> &#8594; <tspan fill="#fab387">true</tspan>.</text>
+      
+      <rect x="15" y="100" width="260" height="65" fill="#181825" stroke="#fab387" rx="6"/>
+      <text x="25" y="122" class="head-title" font-size="12" fill="#fab387">&#9889; Invokes wait():</text>
+      <text x="25" y="140" class="body-txt">1. <tspan fill="#a6e3a1" font-weight="700">RELEASES</tspan> monitor lock!</text>
+      <text x="25" y="156" class="body-txt">2. Moves to WAITING state in Wait Set.</text>
+
+      <text x="15" y="185" class="body-txt" fill="#a6adc8">&#10004; <tspan fill="#a6e3a1">Deadlock Avoided:</tspan> Releasing the lock allows Producer to enter!</text>
+    </g>
+
+    <!-- Arrow Col 1 -> Col 2 -->
+    <path d="M 295 120 L 335 120" class="arrow-o"/>
+
+    <!-- Column 2: Producer produces & notifies -->
+    <g transform="translate(340, 0)">
+      <rect width="290" height="235" class="prod-card"/>
+      <text x="15" y="24" class="head-title" fill="#a6e3a1">2. Producer Thread</text>
+      <text x="15" y="44" class="mono-txt">addItem()</text>
+      <text x="15" y="66" class="body-txt">&#8226; Sleeps 5s, then enters <tspan class="mono-txt">addItem()</tspan>.</text>
+      <text x="15" y="86" class="body-txt">&#8226; Acquires freed monitor lock.</text>
+      <text x="15" y="106" class="body-txt">&#8226; Sets <tspan class="mono-txt">itemAvailable = true;</tspan></text>
+      
+      <rect x="15" y="120" width="260" height="65" fill="#181825" stroke="#a6e3a1" rx="6"/>
+      <text x="25" y="142" class="head-title" font-size="12" fill="#a6e3a1">&#128227; Invokes notifyAll():</text>
+      <text x="25" y="160" class="body-txt">Wakes all threads in object's Wait Set</text>
+      <text x="25" y="176" class="body-txt">to compete for monitor lock.</text>
+
+      <text x="15" y="205" class="body-txt">&#8226; Exits method &#8594; Releases lock.</text>
+    </g>
+
+    <!-- Arrow Col 2 -> Col 3 -->
+    <path d="M 635 120 L 675 120" class="arrow-g"/>
+
+    <!-- Column 3: Consumer re-acquires & consumes -->
+    <g transform="translate(680, 0)">
+      <rect width="250" height="235" class="cons-card"/>
+      <text x="15" y="24" class="head-title" fill="#89b4fa">3. Consumer Resumes</text>
+      <text x="15" y="44" class="mono-txt">re-acquires lock</text>
+      <text x="15" y="66" class="body-txt">&#8226; Woken up by <tspan class="mono-txt">notifyAll()</tspan>.</text>
+      <text x="15" y="86" class="body-txt">&#8226; Transitions: WAITING &#8594; BLOCKED &#8594; <tspan fill="#a6e3a1">RUNNABLE</tspan>.</text>
+      <text x="15" y="106" class="body-txt">&#8226; Re-checks <tspan class="mono-txt">while(!itemAvailable)</tspan>.</text>
+      <text x="15" y="126" class="body-txt">&#8226; Condition is now <tspan fill="#a6e3a1">false</tspan> &#8594; exits loop.</text>
+      <text x="15" y="156" class="body-txt">&#8226; Consumes item successfully!</text>
+      <text x="15" y="176" class="mono-txt">itemAvailable = false;</text>
+      <text x="15" y="200" class="body-txt">&#8226; Exits synchronized method.</text>
+    </g>
+  </g>
+
+  <!-- Bottom Deep-Dive Card: Spurious Wakeup Defense -->
+  <g transform="translate(35, 340)">
+    <rect width="930" height="255" class="card"/>
+    <text x="25" y="30" class="head-title" fill="#f9e2af">&#128269; Why ALWAYS Use a 'while' Loop Instead of 'if' With wait()?</text>
+    <line x1="25" y1="42" x2="905" y2="42" stroke="#313244"/>
+
+    <!-- Left Box: The Bug with 'if' -->
+    <g transform="translate(25, 55)">
+      <rect width="425" height="180" class="warn-box"/>
+      <text x="15" y="24" class="head-title" fill="#f38ba8">&#10060; BUGGY PATTERN: Using 'if' Statement</text>
+      <text x="15" y="45" class="mono-txt">if (!itemAvailable) { wait(); }</text>
+      <text x="15" y="65" class="mono-txt">consumeItem(); // DANGER: Executes unconditionally!</text>
+      <line x1="15" y1="75" x2="410" y2="75" stroke="#f38ba8" stroke-width="0.5"/>
+      <text x="15" y="96" class="body-txt">&#8226; <tspan fill="#f38ba8" font-weight="700">Spurious Wakeup:</tspan> Operating systems can wake waiting</text>
+      <text x="25" y="114" class="body-txt">threads without any thread calling notify() (due to system noise).</text>
+      <text x="15" y="136" class="body-txt">&#8226; With <tspan class="mono-txt">if</tspan>, thread wakes and proceeds straight to consumption</text>
+      <text x="25" y="154" class="body-txt">even when no item exists, causing crashes or corrupted state!</text>
+    </g>
+
+    <!-- Right Box: The Defensive Pattern with 'while' -->
+    <g transform="translate(480, 55)">
+      <rect width="425" height="180" fill="#1e1e2e" stroke="#a6e3a1" rx="8"/>
+      <text x="15" y="24" class="head-title" fill="#a6e3a1">&#10004; CORRECT PATTERN: Using 'while' Loop</text>
+      <text x="15" y="45" class="mono-txt">while (!itemAvailable) { wait(); }</text>
+      <text x="15" y="65" class="mono-txt">consumeItem(); // SAFE: Guaranteed condition holds!</text>
+      <line x1="15" y1="75" x2="410" y2="75" stroke="#a6e3a1" stroke-width="0.5"/>
+      <text x="15" y="96" class="body-txt">&#8226; <tspan fill="#a6e3a1" font-weight="700">Defensive Re-Verification:</tspan> When the thread wakes up</text>
+      <text x="25" y="114" class="body-txt">(spurious or real), it immediately re-tests the predicate condition.</text>
+      <text x="15" y="136" class="body-txt">&#8226; If <tspan class="mono-txt">itemAvailable</tspan> is still false, the thread is safely sent back</text>
+      <text x="25" y="154" class="body-txt">to <tspan class="mono-txt">wait()</tspan> until an item is genuinely available.</text>
+    </g>
+  </g>
+</svg>

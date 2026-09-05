@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .flow-box { fill: #313244; stroke: #89b4fa; stroke-width: 1.5; rx: 8px; }
+      .native-box { fill: #383145; stroke: #cba6f7; stroke-width: 1.5; rx: 8px; }
+      .os-box { fill: #2d3843; stroke: #a6e3a1; stroke-width: 1.5; rx: 8px; }
+      .warn-box { fill: #452b36; stroke: #f38ba8; stroke-width: 1.5; rx: 8px; }
+      .box-head { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 13px; text-anchor: middle; }
+      .box-sub { font-family: 'Segoe UI', sans-serif; font-size: 11px; fill: #a6adc8; text-anchor: middle; }
+      .mono-txt { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11px; fill: #fab387; }
+      .body-txt { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+      .arrow { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-o); }
+      .arrow-blue { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-b); }
+      .arrow-green { stroke: #a6e3a1; stroke-width: 2; fill: none; marker-end: url(#arr-g); }
+      .arrow-red { stroke: #f38ba8; stroke-width: 2; fill: none; marker-end: url(#arr-r); stroke-dasharray: 4,4; }
+    </style>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#a6e3a1" />
+    </marker>
+    <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#f38ba8" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">JVM Under-The-Hood: thread.start() vs. thread.run()</text>
+  <text x="35" y="58" class="subtitle">How start() bridges Java bytecode to OS kernel thread scheduling via native JNI calls</text>
+
+  <!-- Left: Invoking .run() Directly (Anti-Pattern) -->
+  <g transform="translate(35, 85)">
+    <rect width="320" height="480" class="warn-box"/>
+    <text x="20" y="30" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="15" fill="#f38ba8">&#10060; Calling myThread.run() Directly</text>
+    <text x="20" y="48" class="body-txt">Bypasses OS thread creation entirely</text>
+
+    <!-- Step 1 -->
+    <g transform="translate(20, 70)">
+      <rect width="280" height="65" fill="#313244" rx="6"/>
+      <text x="140" y="24" class="box-head" fill="#cdd6f4">1. Direct Method Call</text>
+      <text x="140" y="44" class="mono-txt" text-anchor="middle">myThread.run();</text>
+    </g>
+
+    <!-- Down arrow -->
+    <line x1="160" y1="135" x2="160" y2="165" class="arrow-red"/>
+
+    <!-- Step 2 -->
+    <g transform="translate(20, 165)">
+      <rect width="280" height="75" fill="#313244" rx="6"/>
+      <text x="140" y="24" class="box-head" fill="#f38ba8">2. Executes on Caller Thread</text>
+      <text x="140" y="42" class="box-sub">Runs synchronously on &quot;main&quot;</text>
+      <text x="140" y="60" class="box-sub">Caller thread blocks &amp; freezes</text>
+    </g>
+
+    <!-- Down arrow -->
+    <line x1="160" y1="240" x2="160" y2="270" class="arrow-red"/>
+
+    <!-- Step 3 -->
+    <g transform="translate(20, 270)">
+      <rect width="280" height="180" fill="#181825" stroke="#f38ba8" rx="6"/>
+      <text x="15" y="25" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#f38ba8">&#9888; Critical Consequences:</text>
+      <text x="15" y="52" class="body-txt">&#8226; <tspan fill="#cdd6f4" font-weight="700">0 OS Threads Created:</tspan> No parallelism.</text>
+      <text x="15" y="80" class="body-txt">&#8226; <tspan fill="#cdd6f4" font-weight="700">No Concurrency:</tspan> Acts identical to</text>
+      <text x="25" y="98" class="body-txt">a standard helper method.</text>
+      <text x="15" y="126" class="body-txt">&#8226; <tspan fill="#cdd6f4" font-weight="700">Call Stack:</tspan> Executes inside caller's</text>
+      <text x="25" y="144" class="body-txt">existing stack frame!</text>
+    </g>
+  </g>
+
+  <!-- Right: Invoking .start() (The True Native OS Lifecycle) -->
+  <g transform="translate(385, 85)">
+    <rect width="580" height="480" class="card"/>
+    <text x="25" y="30" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="15" fill="#a6e3a1">&#10004; Calling myThread.start() (The OS Bridge)</text>
+    <text x="25" y="48" class="body-txt">Hands over thread allocation to the host Operating System</text>
+
+    <!-- Step 1 -->
+    <g transform="translate(25, 68)">
+      <rect width="530" height="58" class="flow-box"/>
+      <text x="20" y="24" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#89b4fa">Step 1: Java Layer (Thread.start())</text>
+      <text x="20" y="44" class="body-txt">Verifies thread status (not already started), then delegates to private native method:</text>
+    </g>
+
+    <!-- Down arrow -->
+    <line x1="290" y1="126" x2="290" y2="152" class="arrow-blue"/>
+
+    <!-- Step 2 -->
+    <g transform="translate(25, 152)">
+      <rect width="530" height="68" class="native-box"/>
+      <text x="20" y="24" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#cba6f7">Step 2: JVM Native JNI Hook (start0())</text>
+      <text x="20" y="44" class="mono-txt">private native void start0(); // Written in C++ (JVM HotSpot)</text>
+      <text x="20" y="58" class="body-txt">HotSpot JVM requests native thread creation from host OS Kernel.</text>
+    </g>
+
+    <!-- Down arrow -->
+    <line x1="290" y1="220" x2="290" y2="246" class="arrow"/>
+
+    <!-- Step 3 -->
+    <g transform="translate(25, 246)">
+      <rect width="530" height="68" class="os-box"/>
+      <text x="20" y="24" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#a6e3a1">Step 3: Operating System Kernel Allocates Physical Thread</text>
+      <text x="20" y="44" class="body-txt">&#8226; OS creates pthread (Linux) or Win32 thread (Windows) with dedicated stack.</text>
+      <text x="20" y="58" class="body-txt">&#8226; OS CPU scheduler marks thread ready and assigns CPU core time.</text>
+    </g>
+
+    <!-- Down arrow -->
+    <line x1="290" y1="314" x2="290" y2="340" class="arrow-green"/>
+
+    <!-- Step 4 -->
+    <g transform="translate(25, 340)">
+      <rect width="530" height="115" class="flow-box" stroke="#a6e3a1"/>
+      <text x="20" y="24" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#a6e3a1">Step 4: OS Wakes JVM &amp; Executes target.run() in Background</text>
+      <text x="20" y="44" class="body-txt">On the new physical thread, JVM invokes Thread's internal <tspan class="mono-txt">run()</tspan> method:</text>
+      
+      <rect x="20" y="52" width="490" height="52" fill="#181825" rx="6"/>
+      <text x="35" y="72" class="mono-txt">if (target != null) {</text>
+      <text x="65" y="90" class="mono-txt">target.run(); // &#128640; Your lambda / Runnable task executes asynchronously!</text>
+      <text x="35" y="100" class="mono-txt">}</text>
+    </g>
+  </g>
+</svg>

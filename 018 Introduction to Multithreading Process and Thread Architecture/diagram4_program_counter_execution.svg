@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #1e1e2e; }
+      .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; fill: #cdd6f4; font-size: 20px; }
+      .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 13px; fill: #a6adc8; }
+      .card { fill: #181825; stroke: #313244; stroke-width: 1.5; rx: 12px; }
+      .code-seg { fill: #181825; stroke: #f38ba8; stroke-width: 1.5; rx: 10px; }
+      .instr-row { fill: #313244; stroke: #45475a; rx: 6px; }
+      .instr-active1 { fill: #263347; stroke: #89b4fa; stroke-width: 1.5; rx: 6px; }
+      .instr-active2 { fill: #3f3127; stroke: #fab387; stroke-width: 1.5; rx: 6px; }
+      .instr-active3 { fill: #352642; stroke: #cba6f7; stroke-width: 1.5; rx: 6px; }
+      .pc-card1 { fill: #181825; stroke: #89b4fa; stroke-width: 1.5; rx: 8px; }
+      .pc-card2 { fill: #181825; stroke: #fab387; stroke-width: 1.5; rx: 8px; }
+      .pc-card3 { fill: #181825; stroke: #cba6f7; stroke-width: 1.5; rx: 8px; }
+      .thread-title { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 14px; }
+      .code-mono { font-family: 'Consolas', 'Fira Code', monospace; font-size: 11.5px; fill: #cdd6f4; }
+      .addr-mono { font-family: 'Consolas', monospace; font-size: 11px; fill: #9399b2; font-weight: 600; }
+      .body-desc { font-family: 'Segoe UI', sans-serif; font-size: 12px; fill: #bac2de; }
+      .arr1 { stroke: #89b4fa; stroke-width: 2; fill: none; marker-end: url(#arr-b); }
+      .arr2 { stroke: #fab387; stroke-width: 2; fill: none; marker-end: url(#arr-o); }
+      .arr3 { stroke: #cba6f7; stroke-width: 2; fill: none; marker-end: url(#arr-p); }
+    </style>
+    <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#89b4fa" />
+    </marker>
+    <marker id="arr-o" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fab387" />
+    </marker>
+    <marker id="arr-p" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#cba6f7" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="480" rx="14" class="bg"/>
+
+  <!-- Header -->
+  <text x="35" y="38" class="title">Program Counter (PC) Register in Multithreaded Execution</text>
+  <text x="35" y="58" class="subtitle">Each thread maintains its own private PC register tracking its current instruction inside the shared Code Segment</text>
+
+  <!-- Left: Threads with private PC registers -->
+  <g transform="translate(35, 90)">
+    <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="14" fill="#cdd6f4">Thread-Private Program Counters</text>
+
+    <!-- Thread 1 -->
+    <g transform="translate(0, 15)">
+      <rect width="250" height="95" class="pc-card1"/>
+      <text x="15" y="24" class="thread-title" fill="#89b4fa">Thread 1 (Worker-A)</text>
+      <rect x="15" y="35" width="220" height="45" fill="#313244" rx="6"/>
+      <text x="25" y="54" class="addr-mono" fill="#89b4fa">Program Counter (PC):</text>
+      <text x="25" y="70" class="code-mono" fill="#a6e3a1" font-weight="700">Line 200 (Address 0x0200)</text>
+    </g>
+
+    <!-- Thread 2 -->
+    <g transform="translate(0, 130)">
+      <rect width="250" height="95" class="pc-card2"/>
+      <text x="15" y="24" class="thread-title" fill="#fab387">Thread 2 (Worker-B)</text>
+      <rect x="15" y="35" width="220" height="45" fill="#313244" rx="6"/>
+      <text x="25" y="54" class="addr-mono" fill="#fab387">Program Counter (PC):</text>
+      <text x="25" y="70" class="code-mono" fill="#f9e2af" font-weight="700">Line 500 (Address 0x0500)</text>
+    </g>
+
+    <!-- Thread 3 -->
+    <g transform="translate(0, 245)">
+      <rect width="250" height="95" class="pc-card3"/>
+      <text x="15" y="24" class="thread-title" fill="#cba6f7">Thread 3 (Worker-C)</text>
+      <rect x="15" y="35" width="220" height="45" fill="#313244" rx="6"/>
+      <text x="25" y="54" class="addr-mono" fill="#cba6f7">Program Counter (PC):</text>
+      <text x="25" y="70" class="code-mono" fill="#cba6f7" font-weight="700">Line 700 (Address 0x0700)</text>
+    </g>
+  </g>
+
+  <!-- Connectors from Threads to Code Segment -->
+  <!-- Line 1 to 200 -->
+  <path d="M 285 160 C 340 160, 360 170, 420 170" class="arr1"/>
+  <!-- Line 2 to 500 -->
+  <path d="M 285 270 C 340 270, 360 270, 420 270" class="arr2"/>
+  <!-- Line 3 to 700 -->
+  <path d="M 285 385 C 340 385, 360 365, 420 365" class="arr3"/>
+
+  <!-- Right: Shared Code Segment -->
+  <g transform="translate(425, 90)">
+    <rect width="500" height="345" class="code-seg"/>
+    
+    <!-- Code segment header -->
+    <rect x="15" y="15" width="470" height="32" fill="#313244" rx="6"/>
+    <text x="25" y="36" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="13" fill="#f38ba8">Shared Code Segment (Read-Only Bytecode &amp; Native Machine Code)</text>
+
+    <!-- Code rows -->
+    <!-- Line 100 -->
+    <g transform="translate(15, 58)">
+      <rect width="470" height="42" class="instr-row"/>
+      <text x="15" y="26" class="addr-mono">0x0100:</text>
+      <text x="80" y="26" class="code-mono">public void run() { int sum = 0; }</text>
+    </g>
+
+    <!-- Line 200 (Active T1) -->
+    <g transform="translate(15, 108)">
+      <rect width="470" height="46" class="instr-active1"/>
+      <text x="15" y="28" class="addr-mono" fill="#89b4fa">0x0200:</text>
+      <text x="80" y="28" class="code-mono" fill="#89b4fa">sum += computeMetric(data[i]);</text>
+      <text x="350" y="28" font-family="'Segoe UI', sans-serif" font-size="11" fill="#89b4fa" font-weight="700">&#8592; [T1 PC = 200]</text>
+    </g>
+
+    <!-- Line 350 -->
+    <g transform="translate(15, 162)">
+      <rect width="470" height="38" class="instr-row"/>
+      <text x="15" y="24" class="addr-mono">0x0350:</text>
+      <text x="80" y="24" class="code-mono">logger.info("Processing complete");</text>
+    </g>
+
+    <!-- Line 500 (Active T2) -->
+    <g transform="translate(15, 208)">
+      <rect width="470" height="46" class="instr-active2"/>
+      <text x="15" y="28" class="addr-mono" fill="#fab387">0x0500:</text>
+      <text x="80" y="28" class="code-mono" fill="#fab387">orderRepository.save(order);</text>
+      <text x="350" y="28" font-family="'Segoe UI', sans-serif" font-size="11" fill="#fab387" font-weight="700">&#8592; [T2 PC = 500]</text>
+    </g>
+
+    <!-- Line 700 (Active T3) -->
+    <g transform="translate(15, 262)">
+      <rect width="470" height="46" class="instr-active3"/>
+      <text x="15" y="28" class="addr-mono" fill="#cba6f7">0x0700:</text>
+      <text x="80" y="28" class="code-mono" fill="#cba6f7">emailService.sendReceipt(user);</text>
+      <text x="350" y="28" font-family="'Segoe UI', sans-serif" font-size="11" fill="#cba6f7" font-weight="700">&#8592; [T3 PC = 700]</text>
+    </g>
+
+    <!-- Auto-increment note -->
+    <text x="25" y="332" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#a6adc8">💡 <tspan fill="#a6e3a1" font-weight="600">Auto-Increment:</tspan> Upon executing the current instruction, JVM automatically increments that thread's PC to the next byte address.</text>
+  </g>
+
+  <!-- Bottom Key Rules -->
+  <g transform="translate(35, 442)">
+    <text x="0" y="16" font-family="'Segoe UI', sans-serif" font-size="12" fill="#cdd6f4">• <tspan fill="#f38ba8" font-weight="700">Code is Immutable:</tspan> All threads read the exact same instructions; no thread can mutate the Code Segment.</text>
+    <text x="500" y="16" font-family="'Segoe UI', sans-serif" font-size="12" fill="#cdd6f4">• <tspan fill="#89b4fa" font-weight="700">Independent Execution:</tspan> Each thread maintains its own position and branch logic independently.</text>
+  </g>
+</svg>
