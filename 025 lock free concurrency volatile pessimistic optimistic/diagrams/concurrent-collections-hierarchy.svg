@@ -1,0 +1,71 @@
+<svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="778" height="418" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="20" y="24" font-size="12" fill="#334155">▭ blue = interface</text>
+  <text x="150" y="24" font-size="12" fill="#334155">▭ purple = concrete class</text>
+
+  <rect x="330" y="34" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="375" y="51" text-anchor="middle" font-size="11" fill="#1e3a8a">Iterable</text>
+  <rect x="330" y="76" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="375" y="93" text-anchor="middle" font-size="11" fill="#1e3a8a">Collection</text>
+  <path d="M375 60 V76" stroke="#64748b" marker-end="url(#c1)"/>
+
+  <rect x="120" y="118" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="165" y="135" text-anchor="middle" font-size="11" fill="#1e3a8a">Queue</text>
+  <rect x="330" y="118" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="375" y="135" text-anchor="middle" font-size="11" fill="#1e3a8a">List</text>
+  <rect x="540" y="118" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="585" y="135" text-anchor="middle" font-size="11" fill="#1e3a8a">Set</text>
+  <path d="M375 102 L165 118" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M375 102 V118" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M375 102 L585 118" stroke="#64748b" marker-end="url(#c1)"/>
+
+  <rect x="120" y="160" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="165" y="177" text-anchor="middle" font-size="11" fill="#1e3a8a">Deque</text>
+  <path d="M165 144 V160" stroke="#64748b" marker-end="url(#c1)"/>
+  <rect x="20" y="202" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="70" y="219" text-anchor="middle" font-size="10.5" fill="#4c1d95">PriorityQueue</text>
+  <path d="M120 175 L70 202" stroke="#64748b" marker-end="url(#c1)"/>
+  <rect x="130" y="202" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="180" y="219" text-anchor="middle" font-size="10.5" fill="#4c1d95">ArrayDeque</text>
+  <rect x="240" y="202" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="290" y="219" text-anchor="middle" font-size="10.5" fill="#4c1d95">LinkedList</text>
+  <path d="M165 186 L180 202" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M165 186 L290 202" stroke="#64748b" marker-end="url(#c1)"/>
+
+  <rect x="330" y="160" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="380" y="177" text-anchor="middle" font-size="10.5" fill="#4c1d95">ArrayList</text>
+  <rect x="440" y="160" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="490" y="177" text-anchor="middle" font-size="10.5" fill="#4c1d95">Vector / Stack</text>
+  <path d="M375 144 L380 160" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M375 144 L490 160" stroke="#64748b" marker-end="url(#c1)"/>
+
+  <rect x="540" y="160" width="100" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="590" y="177" text-anchor="middle" font-size="10.5" fill="#1e3a8a">SortedSet</text>
+  <path d="M585 144 V160" stroke="#64748b" marker-end="url(#c1)"/>
+  <rect x="650" y="118" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="700" y="135" text-anchor="middle" font-size="10.5" fill="#4c1d95">HashSet / LinkedHashSet</text>
+  <path d="M630 130 H648" stroke="#64748b" marker-end="url(#c1)"/>
+  <rect x="540" y="202" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="590" y="219" text-anchor="middle" font-size="10.5" fill="#4c1d95">TreeSet</text>
+  <path d="M590 186 V202" stroke="#64748b" marker-end="url(#c1)"/>
+
+  <rect x="330" y="290" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="375" y="307" text-anchor="middle" font-size="11" fill="#1e3a8a">Map</text>
+  <rect x="200" y="332" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="250" y="349" text-anchor="middle" font-size="10.5" fill="#4c1d95">HashMap</text>
+  <rect x="310" y="332" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="360" y="349" text-anchor="middle" font-size="10.5" fill="#4c1d95">LinkedHashMap</text>
+  <rect x="420" y="332" width="100" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="470" y="349" text-anchor="middle" font-size="10.5" fill="#4c1d95">HashTable</text>
+  <rect x="100" y="332" width="90" height="26" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="145" y="349" text-anchor="middle" font-size="10.5" fill="#1e3a8a">SortedMap</text>
+  <path d="M375 316 L145 332" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M375 316 L250 332" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M375 316 L360 332" stroke="#64748b" marker-end="url(#c1)"/>
+  <path d="M375 316 L470 332" stroke="#64748b" marker-end="url(#c1)"/>
+  <rect x="100" y="374" width="90" height="26" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="145" y="391" text-anchor="middle" font-size="10.5" fill="#4c1d95">TreeMap</text>
+  <path d="M145 358 V374" stroke="#64748b" marker-end="url(#c1)"/>
+
+  <defs><marker id="c1" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#64748b"/></marker></defs>
+</svg>
