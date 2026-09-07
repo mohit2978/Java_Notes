@@ -1,0 +1,27 @@
+<svg viewBox="0 0 680 230" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="678" height="228" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+
+  <text x="140" y="28" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">Thread T1 (idle)</text>
+  <rect x="40" y="38" width="200" height="30" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="140" y="58" text-anchor="middle" font-size="11" fill="#334155">own queue empty, submission queue empty</text>
+
+  <text x="540" y="28" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">Thread T2 (busy)</text>
+  <rect x="440" y="38" width="200" height="30" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="540" y="58" text-anchor="middle" font-size="11" fill="#14532d">running Sub-Task 1 (front of deque)</text>
+
+  <text x="540" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">T2's work-stealing deque</text>
+  <rect x="440" y="108" width="200" height="34" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <line x1="490" y1="108" x2="490" y2="142" stroke="#16a34a" stroke-width="1"/>
+  <line x1="590" y1="108" x2="590" y2="142" stroke="#16a34a" stroke-width="1"/>
+  <text x="465" y="130" text-anchor="middle" font-size="11" fill="#14532d">ST1</text>
+  <text x="615" y="130" text-anchor="middle" font-size="11" fill="#14532d">ST2</text>
+  <text x="465" y="160" text-anchor="middle" font-size="10.5" fill="#64748b">front — T2 takes next task here</text>
+  <text x="615" y="160" text-anchor="middle" font-size="10.5" fill="#7c3aed">back — T1 steals from here</text>
+
+  <path d="M600 142 C 600 190, 240 190, 200 142" stroke="#7c3aed" stroke-width="1.5" fill="none" marker-end="url(#s1)"/>
+  <text x="400" y="205" text-anchor="middle" font-size="12" font-weight="600" fill="#7c3aed">T1 steals ST2 from the back of T2's deque</text>
+
+  <text x="340" y="225" text-anchor="middle" font-size="11" fill="#334155">Rule: new tasks are added to a deque from the FRONT; other threads steal from the BACK.</text>
+
+  <defs><marker id="s1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#7c3aed"/></marker></defs>
+</svg>

@@ -1,0 +1,23 @@
+<svg viewBox="0 0 700 110" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="698" height="108" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="20" y="30" width="140" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="90" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">Producer</text>
+  <text x="90" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">acquires lock</text>
+
+  <rect x="200" y="30" width="150" height="50" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="275" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="#991b1b">Consumer cannot</text>
+  <text x="275" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="#991b1b">enter / calls wait()</text>
+
+  <rect x="390" y="30" width="150" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="465" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">Producer finishes</text>
+  <text x="465" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">or calls wait()</text>
+
+  <rect x="580" y="30" width="105" height="50" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="632" y="50" text-anchor="middle" font-size="11.5" font-weight="600" fill="#14532d">Lock becomes</text>
+  <text x="632" y="66" text-anchor="middle" font-size="11.5" font-weight="600" fill="#14532d">available</text>
+
+  <path d="M160 55 H196" stroke="#334155" stroke-width="1.5" marker-end="url(#a2)"/>
+  <path d="M350 55 H386" stroke="#334155" stroke-width="1.5" marker-end="url(#a2)"/>
+  <path d="M540 55 H576" stroke="#334155" stroke-width="1.5" marker-end="url(#a2)"/>
+  <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#334155"/></marker></defs>
+</svg>

@@ -1,0 +1,24 @@
+<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="478" height="238" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="20" y="28" font-size="13" font-weight="700" fill="#334155">Lock compatibility: T1 holds \ T2 wants</text>
+
+  <text x="270" y="55" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">S (Shared)</text>
+  <text x="390" y="55" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">X (Exclusive)</text>
+  <text x="150" y="90" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">S (Shared)</text>
+  <text x="150" y="150" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">X (Exclusive)</text>
+
+  <rect x="210" y="70" width="120" height="55" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="270" y="103" text-anchor="middle" font-size="16" fill="#14532d">✓ Allowed</text>
+
+  <rect x="330" y="70" width="120" height="55" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="390" y="103" text-anchor="middle" font-size="16" fill="#991b1b">✗</text>
+
+  <rect x="210" y="125" width="120" height="55" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="270" y="158" text-anchor="middle" font-size="16" fill="#991b1b">✗</text>
+
+  <rect x="330" y="125" width="120" height="55" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="390" y="158" text-anchor="middle" font-size="16" fill="#991b1b">✗</text>
+
+  <text x="240" y="215" text-anchor="middle" font-size="12.5" fill="#334155">Only Shared–Shared is compatible. Everything touching an</text>
+  <text x="240" y="230" text-anchor="middle" font-size="12.5" fill="#334155">Exclusive lock (held or requested) is blocked.</text>
+</svg>

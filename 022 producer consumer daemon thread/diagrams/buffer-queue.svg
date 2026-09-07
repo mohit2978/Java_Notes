@@ -1,0 +1,15 @@
+<svg viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="418" height="128" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="60" y="30" font-size="13" font-weight="600" fill="#334155">Front</text>
+  <text x="330" y="30" font-size="13" font-weight="600" fill="#334155">Rear</text>
+  <path d="M50 45 H30" stroke="#334155" stroke-width="1.5" marker-end="url(#a1)"/>
+  <path d="M370 45 H390" stroke="#334155" stroke-width="1.5" marker-end="url(#a1)"/>
+  <rect x="130" y="55" width="50" height="40" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <rect x="180" y="55" width="50" height="40" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <rect x="230" y="55" width="50" height="40" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="155" y="80" text-anchor="middle" font-size="15" fill="#1e3a8a">1</text>
+  <text x="205" y="80" text-anchor="middle" font-size="15" fill="#1e3a8a">2</text>
+  <text x="255" y="80" text-anchor="middle" font-size="15" fill="#1e3a8a">3</text>
+  <text x="205" y="115" text-anchor="middle" font-size="11" fill="#64748b">capacity = 3</text>
+  <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#334155"/></marker></defs>
+</svg>

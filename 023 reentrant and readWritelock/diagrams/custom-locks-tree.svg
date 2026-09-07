@@ -1,0 +1,27 @@
+<svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="638" height="248" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="240" y="20" width="160" height="44" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="320" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Custom Locks</text>
+
+  <rect x="30" y="150" width="130" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="95" y="171" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">Reentrant</text>
+  <text x="95" y="187" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">Lock</text>
+
+  <rect x="190" y="150" width="130" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="255" y="171" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">Read Write</text>
+  <text x="255" y="187" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">Lock</text>
+
+  <rect x="350" y="150" width="130" height="50" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="415" y="180" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">Semaphore</text>
+
+  <rect x="510" y="150" width="110" height="50" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="565" y="180" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">StampedLock</text>
+
+  <path d="M320 64 V100 H95 V148" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#c1)"/>
+  <path d="M320 64 V100 H255 V148" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#c1)"/>
+  <path d="M320 64 V110 H415 V148" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#c1)"/>
+  <path d="M320 64 V120 H565 V148" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#c1)"/>
+
+  <text x="320" y="225" text-anchor="middle" font-size="12" fill="#334155">These do not depend on an object — unlike synchronized's monitor lock.</text>
+  <defs><marker id="c1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#64748b"/></marker></defs>
+</svg>

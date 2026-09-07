@@ -1,0 +1,44 @@
+<svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <rect x="1" y="1" width="678" height="218" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+
+  <text x="90" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">Submission Queue</text>
+  <g>
+    <rect x="30" y="40" width="120" height="30" fill="#fdf4ff" stroke="#a21caf" stroke-width="1.5"/>
+    <line x1="60" y1="40" x2="60" y2="70" stroke="#a21caf" stroke-width="1"/>
+    <line x1="90" y1="40" x2="90" y2="70" stroke="#a21caf" stroke-width="1"/>
+    <line x1="120" y1="40" x2="120" y2="70" stroke="#a21caf" stroke-width="1"/>
+    <text x="135" y="60" text-anchor="middle" font-size="11" fill="#701a75">Task3</text>
+  </g>
+  <text x="90" y="90" text-anchor="middle" font-size="10.5" fill="#64748b">tasks land here when all threads are busy</text>
+
+  <rect x="260" y="30" width="140" height="120" rx="8" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>
+  <text x="330" y="20" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155">Thread Pool</text>
+  <rect x="278" y="50" width="104" height="30" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="330" y="70" text-anchor="middle" font-size="12" fill="#1e3a8a">Thread T1</text>
+  <rect x="278" y="100" width="104" height="30" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="330" y="120" text-anchor="middle" font-size="12" fill="#14532d">Thread T2</text>
+
+  <path d="M382 65 H420" stroke="#2563eb" stroke-width="1.5" marker-end="url(#w1)"/>
+  <path d="M382 115 H420" stroke="#16a34a" stroke-width="1.5" marker-end="url(#w1)"/>
+
+  <g>
+    <rect x="420" y="50" width="120" height="30" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+    <line x1="450" y1="50" x2="450" y2="80" stroke="#2563eb" stroke-width="1"/>
+    <line x1="480" y1="50" x2="480" y2="80" stroke="#2563eb" stroke-width="1"/>
+    <line x1="510" y1="50" x2="510" y2="80" stroke="#2563eb" stroke-width="1"/>
+  </g>
+  <text x="480" y="95" text-anchor="middle" font-size="10.5" fill="#1e3a8a">T1's work-stealing deque</text>
+
+  <g>
+    <rect x="420" y="100" width="120" height="30" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+    <line x1="450" y1="100" x2="450" y2="130" stroke="#16a34a" stroke-width="1"/>
+    <line x1="480" y1="100" x2="480" y2="130" stroke="#16a34a" stroke-width="1"/>
+    <line x1="510" y1="100" x2="510" y2="130" stroke="#16a34a" stroke-width="1"/>
+    <text x="435" y="120" text-anchor="middle" font-size="10" fill="#14532d">ST2</text>
+  </g>
+  <text x="480" y="145" text-anchor="middle" font-size="10.5" fill="#14532d">T2's work-stealing deque</text>
+
+  <text x="330" y="190" text-anchor="middle" font-size="11.5" fill="#334155">Each thread has its own deque; the pool shares one Submission Queue.</text>
+
+  <defs><marker id="w1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#334155"/></marker></defs>
+</svg>
