@@ -719,3 +719,246 @@ plus annotation checking.
 A concise answer would be:
 
 > A marker interface is an empty interface used to mark a class as belonging to a particular category or having a capability. Examples are `Serializable` and `Cloneable`. Marker interfaces were especially common before Java annotations. Although annotations can also mark classes, marker interfaces participate in Java's type system, so they support polymorphism and compile-time type checking. For example, a method can accept only `Serializable` or another marker-interface type. Annotations are more flexible for pure metadata because they can contain values and can be placed on methods, fields, parameters, etc. Therefore, today annotations are generally preferred when we only need metadata, while a marker interface can still make sense when the marker should represent an actual Java type.
+
+---
+
+# The `transient` Keyword in Java
+
+Since we just discussed the `Serializable` marker interface, there is a tightly coupled keyword you will always encounter in interviews and real-world code: **`transient`**.
+
+---
+
+## What is `transient`?
+
+`transient` is a **field-level access modifier** in Java.
+
+When a class implements `Serializable`, Java's serialization mechanism automatically saves all fields of that object into a byte stream. 
+
+If you mark a field with `transient`, you tell the JVM:
+
+> **"Do NOT serialize this field. Skip it when saving object state to a byte stream or disk."**
+
+```text
+Object Serialization:
+[ username ]  -------> Saved to byte stream
+[ transient password ] -------> SKIPPED (Not saved)
+```
+
+---
+
+## Why is `transient` used?
+
+There are 3 primary reasons to use `transient`:
+
+### 1. Security (Sensitive Data)
+You do not want confidential information stored in plain files, logs, or sent over an unencrypted network.
+- Passwords / PINs
+- Secret API keys / tokens
+- Credit card numbers / SSNs
+
+### 2. Non-Serializable References
+Sometimes an object holds references to system-level resources or classes that do not implement `Serializable`.
+If you try to serialize an object containing a non-serializable field, Java throws `java.io.NotSerializableException`.
+Marking those fields `transient` prevents this error.
+- `Thread`
+- `Socket` / Network connections
+- `InputStream` / `OutputStream` / File handles
+- Database connections (`Connection`)
+- Loggers (`Logger`)
+
+### 3. Derived or Redundant Data
+Data that can easily be recalculated from other fields, or temporary cache values, should not waste storage space or bandwidth:
+- Pre-computed hash codes
+- Derived values (e.g., `age` when `dateOfBirth` is already stored)
+- Temporary GUI handles or caches
+
+---
+
+## Code Example: How `transient` works
+
+```java
+import java.io.*;
+
+class UserAccount implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    String username;
+    
+    // transient field: will NOT be serialized
+    transient String password;
+    
+    // transient field: can be recalculated
+    transient int loginAttempts;
+
+    UserAccount(String username, String password, int loginAttempts) {
+        this.username = username;
+        this.password = password;
+        this.loginAttempts = loginAttempts;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAccount{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", loginAttempts=" + loginAttempts +
+                '}';
+    }
+}
+```
+
+Now let's serialize and deserialize:
+
+```java
+public class TransientDemo {
+    public static void main(String[] args) throws Exception {
+        UserAccount account = new UserAccount("mohit", "secret_pass_123", 3);
+        System.out.println("Before Serialization: " + account);
+
+        // 1. Serialize
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(baos);
+        out.writeObject(account);
+        out.close();
+
+        // 2. Deserialize
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(bais);
+        UserAccount restoredAccount = (UserAccount) in.readObject();
+        in.close();
+
+        System.out.println("After Deserialization: " + restoredAccount);
+    }
+}
+```
+
+### Output:
+
+```text
+Before Serialization: UserAccount{username='mohit', password='secret_pass_123', loginAttempts=3}
+After Deserialization: UserAccount{username='mohit', password='null', loginAttempts=0}
+```
+
+Notice what happened during deserialization:
+- `username` was preserved (`"mohit"`).
+- `password` was **not saved**, so it was restored to `null` (default for objects).
+- `loginAttempts` was **not saved**, so it was restored to `0` (default for `int`).
+
+---
+
+## What value does a `transient` field get on Deserialization?
+
+When an object is restored from a byte stream, constructor logic is **not** called. The JVM simply allocates memory and assigns the **default value** corresponding to the variable's type:
+
+| Type | Default Value after Deserialization |
+|---|---|
+| Object references (`String`, `Date`, etc.) | `null` |
+| `int`, `byte`, `short` | `0` |
+| `long` | `0L` |
+| `float` | `0.0f` |
+| `double` | `0.0d` |
+| `boolean` | `false` |
+| `char` | `'\u0000'` |
+
+---
+
+## What if you need to restore or customize transient fields?
+
+If a transient field is needed after deserialization, you can reconstruct it using Java's custom serialization methods:
+
+```java
+private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    // 1. Perform default deserialization
+    in.defaultReadObject();
+    
+    // 2. Reinitialize transient field or compute it
+    this.loginAttempts = 0; // reset
+    // or re-establish database connection, etc.
+}
+```
+
+---
+
+## Important Interview Nuances
+
+### 1. `transient` vs `static`
+- **`static` variables belong to the class**, not to any specific instance.
+- Serialization only saves the **state of an object instance**.
+- Therefore, **`static` fields are never serialized by default**, regardless of whether you mark them `transient` or not.
+- Adding `transient` to a `static` field is syntactically valid, but technically redundant.
+
+### 2. `transient` with `final`
+- If a `final` field is initialized directly with a compile-time constant:
+  ```java
+  transient final String key = "ABC";
+  ```
+  The Java compiler inlines compile-time constants directly into bytecode, so after deserialization it may still evaluate to `"ABC"`.
+- If the `final` field is initialized at runtime (e.g. inside a constructor):
+  ```java
+  transient final String key;
+  User(String key) { this.key = key; }
+  ```
+  During deserialization, the deserialization mechanism sets it to its default value (`null`).
+
+---
+
+## Quick Summary for Interviews
+
+| Feature | `transient` Keyword |
+|---|---|
+| **Applies to** | Variables / Fields only (cannot apply to classes or methods) |
+| **Primary Purpose** | Exclude field from serialization process |
+| **Common Use Cases** | Passwords/keys (security), sockets/threads (non-serializable), caches (derived data) |
+| **Deserialized Value** | Default value of type (`null`, `0`, `false`) |
+| **Effect on static** | Redundant; `static` is already excluded from object serialization |
+
+---
+
+# `transient` vs `@JsonIgnore` (Spring Boot / Jackson)
+
+A very common real-world question: 
+> *"In Spring Boot, we use `@JsonIgnore` on fields like `password`. Is `transient` doing the same thing?"*
+
+**Conceptually: YES.**  
+Both are used to say: **"Do not include this field when turning this object into data to be stored or transmitted."**
+
+However, they operate in **different contexts**:
+
+```text
+Java Native Serialization (Binary)
+User Object  ====[ transient ]====>  Byte Stream / .ser file
+(Uses Java's built-in Serializable mechanism)
+
+
+REST API / Spring Boot (JSON)
+User Object  ====[ @JsonIgnore ]===>  JSON string {"username": "mohit"}
+(Uses Jackson JSON parser library)
+```
+
+---
+
+## Comparison
+
+| Feature | `transient` | `@JsonIgnore` |
+|---|---|---|
+| **What it is** | Java core language **keyword** | Jackson library **annotation** (`com.fasterxml.jackson.annotation.JsonIgnore`) |
+| **Serialization Type** | **Java Native Serialization** (converts object to **binary byte stream**) | **JSON Serialization** (converts object to **JSON text string** in Spring Boot) |
+| **Where it is used** | `ObjectOutputStream`, Java RMI, caching binary state | Spring Boot REST APIs, Kafka JSON messages |
+| **Flexibility** | All-or-nothing (ignores field completely) | Fine-grained (can ignore only for serialization, only for deserialization, or both) |
+
+---
+
+## Important Spring Boot Tip: Did you know?
+
+1. **Jackson actually respects `transient`!**  
+   If you mark a field as `transient` in a Spring Boot DTO or Entity, Jackson by default will also ignore it during JSON serialization. However, using `@JsonIgnore` (or `@JsonProperty(access = Access.WRITE_ONLY)`) is the standard practice in Spring Boot because it is explicit and clear about API contracts.
+
+2. **The Password Problem in Spring Boot:**  
+   With `transient` or `@JsonIgnore`, the field is ignored in **both** directions (cannot read it in, cannot send it out).  
+   In Spring Boot, for passwords you usually want the user to **send** the password in a `POST` request, but you **never want to return** it in the response:
+   ```java
+   // Best practice in Spring Boot:
+   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+   private String password;
+   ```
+   This allows incoming JSON to populate `password`, but prevents it from appearing in any outgoing JSON response.
