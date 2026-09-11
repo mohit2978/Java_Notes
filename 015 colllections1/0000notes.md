@@ -771,6 +771,91 @@ A `List` is an **ordered collection** allowing duplicate elements and **random i
 
 ---
 
+### `add()` vs `set()` in `ArrayList` (Deep Dive)
+
+While both methods mutate an `ArrayList`, they serve fundamentally different operations: **`add()` inserts / appends** elements (increasing list size), whereas **`set()` replaces / overwrites** an existing element (keeping size unchanged).
+
+#### Comparison Matrix:
+
+| Feature | `add(E e)` | `add(int index, E element)` | `set(int index, E element)` |
+| :--- | :--- | :--- | :--- |
+| **Operation** | **Appends** to the end | **Inserts** at specified position | **Replaces / Overwrites** at specified position |
+| **Size Impact** | Increases by `1` (`size++`) | Increases by `1` (`size++`) | **Unchanged** (replaces existing item) |
+| **Element Shifting?** | No shifting (amortized $O(1)$) | **Yes**, shifts elements at index and rightwards by $+1$ position ($O(n)$) | **No shifting** (direct array cell replacement) |
+| **Return Value** | `boolean` (always `true`) | `void` | Returns the **previous element** that was replaced (`E`) |
+| **Time Complexity**| Amortized $O(1)$ (resizes when full) | $O(n)$ (due to array copying/shifting) | $O(1)$ (direct random access by index) |
+| **Valid Indices** | N/A | `0 <= index <= size()` | `0 <= index < size()` |
+| **Exception Thrown**| N/A | `IndexOutOfBoundsException` (if `index < 0 \|\| index > size()`) | `IndexOutOfBoundsException` (if `index < 0 \|\| index >= size()`) |
+
+---
+
+#### Comprehensive Code Example:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class AddVsSetExample {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+
+        // 1. add(E e) - Appends elements to the end
+        list.add("Apple");   // returns true, size becomes 1
+        list.add("Banana");  // returns true, size becomes 2
+        list.add("Cherry");  // returns true, size becomes 3
+        System.out.println("Initial List: " + list);
+        System.out.println("Size after appends: " + list.size()); // 3
+
+        // 2. add(int index, E element) - Inserts at index and shifts existing elements right
+        // "Banana" and "Cherry" get shifted from indices 1, 2 to indices 2, 3
+        list.add(1, "Blueberry");
+        System.out.println("\nAfter add(1, 'Blueberry'): " + list);
+        System.out.println("Size after insertion: " + list.size()); // 4 (size increased!)
+
+        // 3. set(int index, E element) - Overwrites element at index and returns old element
+        String replacedElement = list.set(2, "Blackberry");
+        System.out.println("\nOld element replaced: " + replacedElement); // Banana
+        System.out.println("After set(2, 'Blackberry'): " + list);
+        System.out.println("Size after set: " + list.size()); // 4 (size unchanged!)
+
+        // 4. ⚠️ CRITICAL GOTCHA: Initial Capacity vs Size with set()
+        List<String> preSizedList = new ArrayList<>(10); // Capacity = 10, but size = 0!
+        System.out.println("\npreSizedList capacity: 10, actual size: " + preSizedList.size()); // 0
+
+        try {
+            // ❌ Throws IndexOutOfBoundsException: Index 0 out of bounds for length 0
+            // Because set requires 0 <= index < size()!
+            preSizedList.set(0, "Mango");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Caught Exception on set(0): " + e.getMessage());
+        }
+
+        // ✅ add(0, element) works because add requires 0 <= index <= size()
+        preSizedList.add(0, "Mango");
+        System.out.println("preSizedList after add(0, 'Mango'): " + preSizedList);
+    }
+}
+```
+
+#### Output:
+```text
+Initial List: [Apple, Banana, Cherry]
+Size after appends: 3
+
+After add(1, 'Blueberry'): [Apple, Blueberry, Banana, Cherry]
+Size after insertion: 4
+
+Old element replaced: Banana
+After set(2, 'Blackberry'): [Apple, Blueberry, Blackberry, Cherry]
+Size after set: 4
+
+preSizedList capacity: 10, actual size: 0
+Caught Exception on set(0): Index 0 out of bounds for length 0
+preSizedList after add(0, 'Mango'): [Mango]
+```
+
+---
+
 ### `ListIterator` & Bidirectional Traversal
 
 ![ListIterator and subList](list_iterator_traversal.svg)
