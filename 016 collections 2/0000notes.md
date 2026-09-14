@@ -748,3 +748,563 @@ public class TreeSetExample {
 | **`HashSet`** | Backed by `HashMap` | No order | **Yes (1 max)** | N/A | No | $O(1)$ |
 | **`LinkedHashSet`**| Backed by `LinkedHashMap` | Insertion order | **Yes (1 max)** | N/A | No | $O(1)$ |
 | **`TreeSet`** | Backed by `NavigableMap` (`TreeMap`)| Sorted order | **No** | N/A | No | $O(\log n)$ |
+
+---
+
+## 11. 🔥 Interview Question: How Does `HashSet` Maintain Non-Duplicacy (Uniqueness)?
+
+> **Question:** *How does `HashSet` prevent duplicate elements internally in Java? What happens behind the scenes when you call `set.add(element)`?*
+
+---
+
+### Direct Answer (Elevator Pitch)
+`HashSet` does not have its own independent hashing or deduplication algorithm. Internally, **`HashSet` is backed by a `HashMap`**. 
+
+When an element is added to a `HashSet`:
+1. The element is stored as the **`Key`** in the internal `HashMap`.
+2. A constant dummy `Object` (`PRESENT`) is stored as the **`Value`**.
+3. Duplicate prevention relies entirely on `HashMap`'s key uniqueness mechanism, which uses **`hashCode()`** to locate the bucket and **`equals()`** (along with `==`) to check for equality.
+4. If an identical key already exists, `map.put()` returns the previous value (`PRESENT`), making `set.add()` return `false` without adding a duplicate.
+
+---
+
+### Step-by-Step Internal Mechanism
+
+```
+set.add(element)
+       │
+       ▼
+Calls: map.put(element, PRESENT)
+       │
+       ▼
+Compute 32-bit Hash: hash = (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16)
+       │
+       ▼
+Compute Bucket Index: index = (n - 1) & hash
+       │
+       ├─────────────────────────────────────────────┐
+       ▼                                             ▼
+Bucket is Empty (table[index] == null)        Bucket has Existing Node(s)
+       │                                             │
+Insert new Node(hash, element, PRESENT, null)        Traverse List / Red-Black Tree
+       │                                             │
+map.put() returns null                               Check for every node 'p':
+       │                                             if (p.hash == hash && 
+       ▼                                                 ((p.key == key) || (key != null && key.equals(p.key))))
+set.add() returns TRUE (Element added)               │
+                                                     ├───────────────────────┬────────────────────────┐
+                                                     ▼                       ▼                        ▼
+                                            Match Found! (Duplicate)    No Match Found           Treeified Bucket
+                                                     │                       │                        │
+                                            Overwrite value with PRESENT    Attach new Node at tail  Add TreeNode
+                                                     │                       │                        │
+                                            Return previous value (PRESENT)  Return null              Return null
+                                                     │                       │                        │
+                                                     ▼                       ▼                        ▼
+                                            set.add() returns FALSE!        set.add() returns TRUE   set.add() returns TRUE
+                                            (Duplicate Rejected)            (Element Added)          (Element Added)
+```
+
+---
+
+### JDK Source Code Breakdown
+
+From `java.util.HashSet`:
+
+```java
+public class HashSet<E> implements Set<E>, Cloneable, java.io.Serializable {
+    // 1. Backing HashMap instance
+    private transient HashMap<E, Object> map;
+
+    // 2. Dummy value associated with every key in the backing Map
+    private static final Object PRESENT = new Object();
+
+    // Constructor creates a standard HashMap
+    public HashSet() {
+        map = new HashMap<>();
+    }
+
+    // 3. The add() method delegates to map.put()
+    public boolean add(E e) {
+        return map.put(e, PRESENT) == null;
+    }
+}
+```
+
+#### How the Return Value Determines Duplication:
+* `map.put(key, value)` contract:
+  * Returns **`null`** if the key was **new** (not present previously).
+  * Returns the **previous associated value** if the key was **already present**.
+* In `HashSet.add(e)`:
+  * If `e` is **new**: `map.put(e, PRESENT)` returns `null`. Then `null == null` evaluates to **`true`** &rarr; Element was added successfully.
+  * If `e` is a **duplicate**: `map.put(e, PRESENT)` returns `PRESENT` (an existing non-null `Object`). Then `PRESENT == null` evaluates to **`false`** &rarr; Element was rejected as duplicate.
+
+---
+
+### The 2-Tier Equality Check in `HashMap.putVal()`
+
+Inside `HashMap.putVal()`, Java tests whether a node's key `p.key` is duplicate to the incoming `key` using this exact condition:
+
+```java
+if (p.hash == hash && ((k = p.key) == key || (key != null && key.equals(k))))
+```
+
+1. **Hash Code Comparison (`p.hash == hash`):**
+   * If two objects have different hash codes, they **cannot** be equal.
+   * This is an extremely fast 32-bit integer comparison that eliminates unnecessary `.equals()` invocations.
+2. **Reference / Identity Check (`(k = p.key) == key`):**
+   * If both references point to the exact same memory address (or both are `null`), they are identical without needing `.equals()`.
+3. **Value Equality Check (`key != null && key.equals(k)`):**
+   * If references differ but hash codes match, the `.equals()` method is invoked to check logical equality.
+
+---
+
+### Why Must You Override BOTH `equals()` and `hashCode()`?
+
+> **⚠️ Critical Interview Rule:**
+> If you override `equals()`, you **MUST** also override `hashCode()`, and vice-versa. Failing to do so breaks `HashSet`'s non-duplicacy contract!
+
+| Scenario | What Happens | Result in `HashSet` |
+| :--- | :--- | :--- |
+| **Only `equals()` overridden** | Default `Object.hashCode()` returns memory address-based hash codes. Two logically equal objects produce different hash codes. | Objects land in **different buckets**! `HashSet` will fail to detect duplicates and will store both duplicates. |
+| **Only `hashCode()` overridden** | Equal objects land in the same bucket, but default `Object.equals()` uses reference equality (`==`). | The equality check fails unless both are the exact same instance in memory. Logical duplicates are stored! |
+| **Both overridden properly** | Both objects produce the same hash code (same bucket) and `equals()` returns `true`. | **Duplicate is correctly detected and rejected.** |
+
+---
+
+### Complete Demonstrating Code
+
+```java
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+// Custom Class correctly overriding both equals() and hashCode()
+class Student {
+    private final int id;
+    private final String name;
+
+    public Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return id == student.id && Objects.equals(name, student.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" + "id=" + id + ", name='" + name + "'}";
+    }
+}
+
+public class HashSetNonDuplicacyDemo {
+    public static void main(String[] args) {
+        Set<Student> students = new HashSet<>();
+
+        Student s1 = new Student(101, "Alice");
+        Student s2 = new Student(101, "Alice"); // Different object reference, identical data
+
+        boolean addedS1 = students.add(s1);
+        boolean addedS2 = students.add(s2);
+
+        System.out.println("Added s1: " + addedS1); // true
+        System.out.println("Added s2: " + addedS2); // false (Rejected as duplicate!)
+        System.out.println("Set size: " + students.size()); // 1
+        System.out.println("Set content: " + students);
+    }
+}
+```
+
+#### Output:
+```text
+Added s1: true
+Added s2: false
+Set size: 1
+Set content: [Student{id=101, name='Alice'}]
+```
+
+---
+
+### Summary Checklist for Interviews
+
+* **Backing Structure:** `HashSet` is an adapter wrapper around a `HashMap`.
+* **Storage Role:** Element is the **Key**; a dummy static constant `PRESENT` (`new Object()`) is the **Value**.
+* **Detection Mechanism:** `map.put(key, PRESENT) == null`.
+* **Uniqueness Criteria:** Equal hash code (`hash == p.hash`) **AND** (`key == p.key || key.equals(p.key)`).
+* **Null Handling:** Allows at most **one `null`** because `HashMap` maps `null` keys to bucket `0` with `hash = 0`. Duplicate `null` calls will simply return `false`.
+
+---
+
+## 12. 🔥 Coding Interview Question: Implement a Custom `HashSet`
+
+> **Interview Question:** *How would you implement a custom `HashSet` from scratch in Java? Explain the design choices for collision handling, dynamic resizing (rehashing), and element uniqueness.*
+
+---
+
+### Overview: What Interviewers Are Looking For
+
+Interviewers typically evaluate:
+1. **Low-Level Data Structure Design:** Array of buckets with linked nodes (Separate Chaining).
+2. **Hash & Index Calculation:** Using `hashCode()`, bit-mixing, and modulo/bitwise masking to find bucket index.
+3. **Uniqueness Check:** Comparing both `hash` and `equals()` (and handling `null` safely).
+4. **Dynamic Resizing & Rehashing:** Doubling capacity and re-distributing nodes when `size > capacity * loadFactor`.
+5. **Time & Space Complexities:** Average $O(1)$ operations, worst case $O(n)$.
+
+---
+
+### Approach 1: Low-Level Implementation From Scratch (Separate Chaining + Rehashing)
+
+This approach implements a generic `CustomHashSet<E>` **without using any built-in Java collection classes**.
+
+```java
+import java.util.Arrays;
+import java.util.Objects;
+
+/**
+ * A custom implementation of HashSet from scratch using Separate Chaining.
+ * Supports: add, contains, remove, size, isEmpty, and dynamic rehashing.
+ */
+public class CustomHashSet<E> {
+
+    // 1. Linked list node for collision resolution
+    private static class Node<E> {
+        final int hash;
+        final E data;
+        Node<E> next;
+
+        Node(int hash, E data, Node<E> next) {
+            this.hash = hash;
+            this.data = data;
+            this.next = next;
+        }
+    }
+
+    // Default configuration constants (identical to java.util.HashMap)
+    private static final int DEFAULT_CAPACITY = 16;
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
+    @SuppressWarnings("unchecked")
+    private Node<E>[] buckets = new Node[DEFAULT_CAPACITY];
+    private int size = 0;
+    private int capacity = DEFAULT_CAPACITY;
+    private final float loadFactor = DEFAULT_LOAD_FACTOR;
+
+    // =========================================================================
+    // Hashing & Index Helpers
+    // =========================================================================
+
+    /** Computes 32-bit mixed hash code (null maps to hash 0) */
+    private int computeHash(E key) {
+        if (key == null) return 0;
+        int h = key.hashCode();
+        return h ^ (h >>> 16); // XOR upper 16 bits with lower 16 bits
+    }
+
+    /** Maps hash code to valid bucket index [0, capacity - 1] */
+    private int getBucketIndex(int hash) {
+        return (capacity - 1) & hash; // Bitwise AND equivalent to (hash % capacity)
+    }
+
+    // =========================================================================
+    // Core Public Methods
+    // =========================================================================
+
+    /**
+     * Adds the specified element if not already present.
+     * @return true if added, false if already present (duplicate rejected)
+     */
+    public boolean add(E element) {
+        int hash = computeHash(element);
+        int index = getBucketIndex(hash);
+
+        Node<E> head = buckets[index];
+        Node<E> curr = head;
+
+        // 1. Check if element already exists in this bucket chain
+        while (curr != null) {
+            if (curr.hash == hash && Objects.equals(curr.data, element)) {
+                return false; // Duplicate detected! Do not add.
+            }
+            curr = curr.next;
+        }
+
+        // 2. Insert new element at head of bucket chain (O(1) insertion)
+        Node<E> newNode = new Node<>(hash, element, head);
+        buckets[index] = newNode;
+        size++;
+
+        // 3. Check if rehashing threshold is crossed
+        if ((float) size / capacity >= loadFactor) {
+            resize();
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the set contains the given element.
+     * @return true if present, false otherwise
+     */
+    public boolean contains(Object element) {
+        @SuppressWarnings("unchecked")
+        int hash = computeHash((E) element);
+        int index = getBucketIndex(hash);
+
+        Node<E> curr = buckets[index];
+        while (curr != null) {
+            if (curr.hash == hash && Objects.equals(curr.data, element)) {
+                return true;
+            }
+            curr = curr.next;
+        }
+        return false;
+    }
+
+    /**
+     * Removes the specified element from the set if present.
+     * @return true if removed, false if element was not in set
+     */
+    public boolean remove(Object element) {
+        @SuppressWarnings("unchecked")
+        int hash = computeHash((E) element);
+        int index = getBucketIndex(hash);
+
+        Node<E> curr = buckets[index];
+        Node<E> prev = null;
+
+        while (curr != null) {
+            if (curr.hash == hash && Objects.equals(curr.data, element)) {
+                // Unlink node
+                if (prev == null) {
+                    buckets[index] = curr.next; // Head removed
+                } else {
+                    prev.next = curr.next;      // Middle/Tail removed
+                }
+                size--;
+                return true;
+            }
+            prev = curr;
+            curr = curr.next;
+        }
+        return false;
+    }
+
+    /** Returns total elements in the set */
+    public int size() {
+        return size;
+    }
+
+    /** Checks if set is empty */
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    /** Clears all elements from the set */
+    public void clear() {
+        Arrays.fill(buckets, null);
+        size = 0;
+    }
+
+    // =========================================================================
+    // Dynamic Rehashing
+    // =========================================================================
+
+    /**
+     * Doubles capacity and rehashes all existing nodes into new bucket array.
+     */
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        int newCapacity = capacity * 2;
+        Node<E>[] newBuckets = new Node[newCapacity];
+
+        // Rehash all existing elements
+        for (int i = 0; i < capacity; i++) {
+            Node<E> curr = buckets[i];
+            while (curr != null) {
+                Node<E> next = curr.next; // Save reference
+
+                // Calculate new index with new capacity
+                int newIndex = (newCapacity - 1) & curr.hash;
+
+                // Prepend to new bucket chain
+                curr.next = newBuckets[newIndex];
+                newBuckets[newIndex] = curr;
+
+                curr = next;
+            }
+        }
+
+        this.buckets = newBuckets;
+        this.capacity = newCapacity;
+    }
+
+    // =========================================================================
+    // String Representation
+    // =========================================================================
+
+    @Override
+    public String toString() {
+        if (size == 0) return "[]";
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
+        for (Node<E> head : buckets) {
+            Node<E> curr = head;
+            while (curr != null) {
+                if (!first) sb.append(", ");
+                sb.append(curr.data);
+                first = false;
+                curr = curr.next;
+            }
+        }
+        return sb.append("]").toString();
+    }
+}
+```
+
+---
+
+### Demonstration & Verification Code
+
+```java
+public class CustomHashSetDemo {
+    public static void main(String[] args) {
+        CustomHashSet<String> set = new CustomHashSet<>();
+
+        // 1. Basic Additions
+        System.out.println("Add 'Java': " + set.add("Java"));         // true
+        System.out.println("Add 'Python': " + set.add("Python"));     // true
+        System.out.println("Add 'C++': " + set.add("C++"));           // true
+
+        // 2. Duplicate Detection
+        System.out.println("Add 'Java' (Duplicate): " + set.add("Java")); // false!
+        System.out.println("Set content: " + set);
+        System.out.println("Size: " + set.size());                     // 3
+
+        // 3. Null Handling
+        System.out.println("\nAdd null: " + set.add(null));            // true
+        System.out.println("Add null (Duplicate): " + set.add(null));  // false
+        System.out.println("Contains null? " + set.contains(null));    // true
+        System.out.println("Set with null: " + set);
+
+        // 4. Contains Check
+        System.out.println("\nContains 'Python': " + set.contains("Python")); // true
+        System.out.println("Contains 'Ruby': " + set.contains("Ruby"));       // false
+
+        // 5. Remove Element
+        System.out.println("\nRemove 'Python': " + set.remove("Python"));     // true
+        System.out.println("Remove 'Ruby' (Absent): " + set.remove("Ruby")); // false
+        System.out.println("Set after remove: " + set);
+        System.out.println("Size after remove: " + set.size());               // 3
+
+        // 6. Trigger Dynamic Rehashing
+        System.out.println("\n--- Triggering Dynamic Rehashing ---");
+        for (int i = 1; i <= 20; i++) {
+            set.add("Element_" + i);
+        }
+        System.out.println("Total size after batch insert: " + set.size()); // 23
+        System.out.println("Contains 'Element_15': " + set.contains("Element_15")); // true
+    }
+}
+```
+
+#### Output:
+```text
+Add 'Java': true
+Add 'Python': true
+Add 'C++': true
+Add 'Java' (Duplicate): false!
+Set content: [C++, Python, Java]
+Size: 3
+
+Add null: true
+Add null (Duplicate): false
+Contains null? true
+Set with null: [null, C++, Python, Java]
+
+Contains 'Python': true
+Contains 'Ruby': false
+
+Remove 'Python': true
+Remove 'Ruby' (Absent): false
+Set after remove: [null, C++, Java]
+Size after remove: 3
+
+--- Triggering Dynamic Rehashing ---
+Total size after batch insert: 23
+Contains 'Element_15': true
+```
+
+---
+
+### Approach 2: JDK-Style Wrapper (Delegating to a `HashMap`)
+
+If the interviewer specifically asks: *"How would you implement it the way Java's JDK implements `java.util.HashSet`?"*:
+
+```java
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+public class JdkStyleCustomHashSet<E> implements Iterable<E> {
+    // 1. Backing Map
+    private final Map<E, Object> map;
+
+    // 2. Dummy value associated with every key
+    private static final Object PRESENT = new Object();
+
+    public JdkStyleCustomHashSet() {
+        this.map = new HashMap<>();
+    }
+
+    public boolean add(E element) {
+        return map.put(element, PRESENT) == null;
+    }
+
+    public boolean remove(Object element) {
+        return map.remove(element) == PRESENT;
+    }
+
+    public boolean contains(Object element) {
+        return map.containsKey(element);
+    }
+
+    public int size() {
+        return map.size();
+    }
+
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    public void clear() {
+        map.clear();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return map.keySet().iterator();
+    }
+}
+```
+
+---
+
+### Complexity Comparison
+
+| Operation | Average Case | Worst Case (Heavy Collisions) | Space Complexity |
+| :--- | :--- | :--- | :--- |
+| **`add(e)`** | $O(1)$ | $O(n)$ without treeification | $O(n)$ |
+| **`contains(e)`**| $O(1)$ | $O(n)$ | $O(1)$ |
+| **`remove(e)`** | $O(1)$ | $O(n)$ | $O(1)$ |
+| **Rehashing** | $O(n)$ (amortized $O(1)$) | $O(n)$ | $O(n)$ during reallocation |
