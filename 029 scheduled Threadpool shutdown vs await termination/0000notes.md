@@ -1,303 +1,206 @@
 
 
-![alt text](<029shutdown vs await termination_240523_200420_250714_011504_1.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_2.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_3.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_4.jpg>) ![alt text](<029shutdown vs await termination_240523_200420_250714_011504_5.jpg>)
 
+**Shutdown:**
+- Initiates orderly shutdown of the ExecutorService.
+- After calling 'Shutdown', Executor will not accept new task submission.
+- Already Submitted tasks, will continue to execute.
+- No interruption in these — not a force to stop ThreadPool Execution.
 
+**AwaitTermination:**
+- It's an Optional functionality. Return true/false.
+- It is used after calling 'Shutdown' method.
+- Blocks calling thread for specific timeout period, and wait for ExecutorService shutdown.
+- Return true, if ExecutorService gets shutdown within specific timeout else false.
+- In `shutdown()`, calling the method doesn't wait for Executor Service to shutdown.
+- Used when we need to do something after ThreadPool Shutdown.
 
+**shutdownNow:**
+- Best effort attempt to stop/interrupt the actively executing tasks.
+- Halt the processing of tasks which are waiting.
+- Return the list of tasks which are awaiting execution.
+- All tasks, whether waiting or in progress, will be halted — or the task will not be completed fully which are executing.
+- `shutdownNow()` shuts down the ThreadPool Executor as soon as possible.
 
-## ScheduledThreadPool — Complete Explanation
-
----
-
-## What is it?
+**Scenario1: Task submission after Shutdown**
 
 ```java
-ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+public static void main(String args[]) {
+
+    ExecutorService poolObj = Executors.newFixedThreadPool(5);
+    poolObj.submit(() -> {
+        System.out.println("Thread going to start its work");
+    });
+
+    poolObj.shutdown();
+
+    poolObj.submit(() -> {
+        System.out.println("Thread going to start its work");
+    });
+
+}
 ```
 
-> **A thread pool that can run tasks after a delay OR repeatedly at fixed intervals.**
+```text
+Exception in thread "main" java.util.concurrent.RejectedExecutionException: Task java.util.concurrent.FutureTask@494b9385 rejected
+    at java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:112)
+```
 
----
 
-## How it is created internally
+
+**Scenario2: Shutdown do not impact the already submitted task**
 
 ```java
-// Executors.newScheduledThreadPool(3) internally does:
-new ScheduledThreadPoolExecutor(3);
+public static void main(String args[]) {
 
-// Which internally calls ThreadPoolExecutor with:
-new ThreadPoolExecutor(
-    3,                        // corePoolSize = 3
-    Integer.MAX_VALUE,        // maximumPoolSize = unlimited
-    0, TimeUnit.NANOSECONDS,  // keepAliveTime = 0
-    new DelayedWorkQueue()    // special queue — sorted by time
-);
+    ExecutorService poolExecutorObj = Executors.newFixedThreadPool(5);
+    poolExecutorObj.submit(() -> {
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+
+        }
+        System.out.println("new task");
+    });
+
+    poolExecutorObj.shutdown();
+    System.out.println("Main thread unblocked and finished processing");
+}
 ```
 
-| Parameter | Value | Why |
+**Scenario3: usage of 'awaitTermination'**
+
+```java
+public static void main(String args[]) {
+
+    ExecutorService poolExecutorObj = Executors.newFixedThreadPool(5);
+    poolExecutorObj.submit(() -> {
+        try {
+            Thread.sleep(6000);
+        } catch (Exception e) {
+
+        }
+        System.out.println("new task");
+    });
+
+    poolExecutorObj.shutdown();
+    try {
+        boolean isExecutorTerminated = poolExecutorObj.awaitTermination(3, TimeUnit.SECONDS);
+        System.out.println("Main thread, isExecutorTerminated: " + isExecutorTerminated);
+    } catch (Exception e) {
+
+    }
+}
+```
+- Main thread waits for 3 seconds & checks whether the pool is shut down or not.
+
+
+
+## ScheduledThreadPoolExecutor
+
+Helps to schedule the tasks.
+
+![ThreadPoolExecutor to ScheduledThreadPoolExecutor](diagrams/scheduled-threadpool-hierarchy.svg)
+
+- Core Pool Size is what we provide; new Threads beyond that → 0.
+
+**All methods of ThreadPoolExecutor +**
+
+| S.No. | Method Name | Description |
 |---|---|---|
-| `corePoolSize` | 3 (you decide) | Always keep 3 threads alive |
-| `maximumPoolSize` | `Integer.MAX_VALUE` | Unlimited extra threads if needed |
-| `keepAliveTime` | 0 | Extra threads die immediately when idle |
-| `Queue` | `DelayedWorkQueue` | Min-heap — earliest task always at front |
+| 1. | `schedule(Runnable command, long delay, TimeUnit unit)` | Schedules a Runnable task after specific delay.<br>Only one time task runs. |
+| 2. | `schedule(Callable<V> callable, long delay, TimeUnit unit)` | Schedules a Callable task after specific delay.<br>Only one time task runs. |
+| 3. | `scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)` | Schedules a Runnable task for repeated execution with fixed rate.<br>We can use cancel method to stop this repeated task.<br>Also lets say, if thread1 is taking too much time to complete the task and next task is ready to run, till previous task will not get completed, new task can not be start (it will wait in queue). |
+| 4. | `scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit)` | Schedules a Runnable task for repeated execution with a fixed delay<br>(Means next task delay counter start only after previous one task completed) |
 
----
+- `schedule(() -> "hello", 3, TimeUnit.Seconds)` — after 3 seconds, run this task once.
+- `Callable` returns a value, `Runnable` — Not.
+- (for method 3) 1st have the initial delay, & then after every 5 sec it will run.
+- (for method 4) here, delay then starts after the previous task is completed.
 
-## Difference from Normal ThreadPool
 
-| | `ThreadPoolExecutor` | `ScheduledThreadPoolExecutor` |
-|---|---|---|
-| Queue type | `ArrayBlockingQueue` / `LinkedBlockingQueue` | `DelayedWorkQueue` (min-heap by time) |
-| Run immediately | ✅ | ✅ |
-| Run after delay | ❌ | ✅ |
-| Run repeatedly | ❌ | ✅ |
-| Task ordering | FIFO | Sorted by **next run time** |
 
----
-
-## 3 Methods it provides
-
----
-
-### Method 1 — schedule() — Run Once After Delay
-
+**Ex1**
 ```java
-ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+public class ExecutorsUtilityExample {
 
-Runnable task = () -> System.out.println("Hello Shrayansh!");
+    public static void main(String args[]) {
 
-executor.schedule(task, 5, TimeUnit.SECONDS);
-//                      ↑
-//               run after 5 seconds — only ONCE
-```
+        ScheduledExecutorService poolObj = Executors.newScheduledThreadPool(5);
 
-```
-0s → task submitted → placed in DelayedWorkQueue
-5s → delay expired → thread picks up task → executes → done
-```
-
-| | Detail |
-|---|---|
-| Runs | Only **once** |
-| When | After **5 seconds** delay |
-| Returns | `ScheduledFuture<?>` |
-
----
-
-### Method 2 — scheduleAtFixedRate() — Repeat at Fixed Rate
-
-```java
-executor.scheduleAtFixedRate(task, 2, 4, TimeUnit.SECONDS);
-//                                 ↑  ↑
-//                       initialDelay  period
-```
-
-```
-Next run = previous START time + period
-
-2s  → Task starts
-6s  → Task starts  (2 + 4)
-10s → Task starts  (6 + 4)
-14s → Task starts  (10 + 4)
-```
-
-| | Detail |
-|---|---|
-| Runs | **Repeatedly** |
-| Next time based on | Previous **start** time + period |
-| Long task | Skips missed slots — no parallel runs |
-
----
-
-### Method 3 — scheduleWithFixedDelay() — Repeat with Fixed Delay
-
-```java
-executor.scheduleWithFixedDelay(task, 2, 4, TimeUnit.SECONDS);
-//                                    ↑  ↑
-//                          initialDelay  delay
-```
-
-```
-Next run = previous FINISH time + delay
-
-2s  → Task starts → 12s finishes
-16s → Task starts (12 + 4) → 18s finishes
-22s → Task starts (18 + 4)
-```
-
-| | Detail |
-|---|---|
-| Runs | **Repeatedly** |
-| Next time based on | Previous **finish** time + delay |
-| Long task | Simply pushes next run back |
-
----
-
-## scheduleAtFixedRate vs scheduleWithFixedDelay
-
-| | `scheduleAtFixedRate` | `scheduleWithFixedDelay` |
-|---|---|---|
-| Next run anchored to | Previous **start** time | Previous **finish** time |
-| Long running task | Skips missed slots | Pushes next run back |
-| Gap between runs | Can be 0 if task is slow | Always at least `delay` |
-| Use when | Fixed heartbeat / polling | Task duration varies |
-
----
-
-## Internal Architecture
-
-```
-ScheduledThreadPoolExecutor
-│
-├── DelayedWorkQueue (min-heap)
-│     ├── Task scheduled at 2s   ← head (earliest)
-│     ├── Task scheduled at 6s
-│     ├── Task scheduled at 10s
-│     └── Task scheduled at 14s
-│
-└── Thread Pool
-      ├── Thread-1 → watches queue (leader)
-      ├── Thread-2 → wait
-      └── Thread-3 → wait
-```
-
----
-
-## How Threads Work Internally — Step by Step
-
-```
-Step 1: Queue empty → all threads go to WAITING state
-
-Step 2: Task submitted → placed in DelayedWorkQueue
-        → signal() wakes up 1 thread (Thread-1)
-
-Step 3: Thread-1 checks head task
-        ┌─────────────────────────────────┐
-        │ Current time >= task run time?  │
-        └─────────────────────────────────┘
-              ↓ YES                ↓ NO
-        remove task           awaitNanos(remaining delay)
-        execute it            TIMED_WAITING state
-              ↓               OS timer wakes up after delay
-        task done             check again → execute
-              ↓
-        if periodic → recompute next time → reinsert into queue
-        if more tasks → signal() another thread
-```
-
----
-
-## TIMED_WAITING — No CPU Waste
-
-```
-Task scheduled at 2:00 PM
-Current time = 1:55 PM
-Remaining = 5 minutes
-
-Thread-1 → awaitNanos(5 minutes)
-         → goes to TIMED_WAITING
-         → JVM parks the thread
-         → OS timer set for 5 minutes
-         → zero CPU consumed during wait
-         → OS wakes thread at 2:00 PM
-         → Thread-1 picks up task and runs it
-```
-
----
-
-## Full Example Code
-
-```java
-import java.util.concurrent.*;
-
-public class ScheduledPoolDemo {
-    public static void main(String[] args) {
-
-        ScheduledExecutorService executor =
-                Executors.newScheduledThreadPool(3);
-
-        Runnable task = () ->
-            System.out.println("Task ran by: "
-                + Thread.currentThread().getName()
-                + " at: " + System.currentTimeMillis());
-
-        // 1. Run once after 3 seconds
-        executor.schedule(task, 3, TimeUnit.SECONDS);
-
-        // 2. Run every 4 seconds starting after 2 seconds
-        executor.scheduleAtFixedRate(task, 2, 4, TimeUnit.SECONDS);
-
-        // 3. Run with 4 second gap after each finish, starting after 2 seconds
-        executor.scheduleWithFixedDelay(task, 2, 4, TimeUnit.SECONDS);
-
-        // Shutdown after 20 seconds
-        executor.schedule(
-            () -> executor.shutdown(), 20, TimeUnit.SECONDS
-        );
+        poolObj.schedule(() -> {
+            System.out.println("hello");
+        }, 5, TimeUnit.SECONDS);
     }
 }
 ```
 
----
-
-## ScheduledFuture — Return Value
-
+**Ex2**
 ```java
-// schedule() returns ScheduledFuture
-ScheduledFuture<?> future = executor.schedule(task, 5, TimeUnit.SECONDS);
+public static void main(String args[]) {
 
-// Check remaining delay
-long delay = future.getDelay(TimeUnit.SECONDS);
-System.out.println("Runs in: " + delay + " seconds");
+    ScheduledExecutorService poolObj = Executors.newScheduledThreadPool(5);
 
-// Cancel before it runs
-future.cancel(true);
+    Future<String> futureObj = poolObj.schedule(() -> {
+        return "hello";
+    }, 5, TimeUnit.SECONDS);
 
-// Check if done
-boolean done = future.isDone();
+    try {
+        System.out.println(futureObj.get());
+    } catch (Exception e) {
+
+    }
+}
 ```
 
-| Method | Detail |
-|---|---|
-| `getDelay(unit)` | How long until next execution |
-| `cancel(true)` | Cancel the scheduled task |
-| `isDone()` | Has it completed |
-| `get()` | Wait and get result (blocks) |
+**Ex3**
+```java
+public static void main(String args[]) {
 
----
+    ScheduledExecutorService poolObj = Executors.newScheduledThreadPool(5);
 
-## newScheduledThreadPool vs newSingleThreadScheduledExecutor
+    Future<?> futureObj = poolObj.scheduleAtFixedRate(() -> {
+        try {
+            Thread.sleep(6000);
+        } catch (Exception e) {
 
-| | `newScheduledThreadPool(n)` | `newSingleThreadScheduledExecutor()` |
-|---|---|---|
-| Threads | **N threads** | **Only 1 thread** |
-| Parallel tasks | ✅ Yes — multiple tasks run in parallel | ❌ No — tasks run one by one |
-| If thread dies | New thread created | New thread created automatically |
-| Use when | Multiple concurrent scheduled tasks | Sequential scheduled tasks |
+        }
+        System.out.println("hello");
+    }, 3, 5, TimeUnit.SECONDS);
+}
+```
+- initial Delay: 3sec, & then after every 5sec gap it will put new task.
 
----
 
-## When to Use ScheduledThreadPool
 
-| Use Case | Example |
-|---|---|
-| Polling a database every 5 minutes | Check for new records periodically |
-| Sending heartbeat every 30 seconds | Keep-alive ping to server |
-| Cache refresh every 1 hour | Reload config or data |
-| Retry failed tasks after delay | Retry after 10 seconds |
-| Cleanup jobs | Delete temp files every night |
-| Health checks | Ping dependent services every minute |
+**Ex4**
+```java
+public static void main(String args[]) {
 
----
+    ScheduledExecutorService poolObj = Executors.newScheduledThreadPool(5);
 
-## Key Points to Remember
+    Future<?> futureObj = poolObj.scheduleAtFixedRate(() -> {
+        System.out.println("Thread picked the task");
 
-| Point | Detail |
-|---|---|
-| Built on `ThreadPoolExecutor` | Extends it — adds scheduling capability |
-| Queue is `DelayedWorkQueue` | Min-heap — earliest task always first |
-| Only **1 thread** watches queue at a time | Leader-follower pattern |
-| Threads use **TIMED_WAITING** | Not busy-waiting — zero CPU waste |
-| Periodic tasks reinserted after execution | Same task object — sequential always |
-| Exception swallowed silently | Future executions still happen unlike Timer |
-| Always call `shutdown()` | Prevent thread pool from running forever |
+        try {
+            Thread.sleep(6000);
+        } catch (Exception e) {
+
+        }
+        System.out.println("Thread completed the task");
+    }, 1, 3, TimeUnit.SECONDS);
+}
+```
+- Initial Delay: 1sec & after that every 3sec gap it will put new task.
+
+```text
+/Library/Java/JavaVirtualMachines/zulu-8...
+Thread picked the task        → Task1
+Thread completed the task
+Thread picked the task
+```
+- These two lines come together, as: Task1 needs 6sec & next task comes up at 1+3=4sec, but at t=4sec thread was busy, so Task will wait till t=6, & when Task1 completed, Task2 will be scheduled.
+
+b) If it was `scheduleWithFixedDelay`, than t=6 Task1 completed, from there Delay starts, so Task2 will be scheduled at 6+3=9.
+
+
