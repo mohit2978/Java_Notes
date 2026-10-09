@@ -28,7 +28,7 @@ Before diving into why they must agree when overridden, consider how both method
   }
   ```
 * **Behavior:** Pure **reference equality** (memory address check using `==`).
-* Returns `true` **only if** both references point to the exact same heap memory location (`this == obj`).Same as `==` foe user defined classes so akways override.
+* Returns `true` **only if** both references point to the exact same heap memory location (`this == obj`).Same as `==` for user-defined classes so always override.
 * Two distinct instances (even with identical field values) evaluate to `false`.
 
 #### 2. Default `hashCode()`
