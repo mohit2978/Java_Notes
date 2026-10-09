@@ -1,5 +1,20 @@
 ## What is a Stream?
 
+### Stream vs Traditional Loop (Mental Model)
+
+A **Stream** is not a data structure (like `List` or `Set`) that stores elements; it is a pipeline of computational steps to process data on-demand.
+
+| Feature | Traditional Loop (`for` / `while`) | Java Stream (`stream()`) |
+|---|---|---|
+| **Paradigm** | **Imperative** ("HOW"): You write every step explicitly (initialization, conditions, index increments, manual accumulation). | **Declarative / Functional** ("WHAT"): You specify what transformations you want (`.filter()`, `.map()`, `.count()`), and Java handles execution. |
+| **Iteration** | **External Iteration**: Client code explicitly controls the loop and pulls elements one by one using indices or iterators. | **Internal Iteration**: The Stream API manages traversal internally behind the scenes, enabling JVM optimizations. |
+| **Execution** | **Eager**: Every statement and loop runs immediately step-by-step. | **Lazy**: Intermediate operations do not execute until a terminal operation triggers the pipeline. |
+| **Data Mutation** | **Often Mutable**: Typically relies on mutating external variables or collections (e.g., `count++`, `tempList.add()`). | **Non-Mutating / Pure**: Never modifies the underlying collection; always leaves the original data intact. |
+| **Optimization** | **Manual**: Multiple filtering/mapping stages often require multiple loops or temporary collections in memory. | **Pipelined (Loop Fusion)**: Chained operations are fused into a single traversal pass with short-circuit support (e.g., `findFirst()`, `limit()`). |
+| **Parallelism** | **Difficult**: Requires manual multi-threading, `ExecutorService`, locks, and synchronization to avoid race conditions. | **Effortless**: Can leverage multi-core processors simply by switching from `.stream()` to `.parallelStream()`. |
+
+### The Pipeline Concept
+
 - We can consider a Stream as a **pipeline**, through which our collection elements pass.
 - While elements pass through the pipeline, various operations are performed on them — sorting, filtering, etc.
 - Useful when dealing with **bulk processing** (and it can do **parallel processing**).

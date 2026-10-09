@@ -16,6 +16,42 @@ If you override `equals()`, **you MUST also override `hashCode()`**. Failing to 
 
 ---
 
+### Default Behavior in `java.lang.Object`
+
+Before diving into why they must agree when overridden, consider how both methods behave by default if a class **does not** override them:
+
+#### 1. Default `equals(Object obj)`
+* **Implementation:**
+  ```java
+  public boolean equals(Object obj) {
+      return (this == obj);
+  }
+  ```
+* **Behavior:** Pure **reference equality** (memory address check using `==`).
+* Returns `true` **only if** both references point to the exact same heap memory location (`this == obj`).Same as `==` foe user defined classes so akways override.
+* Two distinct instances (even with identical field values) evaluate to `false`.
+
+#### 2. Default `hashCode()`
+* **Implementation:**
+  ```java
+  public native int hashCode();
+  ```
+* **Behavior:** **Identity hash code** generated natively by the JVM (`native`).
+* Derives an integer typically based on the object's memory identity / header, independent of the fields inside the object.
+* Distinct instances get different hash codes by default. This value can always be retrieved explicitly using `System.identityHashCode(obj)`.
+
+#### Default Behavior Summary
+
+| Method | Default Implementation | What It Compares / Derives From | Two distinct `new` objects with same values |
+|---|---|---|---|
+| `equals(Object obj)` | `return (this == obj);` | Memory address (Reference identity) | `false` |
+| `hashCode()` | `native` (JVM-managed) | Object memory identity (`System.identityHashCode`) | **Different** integer hashes |
+
+> **Key Takeaway:**
+> By default, the Java contract is **not** broken: `o1.equals(o2)` is `true` only when `o1 == o2` (same instance), which guarantees `o1.hashCode() == o2.hashCode()`. The contract breaks only when you override `equals()` to check field values without overriding `hashCode()`.
+
+---
+
 ### The Official Java Contract (`java.lang.Object`)
 
 The Java Language Specification defines three strict rules governing `equals()` and `hashCode()`:

@@ -1138,3 +1138,246 @@ get(0) [by array index]: A
 | **`ArrayDeque`** | Circular Resizable Array | Yes (Insertion order) | **No** | Yes | No | `ConcurrentLinkedDeque` |
 | **`HashSet`** | Hash Table (`HashMap`) | No | Yes (1 max) | **No** | No | `ConcurrentHashMap.newKeySet()` |
 | **`TreeSet`** | Red-Black Tree | Yes (Sorted order) | **No** | **No** | No | `Collections.synchronizedSortedSet()` |
+
+---
+
+## 12. Interview Deep Dive: `ArrayList` vs. `LinkedList`
+
+The comparison between `ArrayList` and `LinkedList` is one of the most frequently asked Core Java interview topics. Interviewers look beyond basic textbook definitions to see if you understand **memory layout**, **CPU cache architecture**, and **real-world performance tradeoffs**.
+
+---
+
+### 1. Architectural & Memory Layout Differences
+
+```text
+ArrayList (Contiguous Memory Block):
+┌───────────┬───────────┬───────────┬───────────┬───────────┐
+│ Element 0 │ Element 1 │ Element 2 │ Element 3 │  (Empty)  │  ◄── Single Object[] array
+└───────────┴───────────┴───────────┴───────────┴───────────┘
+ 0x100       0x108       0x110       0x118       0x120      (Cache-line friendly!)
+
+LinkedList (Scattered Heap Nodes):
+┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│ Node A       │ ────► │ Node B       │ ────► │ Node C       │
+│ prev | next  │ ◄──── │ prev | next  │ ◄──── │ prev | next  │  ◄── Distinct Node objects
+│ item: "Data" │       │ item: "Data" │       │ item: "Data" │
+└──────────────┘       └──────────────┘       └──────────────┘
+  Heap 0x2A40            Heap 0x5F10            Heap 0x1B80     (Cache misses / pointer chasing)
+```
+
+* **`ArrayList`:** Backed by a contiguous `Object[] elementData` array. Because memory addresses are sequential, it takes full advantage of **CPU cache prefetching** (spatial locality).
+* **`LinkedList`:** Backed by a doubly linked list. Each item is wrapped inside a separate `Node<E>` object allocated at random heap addresses. Traversing it involves **pointer chasing**, causing frequent **CPU L1/L2 cache misses**.
+
+---
+
+### 2. Time Complexity Comparison Table
+
+| Operation | `ArrayList` | `LinkedList` | Interview Notes & Explanation |
+| :--- | :---: | :---: | :--- |
+| **Random Access by Index (`get(i)`)** | **$O(1)$** | **$O(n)$** | `ArrayList` calculates address via `baseAddress + index * elementSize`. `LinkedList` must traverse nodes one by one. |
+| **Add / Remove at End** | **Amortized $O(1)$** | **$O(1)$** | `ArrayList` is $O(1)$ on average, but $O(n)$ when resizing occurs (1.5x array growth). `LinkedList` updates `last` node pointer in $O(1)$. |
+| **Add / Remove at Beginning (`index = 0`)** | **$O(n)$** | **$O(1)$** | `ArrayList` must shift every existing element to the right via `System.arraycopy()`. `LinkedList` merely updates `first` node pointer. |
+| **Add / Remove in Middle (`index = k`)** | **$O(n)$** | **$O(n)$** | **Major Interview Trap!** See explanation below. |
+| **Search by Value (`contains(val)`)** | **$O(n)$** | **$O(n)$** | Both require linear scan of elements until match is found. |
+| **Iteration (`Iterator` / `for-each`)** | **$O(n)$ (Fast)** | **$O(n)$ (Slow)** | `ArrayList` iterates significantly faster in wall-clock time due to sequential memory access and CPU cache line hits. |
+
+---
+
+### 3. The #1 Interview Myth: "LinkedList is faster for insertions in the middle"
+
+> **Myth:** *"LinkedList is always better than ArrayList if you have frequent insertions and deletions in the middle of the list because linked list insertion is $O(1)$."*
+
+#### The Reality Check (Why this is FALSE in practice):
+1. **Finding the node takes $O(n)$ time:** To insert at index `k` in a `LinkedList`, you must first traverse $k$ nodes from head or tail:
+   $$\text{Total Time} = \underbrace{O(n)}_{\text{Search for position}} + \underbrace{O(1)}_{\text{Pointer rewiring}} = \mathbf{O(n)}$$
+2. **Hardware & CPU Cache Reality:**
+   * In `ArrayList`, jumping to index `k` is instantaneous ($O(1)$).
+   * Shifting elements is handled by `System.arraycopy()`, which uses **low-level CPU vector instructions (SIMD/memmove)** to copy contiguous bytes in bulk.
+   * In `LinkedList`, finding the node involves hopping across scattered memory locations, incurring CPU cache misses on nearly every hop.
+3. **Verdict:** In real-world benchmarks, **`ArrayList` beats `LinkedList` even for middle insertions** unless the list contains millions of large objects or you are inserting via an already-positioned `ListIterator.add()`.
+
+---
+
+### 4. Memory Footprint & GC Impact
+
+* **`ArrayList` Memory Overhead:**
+  * Only the unused buffer slots in the internal array:
+    $$\text{Overhead} = (\text{capacity} - \text{size}) \times \text{referenceSize (4 or 8 bytes)}$$
+  * Minimal GC pressure (only one contiguous array object to track).
+* **`LinkedList` Memory Overhead:**
+  * Every single element is wrapped in a private `Node<E>` object:
+    * Object header: **12–16 bytes**
+    * Three references (`item`, `next`, `prev`): **$3 \times 4$ to $3 \times 8$ bytes**
+    * Total: **~24 to 48 bytes of pure overhead PER ELEMENT!**
+  * Storing 1 million integers in a `LinkedList` creates **1 million heap Node objects**, causing immense GC overhead and heap fragmentation.
+
+---
+
+### 5. Interfaces & Structural Capabilities
+
+| Interface / Feature | `ArrayList` | `LinkedList` | Impact |
+| :--- | :---: | :---: | :--- |
+| **`RandomAccess`** | **Yes** | **No** | Marker interface indicating fast $O(1)$ random access. Used by algorithms like `Collections.binarySearch()` to choose index lookup over iterator traversal. |
+| **`Deque` & `Queue`** | **No** | **Yes** | `LinkedList` can act as a FIFO Queue (`poll()`, `offer()`) or Double-Ended Queue (`addFirst()`, `pollLast()`). |
+| **`Cloneable` & `Serializable`** | Yes | Yes | Both implement standard cloning and serialization. |
+
+---
+
+### 6. When to Choose Which? (The Senior Engineer Decision Rule)
+
+```text
+Do you need a general-purpose List?
+  │
+  ├─► YES ──► ALWAYS default to ArrayList (99% of production use cases).
+  │
+  └─► NO (You need a Queue, Deque, or Stack behavior)
+        │
+        ├─► Do you think about LinkedList?
+        │     │
+        │     └─► STOP! Prefer ArrayDeque instead!
+        │         (ArrayDeque is faster, has lower memory overhead, and no Node allocations).
+        │
+        └─► Only use LinkedList if:
+              - You strictly need to insert/delete while actively iterating using ListIterator.
+              - You need a List that also allows nulls and implements Deque simultaneously.
+```
+
+---
+
+### 7. Rapid-Fire Interview Questions & Answers
+
+#### Q1: Why does `ArrayList` implement `RandomAccess` but `LinkedList` does not?
+* **Answer:** `RandomAccess` is a marker interface. It flags that the collection supports constant-time ($O(1)$) random element access. If `Collections.binarySearch()` receives a list implementing `RandomAccess`, it uses index-based binary search ($O(\log n)$). If it does not (like `LinkedList`), it falls back to iterator traversal, degrading binary search to $O(n)$ time!
+
+#### Q2: How does `ArrayList` grow when its capacity is exhausted?
+* **Answer:** When full, `ArrayList` creates a new array with **$1.5\times$ (50% increase)** the previous capacity:
+  ```java
+  int newCapacity = oldCapacity + (oldCapacity >> 1);
+  ```
+  It then copies elements across using `Arrays.copyOf()` / `System.arraycopy()`.
+
+#### Q3: Why is `LinkedList` almost never recommended in modern Java development?
+* **Answer:**
+  1. For indexed lookup, `ArrayList` is infinitely faster ($O(1)$ vs $O(n)$).
+  2. For cache locality and CPU branch prediction, `ArrayList` is vastly superior.
+  3. For Queue and Deque operations, **`ArrayDeque` is significantly faster** than `LinkedList` because it uses a circular resizable array without allocating node objects.
+
+#### Q4: What is the initial capacity of `ArrayList`?
+* **Answer:** In Java 8+, `new ArrayList<>()` initializes with an empty array (`{}`). It assigns the default capacity of **10** lazily upon the very first `add()` call to avoid unnecessary memory allocation for empty lists.
+
+---
+
+## 13. Interview Deep Dive: `ArrayDeque` vs. `LinkedList`
+
+Both `ArrayDeque` and `LinkedList` implement the `java.util.Deque` (Double-Ended Queue) and `Queue` interfaces. A classic interview question is:
+> *"If both implement `Deque`, why does the official Java documentation explicitly state that `ArrayDeque` is likely faster than `Stack` when used as a stack, and faster than `LinkedList` when used as a queue?"*
+
+---
+
+### 1. Architectural & Memory Layout Comparison
+
+```text
+ArrayDeque (Circular Contiguous Array with Head/Tail Pointers):
+            head = 6              tail = 2
+               │                     │
+               ▼                     ▼
+┌───┬───┬──────┬──────┬──────┬──────┬───┬───┐
+│ E │ F │ Empty│ Empty│ Empty│ Empty│ A │ B │  ◄── Circular Object[] array
+└───┴───┴──────┴──────┴──────┴──────┴───┴───┘
+  0   1    2      3      4      5     6   7
+ (Zero object allocations on add/remove! High CPU cache locality!)
+
+LinkedList (Scattered Nodes with Forward/Backward References):
+┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│ Node A       │ ────► │ Node B       │ ────► │ Node C       │
+│ prev | next  │ ◄──── │ prev | next  │ ◄──── │ prev | next  │  ◄── Distinct Node objects
+│ item: "Data" │       │ item: "Data" │       │ item: "Data" │
+└──────────────┘       └──────────────┘       └──────────────┘
+  Heap 0x3010            Heap 0x7B20            Heap 0x1A40
+ (Heap allocation + GC churn on every single push/pop/poll!)
+```
+
+* **`ArrayDeque`:**
+  * Uses a single **circular dynamic array** (`Object[] elements`) with two integer cursor pointers: `head` and `tail`.
+  * Wrapping around array boundaries is lightning-fast: it uses bitwise masking `(head - 1) & (elements.length - 1)` because capacity is always maintained as a power of 2 ($2^k$).
+  * Adding or removing from either end requires **zero memory allocations** (it simply writes into an existing array slot and shifts the pointer).
+* **`LinkedList`:**
+  * Uses a doubly linked list with heap-allocated `Node<E>` objects.
+  * Every insertion (`addFirst()`, `addLast()`) allocates a brand-new `Node` object on the heap.
+  * Every deletion (`pollFirst()`, `pollLast()`) discards a `Node`, sending it to garbage collection.
+
+---
+
+### 2. Side-by-Side Comparison Matrix
+
+| Feature | `ArrayDeque` | `LinkedList` | Interview Notes |
+| :--- | :---: | :---: | :--- |
+| **Backing Structure** | Circular Resizable Array | Doubly Linked List | Array vs scattered node pointers |
+| **CPU Cache Locality** | **Excellent (Contiguous)** | **Poor (Scattered)** | `ArrayDeque` fits neatly into CPU cache lines. |
+| **Object Allocation per Insert** | **Zero (0)** (unless resizing) | **1 `Node` object per item** | `LinkedList` puts heavy churn on Java GC. |
+| **Memory Overhead** | Minimal (empty array slots only) | High (~24–48 bytes per node) | `LinkedList` wastes considerable RAM on pointers. |
+| **Null Elements Allowed?** | **NO (`NullPointerException`)** | **YES** | **Critical Interview Trap!** See explanation below. |
+| **Implements `List`?** | **No** (No indexed `get(i)`) | **Yes** (Supports indexed `get(i)`) | `ArrayDeque` only implements `Deque` + `Queue`. |
+| **Add / Remove at Ends** | Amortized $O(1)$ | $O(1)$ | `ArrayDeque` is amortized due to $2\times$ array resizing. |
+| **Wall-Clock Speed** | **Fastest (2× to 3× faster)** | Slower | Cache locality & no GC overhead make `ArrayDeque` the winner. |
+| **Thread Safety** | Not Thread-Safe | Not Thread-Safe | Both are unsynchronized (use `ConcurrentLinkedDeque` for concurrency). |
+
+---
+
+### 3. The Null Value Interview Trap
+
+> **Question:** *"Why does `ArrayDeque` strictly forbid `null` elements while `LinkedList` allows them?"*
+
+* In the `Queue` / `Deque` interface, methods like `poll()`, `peek()`, `pollFirst()`, and `peekLast()` use `null` as a **special sentinel return value** to indicate that the queue is **empty**.
+* If `null` were allowed as a valid element (as in `LinkedList`), calling `deque.poll()` returning `null` becomes ambiguous:
+  * Did the queue contain a `null` element?
+  * OR is the queue completely empty?
+* `ArrayDeque` eliminates this ambiguity by throwing a `NullPointerException` on any attempt to insert `null`.
+
+```java
+Deque<String> arrayDeque = new ArrayDeque<>();
+arrayDeque.add(null); // Throws NullPointerException!
+
+Deque<String> linkedList = new LinkedList<>();
+linkedList.add(null); // Compiles and succeeds!
+```
+
+---
+
+### 4. Which One to Use in Production? (The Rule of Thumb)
+
+```text
+Do you need a Queue, Deque, or LIFO Stack?
+  │
+  ├─► Do you strictly need null elements?
+  │     ├─► YES ──► Use LinkedList (or redesign to avoid nulls).
+  │     └─► NO  ──► Use ArrayDeque (Fastest, best memory profile).
+  │
+  ├─► Do you need index-based random access (List.get(i))?
+  │     ├─► YES ──► Use ArrayList (Never LinkedList!).
+  │     └─► NO  ──► Use ArrayDeque.
+  │
+  └─► For general Queue / Stack workloads ──► ALWAYS prefer ArrayDeque over both Stack and LinkedList!
+```
+
+---
+
+### 5. Rapid-Fire Interview Questions & Answers
+
+#### Q1: Why is `ArrayDeque` preferred over `java.util.Stack`?
+* **Answer:**
+  1. `Stack` extends legacy `Vector`, meaning every method (`push`, `pop`, `peek`) is `synchronized`, causing massive lock contention in single-threaded or modern applications.
+  2. `Stack` inherits `Vector`'s indexed methods (e.g., `stack.get(4)` or `stack.insertElementAt()`), violating the strict LIFO contract.
+  3. `ArrayDeque` is unsynchronized, faster, and correctly represents stack operations.
+
+#### Q2: How does `ArrayDeque` resize its circular array when full?
+* **Answer:** When `head == tail`, the array is completely full. `ArrayDeque` doubles its capacity ($2\times$):
+  ```java
+  int newCapacity = elements.length << 1;
+  ```
+  It copies elements from `head` to the end of the array first, and then wraps elements from `0` to `head`, resetting `head = 0` and `tail = oldLength`.
+
+#### Q3: When would you ever pick `LinkedList` over `ArrayDeque`?
+* **Answer:** Almost never for queue/stack use cases. The only niche exceptions are:
+  1. When you must store `null` elements inside a deque (which `ArrayDeque` prohibits).
+  2. When you require a single object instance to implement **both** the `List` and `Deque` interfaces simultaneously.
