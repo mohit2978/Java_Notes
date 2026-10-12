@@ -514,4 +514,219 @@ Trace:
 - That `signal()` wakes `Thread-0` back up from its `await()` — it re-acquires the lock, finishes its 2nd `producer()` call (`isAvailable = true`), and releases.
 - `Thread-1` loops back for its 2nd `consume()` call and consumes the value `Thread-0` just produced.
 
+
 `Condition` is what `wait()`/`notify()` are for a `synchronized` monitor — but tied to an explicit `Lock` object instead of an object's own intrinsic monitor. `await()` releases the lock while the thread waits (it's associated with the *lock*, not any particular object); `signal()` does **not** itself wait — it just wakes one waiting thread and returns immediately.
+
+---
+
+## Real-World Use Cases — Which Lock to Choose & Why Not Others?
+
+A quick cheat sheet before diving in:
+
+| Lock Type | Core Promise | Best For |
+|---|---|---|
+| `synchronized` | Simplest mutual exclusion | Simple, low-contention critical sections |
+| `ReentrantLock` | Flexible mutual exclusion | Recursive methods, timed/try-lock, fairness needed |
+| `Semaphore` | Controls access count (N permits) | Connection pools, rate limiting, bounded resources |
+| `StampedLock` | Optimistic + Shared + Exclusive | High-read, low-write scenarios (caches, configs) |
+| `ReadWriteLock` | Shared reads, exclusive writes | Shared data that is read often, written rarely |
+
+---
+
+### 🏦 Use Case 1 — Bank Transaction (ReentrantLock)
+
+**Scenario:** A banking app where transferring money requires locking both the *debit* and *credit* operations, with recursive helper methods also needing the same lock (e.g., `transfer()` calls `validateBalance()` which also locks).
+
+```java
+class BankAccount {
+    private double balance;
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public void transfer(double amount) {
+        lock.lock();                   // outer lock — hold count = 1
+        try {
+            validateBalance(amount);   // calls lock.lock() again internally!
+            balance -= amount;
+        } finally {
+            lock.unlock();             // hold count = 0 → lock released
+        }
+    }
+
+    private void validateBalance(double amount) {
+        lock.lock();                   // re-entrant — same thread, no deadlock ✅
+        try {
+            if (balance < amount) throw new RuntimeException("Insufficient funds");
+        } finally {
+            lock.unlock();             // hold count back to 1
+        }
+    }
+}
+```
+
+**Why NOT `synchronized`?**
+- `synchronized` IS reentrant too — but it gives you **no control**. You can't:
+  - Try to acquire without waiting forever: `lock.tryLock()` → `synchronized` blocks forever.
+  - Set a timeout: `lock.tryLock(2, TimeUnit.SECONDS)` → impossible with `synchronized`.
+  - Set **fairness** (FIFO order): `new ReentrantLock(true)` → `synchronized` has no fairness guarantee.
+  - Interrupt a waiting thread: `lock.lockInterruptibly()` → impossible with `synchronized`.
+
+**Why NOT Semaphore?** Semaphore controls *how many* threads enter — not mutual exclusion with reentrancy.
+
+**Why NOT StampedLock?** `StampedLock` is **NOT reentrant** — the same thread calling `writeLock()` twice would deadlock itself.
+
+---
+
+### 🗄️ Use Case 2 — Database Connection Pool (Semaphore)
+
+**Scenario:** Your app has a pool of **5 database connections**. Only 5 threads can use a connection simultaneously. All others must wait until one is freed.
+
+```java
+class ConnectionPool {
+    private final Semaphore semaphore = new Semaphore(5); // 5 permits = 5 connections
+    private final List<Connection> pool = getConnections();
+
+    public Connection acquire() throws InterruptedException {
+        semaphore.acquire();         // blocks if all 5 permits are taken 🛑
+        return pool.remove(0);       // grab a free connection
+    }
+
+    public void release(Connection conn) {
+        pool.add(conn);              // return connection to pool
+        semaphore.release();         // give back 1 permit → unblocks a waiting thread ✅
+    }
+}
+```
+
+```text
+Thread-1 ──► acquire() → permit: 5 → 4 ✅
+Thread-2 ──► acquire() → permit: 4 → 3 ✅
+Thread-3 ──► acquire() → permit: 3 → 2 ✅
+Thread-4 ──► acquire() → permit: 2 → 1 ✅
+Thread-5 ──► acquire() → permit: 1 → 0 ✅
+Thread-6 ──► acquire() → permit: 0 → 🛑 BLOCKED (waits)
+Thread-1 ──► release() → permit: 0 → 1 → Thread-6 unblocked ✅
+```
+
+**Why NOT `synchronized`?** `synchronized` allows only **1 thread** into the critical section at a time. But here you want **up to 5 threads** in concurrently — `synchronized` can't count.
+
+**Why NOT ReentrantLock?** Same problem — `ReentrantLock` is a mutex (exactly 1 thread at a time). It cannot permit N concurrent threads.
+
+**Why NOT StampedLock?** `StampedLock` is a read/write lock — not a counting/permit system.
+
+---
+
+### 📖 Use Case 3 — Configuration Cache (StampedLock)
+
+**Scenario:** A microservice reads its config **thousands of times per second** (for every incoming HTTP request). But config is updated very rarely (once every few hours). You don't want thousands of reader threads blocking each other because of an occasional writer.
+
+```java
+class ConfigService {
+    private final StampedLock sl = new StampedLock();
+    private Map<String, String> config = new HashMap<>();
+
+    // OPTIMISTIC READ — no lock acquired at all! ⚡
+    public String get(String key) {
+        long stamp = sl.tryOptimisticRead();   // returns stamp, acquires NO lock
+        String value = config.get(key);        // read WITHOUT locking
+        if (!sl.validate(stamp)) {             // did a write happen during our read?
+            // Yes — a write happened, fall back to a real read lock
+            stamp = sl.readLock();
+            try {
+                value = config.get(key);
+            } finally {
+                sl.unlockRead(stamp);
+            }
+        }
+        return value;                          // 99.9% of the time — zero lock overhead ✅
+    }
+
+    // EXCLUSIVE WRITE — only when config actually changes
+    public void update(String key, String value) {
+        long stamp = sl.writeLock();
+        try {
+            config.put(key, value);
+        } finally {
+            sl.unlockWrite(stamp);
+        }
+    }
+}
+```
+
+```text
+99.9% case (no write in progress):
+  Thread-1  ──► tryOptimisticRead() → stamp=1  (NO lock!)
+  Thread-2  ──► tryOptimisticRead() → stamp=1  (NO lock! both proceed simultaneously)
+  Thread-1  ──► validate(stamp=1) ✅ → return value instantly
+  Thread-2  ──► validate(stamp=1) ✅ → return value instantly
+
+Rare case (write in progress):
+  Writer    ──► writeLock()  → exclusive lock held, stamp invalidated
+  Thread-3  ──► tryOptimisticRead() → stamp=2
+  Thread-3  ──► validate(stamp=2) ❌ → falls back to readLock() → waits for write to finish
+```
+
+**Why NOT `synchronized`?** Every single read would grab the object monitor lock — 1 thread at a time. With thousands of reads/sec, threads constantly block each other even though reads can safely run in parallel.
+
+**Why NOT ReentrantLock?** Same as `synchronized` — it's a mutex (1 thread at a time), so all readers queue up unnecessarily.
+
+**Why NOT ReadWriteLock?** `ReadWriteLock` does allow concurrent reads (shared lock). But it still acquires a **real shared lock** on every read. `StampedLock`'s **optimistic read** acquires NO lock at all — just validates a stamp. Far cheaper when writes are very rare.
+
+---
+
+### 🧭 Quick Decision Guide
+
+```text
+Need mutual exclusion?
+│
+├──► Simple method, no special needs?
+│         → synchronized  (simplest, built-in, good default)
+│
+├──► Need tryLock / timeout / fairness / interruptible / reentrancy control?
+│         → ReentrantLock
+│
+├──► Need N threads in at once (counting/permits)?
+│         → Semaphore
+│
+└──► High read / low write, need maximum throughput?
+          ├──► Reads need guaranteed consistency at all times? → ReadWriteLock
+          └──► Writes are extremely rare?                     → StampedLock (optimistic read)
+```
+
+> **Golden Rule:** Start with `synchronized`. Move to `ReentrantLock` when you need more control. Use `Semaphore` when you need a permit count. Use `StampedLock` only when profiling shows lock contention on a heavily read-biased path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
